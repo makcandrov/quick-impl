@@ -5,7 +5,7 @@ use quote::quote;
 use crate::attributes::{Attribute, AttributeConfig, MethodAttribute};
 use crate::expand::Context;
 use crate::fields::IndexedField;
-use crate::idents::{CONFIG_DOC, CONFIG_NAME, TRAIT_DEREF_MUT};
+use crate::idents::{CONFIG_DOC, CONFIG_NAME};
 
 struct Config {
     name: syn::Ident,

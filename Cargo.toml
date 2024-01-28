@@ -7,7 +7,7 @@ homepage = "https://github.com/makcandrov/quick-impl"
 documentation = "https://docs.rs/quick-impl"
 description = "A Rust procedural macro auto-generating common methods on enums ans structures."
 license = "MIT OR Apache-2.0"
-keywords = ["quick", "impl"]
+keywords = ["quick", "impl", "derive"]
 
 [lib]
 proc-macro = true
