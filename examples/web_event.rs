@@ -6,7 +6,7 @@ pub enum WebEvent {
     PageLoad,
     #[quick_impl(pub is)]
     PageUnload,
-    #[quick_impl(pub as_ref, as_ref_mut, impl from)]
+    #[quick_impl(pub as_ref, as_ref_mut, impl From)]
     KeyPress(char),
     #[quick_impl(pub as_ref, as_ref_mut, pub into)]
     Paste(String),

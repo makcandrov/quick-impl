@@ -31,7 +31,7 @@ use quick_impl::QuickImpl;
 enum YourEnum {
     #[quick_impl(pub is)]
     Variant1,
-    #[quick_impl(pub as_ref, as_ref_mut, impl from)]
+    #[quick_impl(pub as_ref, as_ref_mut, impl From)]
     Variant2(i32),
     // ... add attributes to other variants as needed
 }

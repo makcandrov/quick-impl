@@ -4,7 +4,7 @@ use self::methods::{enum_method_as_ref, enum_method_as_ref_mut, enum_method_from
 use self::traits::enum_trait_from;
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::idents::{METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS};
+use crate::idents::{METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS, TRAIT_FROM};
 
 mod methods;
 mod traits;
@@ -37,7 +37,7 @@ pub fn enum_impl(context: &Context<'_>, implems: &mut Implems, data_enum: &DataE
                 },
                 AttributeType::Trait => {
                     let tokens = match attribute.ident.to_string().as_str() {
-                        METHOD_FROM => enum_trait_from(context, &variant.ident, fields, attribute)?,
+                        TRAIT_FROM => enum_trait_from(context, &variant.ident, fields, attribute)?,
                         _ => return Err(syn::Error::new_spanned(&attribute.ident, "Invalid trait name.")),
                     };
                     implems.extend_traits(tokens);
