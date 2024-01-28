@@ -4,7 +4,7 @@ use quote::quote;
 use crate::attributes::{Attribute, AttributeConfig};
 use crate::expand::Context;
 use crate::fields::IndexedField;
-use crate::idents::{CONFIG_DOC, TRAIT_DEREF};
+use crate::idents::config::CONFIG_DOC;
 
 struct Config {
     doc: String,
@@ -53,7 +53,7 @@ pub fn struct_trait_deref(
     let doc = &config.doc;
     let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
-    let deref_trait = Ident::new(TRAIT_DEREF, attribute.ident.span());
+    let deref_trait = Ident::new("Deref", attribute.ident.span());
     let name = Ident::new("deref", attribute.ident.span());
 
     let content = quote! {

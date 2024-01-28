@@ -4,7 +4,7 @@ use quote::quote;
 use crate::attributes::{Attribute, AttributeConfig};
 use crate::expand::Context;
 use crate::fields::IndexedField;
-use crate::idents::{CONFIG_DOC, TRAIT_DEREF_MUT};
+use crate::idents::config::CONFIG_DOC;
 
 struct Config {
     doc: String,
@@ -52,7 +52,7 @@ pub fn struct_trait_deref_mut(
 
     let doc = &config.doc;
     let field_ident = indexed_field.as_token();
-    let deref_trait = Ident::new(TRAIT_DEREF_MUT, attribute.ident.span());
+    let deref_mut_trait = Ident::new("DerefMut", attribute.ident.span());
     let name = Ident::new("deref_mut", attribute.ident.span());
 
     let content = quote! {
@@ -62,5 +62,5 @@ pub fn struct_trait_deref_mut(
         }
     };
 
-    Ok(context.in_impl(quote! { std::ops::#deref_trait for }, &content))
+    Ok(context.in_impl(quote! { std::ops::#deref_mut_trait for }, &content))
 }

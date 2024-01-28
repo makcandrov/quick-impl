@@ -3,7 +3,7 @@ use quote::quote;
 use syn::{Data, DeriveInput};
 
 use crate::components::{enum_impl, struct_impl};
-use crate::idents::MACRO_PATH;
+use crate::idents::MACRO_DERIVE_HELPER;
 
 pub fn derive(input: &DeriveInput) -> TokenStream {
     match try_expand(input) {
@@ -81,7 +81,11 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
     let context = Context::new(input);
     let mut implems = Implems::default();
 
-    if let Some(attr) = input.attrs.iter().find(|attr| attr.path().is_ident(MACRO_PATH)) {
+    if let Some(attr) = input
+        .attrs
+        .iter()
+        .find(|attr| attr.path().is_ident(MACRO_DERIVE_HELPER))
+    {
         return Err(syn::Error::new_spanned(attr, "Global attributes unavailable."));
     }
 

@@ -6,7 +6,7 @@ use syn::Fields;
 use crate::attributes::{Attribute, AttributeConfig, MethodAttribute};
 use crate::expand::Context;
 use crate::fields::{destructure_data, destructure_data_with_types, get_delimiter};
-use crate::idents::{CONFIG_DOC, CONFIG_NAME};
+use crate::idents::config::{CONFIG_DOC, CONFIG_NAME};
 
 struct Config {
     name: syn::Ident,

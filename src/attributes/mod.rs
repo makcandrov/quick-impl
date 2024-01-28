@@ -4,7 +4,7 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::parse::Parse;
 
-use crate::idents::MACRO_PATH;
+use crate::idents::MACRO_DERIVE_HELPER;
 
 #[derive(Clone)]
 pub struct Attribute {
@@ -77,14 +77,14 @@ impl Attributes {
     }
 
     pub fn from_attribute(attr: &syn::Attribute) -> syn::Result<Self> {
-        if !attr.path().is_ident(MACRO_PATH) {
+        if !attr.path().is_ident(MACRO_DERIVE_HELPER) {
             return Ok(Self::default());
         }
 
         let syn::Meta::List(list) = &attr.meta else {
             return Err(syn::Error::new_spanned(
                 attr,
-                &format!("Expected `{MACRO_PATH}(...)` attribute."),
+                &format!("Expected `{MACRO_DERIVE_HELPER}(...)` attribute."),
             ));
         };
 

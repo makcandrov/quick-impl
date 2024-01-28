@@ -5,7 +5,7 @@ use syn::Fields;
 
 use crate::attributes::{Attribute, AttributeConfig, MethodAttribute};
 use crate::expand::Context;
-use crate::idents::{CONFIG_DOC, CONFIG_NAME};
+use crate::idents::config::{CONFIG_DOC, CONFIG_NAME};
 
 struct Config {
     name: syn::Ident,

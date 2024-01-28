@@ -3,7 +3,8 @@ use syn::DataStruct;
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
 use crate::fields::to_indexed_field_iter;
-use crate::idents::{METHOD_GET, TRAIT_DEREF, TRAIT_DEREF_MUT};
+use crate::idents::methods::METHOD_GET;
+use crate::idents::traits::{TRAIT_DEREF, TRAIT_DEREF_MUT};
 
 mod methods;
 mod traits;

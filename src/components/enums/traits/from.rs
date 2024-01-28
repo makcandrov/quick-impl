@@ -5,7 +5,7 @@ use syn::Fields;
 use crate::attributes::{Attribute, AttributeConfig};
 use crate::expand::Context;
 use crate::fields::{destructure_data, destructure_types, get_delimiter};
-use crate::idents::CONFIG_DOC;
+use crate::idents::config::CONFIG_DOC;
 
 struct Config {
     doc: String,

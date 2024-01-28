@@ -4,7 +4,8 @@ use self::methods::{enum_method_as_ref, enum_method_as_ref_mut, enum_method_from
 use self::traits::enum_trait_from;
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::idents::{METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS, TRAIT_FROM};
+use crate::idents::methods::{METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS};
+use crate::idents::traits::TRAIT_FROM;
 
 mod methods;
 mod traits;
