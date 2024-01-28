@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput};
 
-use crate::components::enum_impl;
+use crate::components::{enum_impl, struct_impl};
 use crate::idents::MACRO_PATH;
 
 pub fn derive(input: &DeriveInput) -> TokenStream {
@@ -78,7 +78,7 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
     }
 
     match &input.data {
-        Data::Struct(data_struct) => {},
+        Data::Struct(data_struct) => struct_impl(&context, &mut implems, data_struct)?,
         Data::Enum(data_enum) => enum_impl(&context, &mut implems, data_enum)?,
         Data::Union(_) => return Err(syn::Error::new_spanned(input, "Unions are not supported")),
     }
