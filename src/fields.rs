@@ -111,7 +111,7 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #ident: #first_type }
     } else {
-        quote! { arg0 }
+        quote! { arg0: #first_type }
     };
 
     if fields.peek().is_none() {

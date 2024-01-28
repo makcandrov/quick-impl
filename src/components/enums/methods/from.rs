@@ -73,7 +73,7 @@ pub fn enum_method_from(
 
     let delimiter = get_delimiter(fields);
 
-    let input = destructure_data_with_types(fields, Delimiter::Parenthesis, quote! {}, true);
+    let input = destructure_data_with_types(fields, Delimiter::Parenthesis, quote! { () }, true);
     let destruct = destructure_data(fields, quote! {}, delimiter, quote! {}, true);
 
     let keywords = method_attr.keywords();

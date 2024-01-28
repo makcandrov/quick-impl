@@ -74,7 +74,7 @@ pub fn enum_method_as_ref_mut(
 
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(fields, quote! { &mut }, quote! { () }, true);
+    let ty = destructure_types(fields, quote! { &mut }, quote! { () }, false);
     let destruct = destructure_data(fields, quote! { ref mut }, delimiter, quote! {}, true);
     let ret = destructure_data(fields, quote! {}, Delimiter::Parenthesis, quote! { () }, false);
 
