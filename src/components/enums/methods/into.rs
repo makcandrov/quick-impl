@@ -1,9 +1,9 @@
 use convert_case::{Case, Casing};
 use proc_macro2::{Delimiter, Ident, TokenStream};
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::Fields;
 
-use crate::attributes::{Attribute, AttributeConfig};
+use crate::attributes::{Attribute, AttributeConfig, MethodAttribute};
 use crate::expand::Context;
 use crate::fields::{destructure_data, destructure_types, get_delimiter};
 use crate::idents::{CONFIG_DOC, CONFIG_NAME};
@@ -67,8 +67,7 @@ pub fn enum_method_into(
     variant_ident: &Ident,
     fields: &Fields,
     attribute: &Attribute,
-    visibility: &syn::Visibility,
-    constant: bool,
+    method_attr: &MethodAttribute,
 ) -> syn::Result<TokenStream> {
     let config = Config::new(&context.ident, variant_ident, &attribute)?;
 
@@ -78,18 +77,14 @@ pub fn enum_method_into(
     let destruct = destructure_data(fields, quote! {}, delimiter, quote! {}, true);
     let ret = destructure_data(fields, quote! {}, Delimiter::Parenthesis, quote! { () }, false);
 
-    let vis = visibility.to_token_stream();
-    let constant_kw = if constant {
-        quote! { const }
-    } else {
-        quote! {}
-    };
+    let keywords = method_attr.keywords();
+
     let doc = config.doc;
     let name = config.name;
 
     Ok(quote! {
         #[doc = #doc]
-        #vis #constant_kw fn #name(self) -> Option<#ty> {
+        #keywords fn #name(self) -> Option<#ty> {
             match self {
                 Self::#variant_ident #destruct => Some(#ret),
                 _ => None,

@@ -1,5 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
+use proc_macro2::TokenStream;
+use quote::{quote, ToTokens};
 use syn::parse::Parse;
 
 use crate::idents::MACRO_PATH;
@@ -13,11 +15,26 @@ pub struct Attribute {
 
 #[derive(Clone)]
 pub enum AttributeType {
-    Method {
-        visibility: syn::Visibility,
-        constant: bool,
-    },
+    Method(MethodAttribute),
     Trait,
+}
+
+#[derive(Clone)]
+pub struct MethodAttribute {
+    pub visibility: syn::Visibility,
+    pub constant: bool,
+}
+
+impl MethodAttribute {
+    pub fn keywords(&self) -> TokenStream {
+        let const_kw = if self.constant {
+            quote! { const }
+        } else {
+            quote! {}
+        };
+        let visibility = self.visibility.to_token_stream();
+        quote! { #visibility #const_kw }
+    }
 }
 
 #[derive(Clone)]
@@ -92,7 +109,7 @@ impl Parse for Attribute {
                 false
             };
 
-            AttributeType::Method { visibility, constant }
+            AttributeType::Method(MethodAttribute { visibility, constant })
         };
 
         let ident = input.parse::<syn::Ident>()?;

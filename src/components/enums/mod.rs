@@ -16,21 +16,15 @@ pub fn enum_impl(context: &Context<'_>, implems: &mut Implems, data_enum: &DataE
 
         for attribute in variant_attributes.iter() {
             match &attribute.typ {
-                AttributeType::Method { visibility, constant } => {
+                AttributeType::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {
                         METHOD_AS_REF_MUT => {
-                            enum_method_as_ref_mut(context, &variant.ident, fields, attribute, visibility, *constant)?
+                            enum_method_as_ref_mut(context, &variant.ident, fields, attribute, method_attr)?
                         },
-                        METHOD_AS_REF => {
-                            enum_method_as_ref(context, &variant.ident, fields, attribute, visibility, *constant)?
-                        },
-                        METHOD_FROM => {
-                            enum_method_from(context, &variant.ident, fields, attribute, visibility, *constant)?
-                        },
-                        METHOD_INTO => {
-                            enum_method_into(context, &variant.ident, fields, attribute, visibility, *constant)?
-                        },
-                        METHOD_IS => enum_method_is(context, &variant.ident, fields, attribute, visibility, *constant)?,
+                        METHOD_AS_REF => enum_method_as_ref(context, &variant.ident, fields, attribute, method_attr)?,
+                        METHOD_FROM => enum_method_from(context, &variant.ident, fields, attribute, method_attr)?,
+                        METHOD_INTO => enum_method_into(context, &variant.ident, fields, attribute, method_attr)?,
+                        METHOD_IS => enum_method_is(context, &variant.ident, fields, attribute, method_attr)?,
                         _ => return Err(syn::Error::new_spanned(&attribute.ident, "Invalid method name.")),
                     };
                     implems.extend_methods(tokens);
