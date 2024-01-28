@@ -1,11 +1,12 @@
 use convert_case::{Case, Casing};
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Delimiter, Ident, TokenStream};
 use quote::{quote, ToTokens};
 use syn::Fields;
 
 use crate::attributes::{Attribute, AttributeConfig};
-use crate::components::idents::{DOC, NAME};
 use crate::expand::Context;
+use crate::fields::{destructure_data, destructure_data_with_types, get_delimiter};
+use crate::idents::{CONFIG_DOC, CONFIG_NAME};
 
 struct Config {
     name: syn::Ident,
@@ -34,8 +35,8 @@ impl Config {
             AttributeConfig::Multiple(params) => {
                 for param in params {
                     match param.ident.to_string().as_str() {
-                        NAME => config.set_name(&param.literal)?,
-                        DOC => config.set_doc(&param.literal)?,
+                        CONFIG_NAME => config.set_name(&param.literal)?,
+                        CONFIG_DOC => config.set_doc(&param.literal)?,
                         _ => return Err(syn::Error::new_spanned(&param.ident, "Unknown parameter.")),
                     }
                 }
@@ -71,63 +72,10 @@ pub fn enum_method_from(
 ) -> syn::Result<TokenStream> {
     let config = Config::new(&context.ident, variant_ident, &attribute)?;
 
-    let (input, destruct) = match fields {
-        Fields::Named(named_fields) => {
-            let len = named_fields.named.len();
+    let delimiter = get_delimiter(fields);
 
-            let mut input = TokenStream::default();
-            let mut destruct = TokenStream::default();
-
-            let mut i = 0;
-
-            for field in &named_fields.named {
-                let var_ident = field.ident.as_ref().unwrap();
-
-                let field_ty = &field.ty;
-
-                if i == len - 1 {
-                    input.extend(quote! { #var_ident: #field_ty });
-                    destruct.extend(quote! { #var_ident });
-                } else {
-                    input.extend(quote! { #var_ident: #field_ty, });
-                    destruct.extend(quote! { #var_ident, });
-
-                    i += 1;
-                }
-            }
-
-            (quote! { #input }, quote! { { #destruct } })
-        },
-        Fields::Unnamed(unnamed_fields) => {
-            let len = unnamed_fields.unnamed.len();
-
-            let mut input = TokenStream::default();
-            let mut destruct = TokenStream::default();
-
-            let mut i = 0;
-
-            for field in &unnamed_fields.unnamed {
-                assert!(field.ident.is_none());
-
-                let var_ident = Ident::new(&format!("arg{i}"), Span::call_site());
-
-                let field_ty = &field.ty;
-
-                if i == len - 1 {
-                    input.extend(quote! { #var_ident: #field_ty });
-                    destruct.extend(quote! { #var_ident });
-                } else {
-                    input.extend(quote! { #var_ident: #field_ty, });
-                    destruct.extend(quote! { #var_ident, });
-
-                    i += 1;
-                }
-            }
-
-            (quote! { #input }, quote! { ( #destruct ) })
-        },
-        Fields::Unit => (quote! {}, quote! {}),
-    };
+    let input = destructure_data_with_types(fields, Delimiter::Parenthesis, quote! {}, true);
+    let destruct = destructure_data(fields, quote! {}, delimiter, quote! {}, true);
 
     let vis = visibility.to_token_stream();
     let constant_kw = if constant {
@@ -140,7 +88,7 @@ pub fn enum_method_from(
 
     Ok(quote! {
         #[doc = #doc]
-        #vis #constant_kw fn #name(#input) -> Self {
+        #vis #constant_kw fn #name #input -> Self {
             Self::#variant_ident #destruct
         }
     })

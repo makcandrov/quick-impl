@@ -4,8 +4,8 @@ use quote::{quote, ToTokens};
 use syn::Fields;
 
 use crate::attributes::{Attribute, AttributeConfig};
-use crate::components::idents::{DOC, NAME};
 use crate::expand::Context;
+use crate::idents::{CONFIG_DOC, CONFIG_NAME};
 
 struct Config {
     name: syn::Ident,
@@ -34,8 +34,8 @@ impl Config {
             AttributeConfig::Multiple(params) => {
                 for param in params {
                     match param.ident.to_string().as_str() {
-                        NAME => config.set_name(&param.literal)?,
-                        DOC => config.set_doc(&param.literal)?,
+                        CONFIG_NAME => config.set_name(&param.literal)?,
+                        CONFIG_DOC => config.set_doc(&param.literal)?,
                         _ => return Err(syn::Error::new_spanned(&param.ident, "Unknown parameter.")),
                     }
                 }

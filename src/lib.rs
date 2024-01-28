@@ -6,8 +6,8 @@ use syn::{parse_macro_input, DeriveInput};
 mod attributes;
 mod components;
 mod expand;
-
-const ATTRIBUTE_PATH: &str = "quick_impl";
+mod fields;
+mod idents;
 
 #[proc_macro_derive(QuickImpl, attributes(quick_impl))]
 pub fn derive_quick_impl(input: TokenStream) -> TokenStream {

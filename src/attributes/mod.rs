@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use syn::parse::Parse;
 
-use crate::ATTRIBUTE_PATH;
+use crate::idents::MACRO_PATH;
 
 #[derive(Clone)]
 pub struct Attribute {
@@ -60,14 +60,14 @@ impl Attributes {
     }
 
     pub fn from_attribute(attr: &syn::Attribute) -> syn::Result<Self> {
-        if !attr.path().is_ident(ATTRIBUTE_PATH) {
+        if !attr.path().is_ident(MACRO_PATH) {
             return Ok(Self::default());
         }
 
         let syn::Meta::List(list) = &attr.meta else {
             return Err(syn::Error::new_spanned(
                 attr,
-                &format!("Expected `{ATTRIBUTE_PATH}(...)` attribute."),
+                &format!("Expected `{MACRO_PATH}(...)` attribute."),
             ));
         };
 
