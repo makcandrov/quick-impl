@@ -64,10 +64,11 @@ pub fn enum_trait_from(
     let doc = &config.doc;
 
     let from_trait = syn::Ident::new("From", attribute.ident.span());
+    let name = Ident::new("from", attribute.ident.span());
 
     let content = quote! {
         #[doc = #doc]
-            fn from(#ret: #ty) -> Self {
+            fn #name (#ret: #ty) -> Self {
                 Self::#variant_ident #destruct
             }
     };

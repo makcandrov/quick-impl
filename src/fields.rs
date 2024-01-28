@@ -1,7 +1,43 @@
+use std::ops::Deref;
+
 use proc_macro2::{Delimiter, Ident, TokenStream};
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 use syn::{Field, Fields};
+
+#[derive(Clone)]
+pub struct IndexedField<'a> {
+    pub field: &'a Field,
+    pub index: usize,
+}
+
+impl<'a> Deref for IndexedField<'a> {
+    type Target = &'a Field;
+
+    fn deref(&self) -> &Self::Target {
+        &self.field
+    }
+}
+
+impl<'a> IndexedField<'a> {
+    pub fn as_token(&self) -> TokenStream {
+        self.field
+            .ident
+            .as_ref()
+            .map(|x| x.to_token_stream())
+            .unwrap_or_else(|| syn::Index::from(self.index).to_token_stream())
+    }
+}
+
+pub fn to_indexed_field_iter<'a, I>(fields: I) -> impl Iterator<Item = IndexedField<'a>>
+where
+    I: IntoIterator<Item = &'a Field>,
+{
+    fields
+        .into_iter()
+        .enumerate()
+        .map(|(index, field)| IndexedField { field, index })
+}
 
 pub fn get_delimiter(fields: &Fields) -> Delimiter {
     match fields {

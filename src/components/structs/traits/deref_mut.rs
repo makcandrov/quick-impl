@@ -4,7 +4,7 @@ use quote::quote;
 use crate::attributes::{Attribute, AttributeConfig};
 use crate::expand::Context;
 use crate::fields::IndexedField;
-use crate::idents::{CONFIG_DOC, TRAIT_DEREF};
+use crate::idents::{CONFIG_DOC, TRAIT_DEREF_MUT};
 
 struct Config {
     doc: String,
@@ -12,7 +12,7 @@ struct Config {
 
 impl Config {
     pub fn default() -> Self {
-        let doc = "Dereferences the value.".to_owned();
+        let doc = "Mutably dereferences the value.".to_owned();
 
         Self { doc }
     }
@@ -43,7 +43,7 @@ impl Config {
     }
 }
 
-pub fn struct_trait_deref(
+pub fn struct_trait_deref_mut(
     context: &Context,
     indexed_field: &IndexedField<'_>,
     attribute: &Attribute,
@@ -51,17 +51,14 @@ pub fn struct_trait_deref(
     let config = Config::new(&attribute)?;
 
     let doc = &config.doc;
-    let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
-    let deref_trait = Ident::new(TRAIT_DEREF, attribute.ident.span());
-    let name = Ident::new("deref", attribute.ident.span());
+    let deref_trait = Ident::new(TRAIT_DEREF_MUT, attribute.ident.span());
+    let name = Ident::new("deref_mut", attribute.ident.span());
 
     let content = quote! {
-        type Target = #field_type;
-
         #[doc = #doc]
-        fn #name (&self) -> &Self::Target {
-            &self.#field_ident
+        fn #name (&mut self) -> &mut <Self as std::ops::Deref>::Target {
+            &mut self.#field_ident
         }
     };
 

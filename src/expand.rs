@@ -56,16 +56,24 @@ impl Implems {
         self.traits.push(tokens)
     }
 
-    pub fn get_methods(&self, context: &Context) -> TokenStream {
-        context.in_impl(Default::default(), &self.methods)
+    pub fn get_methods(&self, context: &Context) -> Option<TokenStream> {
+        if self.methods.is_empty() {
+            None
+        } else {
+            Some(context.in_impl(Default::default(), &self.methods))
+        }
     }
 
-    pub fn get_traits(&self) -> TokenStream {
-        let mut res = TokenStream::new();
-        for t in &self.traits {
-            res.extend(quote! { #t })
+    pub fn get_traits(&self) -> Option<TokenStream> {
+        if self.traits.is_empty() {
+            None
+        } else {
+            let mut res = TokenStream::new();
+            for t in &self.traits {
+                res.extend(quote! { #t })
+            }
+            Some(res)
         }
-        res
     }
 }
 
@@ -83,8 +91,8 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
         Data::Union(_) => return Err(syn::Error::new_spanned(input, "Unions are not supported")),
     }
 
-    let methods = implems.get_methods(&context);
-    let traits = implems.get_traits();
+    let methods = implems.get_methods(&context).unwrap_or_default();
+    let traits = implems.get_traits().unwrap_or_default();
 
     Ok(quote! {
         #methods
