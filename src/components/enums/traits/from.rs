@@ -68,9 +68,9 @@ pub fn enum_trait_from(
 
     let content = quote! {
         #[doc = #doc]
-            fn #name (#ret: #ty) -> Self {
-                Self::#variant_ident #destruct
-            }
+        fn #name (#ret: #ty) -> Self {
+            Self::#variant_ident #destruct
+        }
     };
 
     Ok(context.in_impl(quote! { #from_trait<#ty> for }, &content))
