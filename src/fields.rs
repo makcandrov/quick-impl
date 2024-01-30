@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use proc_macro2::{Delimiter, Ident, TokenStream};
+use proc_macro2::{Delimiter, Ident, Span, TokenStream};
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 use syn::{Field, Fields, Index, Variant};
@@ -28,6 +28,13 @@ impl<'a> IndexedField<'a> {
             .as_ref()
             .map(|x| x.to_token_stream())
             .unwrap_or_else(|| Index::from(self.index).to_token_stream())
+    }
+
+    pub fn as_ident(&self) -> Ident {
+        self.field
+            .ident
+            .clone()
+            .unwrap_or_else(|| Ident::new(&format!("{ARGUMENT}{}", self.index), Span::call_site()))
     }
 }
 
