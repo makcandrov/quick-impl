@@ -5,6 +5,7 @@ use syn::{parse_macro_input, DeriveInput};
 
 mod attributes;
 mod components;
+mod config;
 mod expand;
 mod fields;
 mod idents;

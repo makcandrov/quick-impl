@@ -3,7 +3,7 @@ use std::ops::Deref;
 use proc_macro2::{Delimiter, Ident, TokenStream};
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{Field, Fields, Index};
+use syn::{Field, Fields, Index, Variant};
 
 use crate::idents::ARGUMENT;
 
@@ -39,6 +39,23 @@ where
         .into_iter()
         .enumerate()
         .map(|(index, field)| IndexedField { field, index })
+}
+
+pub enum VariantOrField<'a> {
+    Variant(&'a Variant),
+    Field(&'a IndexedField<'a>),
+}
+
+impl<'a> From<&'a Variant> for VariantOrField<'a> {
+    fn from(variant: &'a Variant) -> Self {
+        Self::Variant(variant)
+    }
+}
+
+impl<'a> From<&'a IndexedField<'a>> for VariantOrField<'a> {
+    fn from(field: &'a IndexedField<'a>) -> Self {
+        Self::Field(field)
+    }
 }
 
 pub fn get_delimiter(fields: &Fields) -> Delimiter {
@@ -102,7 +119,7 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #prefix #ident }
     } else {
-        let first_ident = Ident::new(&format!("{ARGUMENT}0", ), first.span());
+        let first_ident = Ident::new(&format!("{ARGUMENT}0",), first.span());
         quote! { #prefix #first_ident }
     };
 
@@ -149,7 +166,7 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #ident: #first_type }
     } else {
-        let first_ident = Ident::new(&format!("{ARGUMENT}0", ), first.span());
+        let first_ident = Ident::new(&format!("{ARGUMENT}0",), first.span());
         quote! { #first_ident: #first_type }
     };
 
