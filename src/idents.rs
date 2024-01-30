@@ -1,4 +1,5 @@
 pub const MACRO_DERIVE_HELPER: &str = "quick_impl";
+pub const ARGUMENT: &str = "arg";
 
 pub mod config {
     pub const CONFIG_DOC: &str = "doc";

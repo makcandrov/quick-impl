@@ -3,7 +3,9 @@ use std::ops::Deref;
 use proc_macro2::{Delimiter, Ident, TokenStream};
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{Field, Fields};
+use syn::{Field, Fields, Index};
+
+use crate::idents::ARGUMENT;
 
 #[derive(Clone)]
 pub struct IndexedField<'a> {
@@ -25,7 +27,7 @@ impl<'a> IndexedField<'a> {
             .ident
             .as_ref()
             .map(|x| x.to_token_stream())
-            .unwrap_or_else(|| syn::Index::from(self.index).to_token_stream())
+            .unwrap_or_else(|| Index::from(self.index).to_token_stream())
     }
 }
 
@@ -42,8 +44,7 @@ where
 pub fn get_delimiter(fields: &Fields) -> Delimiter {
     match fields {
         Fields::Named(_) => Delimiter::Brace,
-        Fields::Unnamed(_) => Delimiter::Parenthesis,
-        Fields::Unit => Delimiter::Parenthesis,
+        Fields::Unnamed(_) | Fields::Unit => Delimiter::Parenthesis,
     }
 }
 
@@ -101,7 +102,8 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #prefix #ident }
     } else {
-        quote! { #prefix arg0 }
+        let first_ident = Ident::new(&format!("{ARGUMENT}0", ), first.span());
+        quote! { #prefix #first_ident }
     };
 
     if fields.peek().is_none() {
@@ -117,7 +119,7 @@ where
         let field_ident = if let Some(ident) = &field.ident {
             ident.clone()
         } else {
-            Ident::new(&format!("arg{i}"), field.span())
+            Ident::new(&format!("{ARGUMENT}{i}"), field.span())
         };
 
         res.extend(quote! { , #prefix #field_ident });
@@ -147,7 +149,8 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #ident: #first_type }
     } else {
-        quote! { arg0: #first_type }
+        let first_ident = Ident::new(&format!("{ARGUMENT}0", ), first.span());
+        quote! { #first_ident: #first_type }
     };
 
     if fields.peek().is_none() {
@@ -163,7 +166,7 @@ where
         let field_ident = if let Some(ident) = &field.ident {
             ident.clone()
         } else {
-            Ident::new(&format!("arg{i}"), field.span())
+            Ident::new(&format!("{ARGUMENT}{i}"), field.span())
         };
         let field_type = &field.ty;
 
