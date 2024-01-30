@@ -1,17 +1,38 @@
 # quick-impl
 
-`quick-impl` is a Rust procedural macro that simplifies working with enums by generating common methods and traits for each variant. This helps reduce boilerplate code and enhances the ergonomics of using enums in your Rust projects.
+`quick-impl` is a Rust procedural macro that simplifies working with enums and structures by generating common methods and traits for each variant/field. This helps reduce boilerplate code and enhances the ergonomics of using enums and structures in your Rust projects.
 
 ## Features
 
-- `[pub] as_ref [= "rename"]` Generates a method that returns an immutable reference to the associated data of the enum variant.
-- `[pub] as_ref_mut [= "rename"]` Generates a method that returns a mutable reference to the associated data of the enum variant.
-- `[pub] from [= "rename"]` Generates a method that creates an instance of the enum variant from the associated data.
-- `impl from` Implements the [`From`] trait for the enum, creating an instance of the enum variant from the associated data.
-- `[pub] into [= "rename"]` Generates a method that converts the enum into the variant associated data.
-- `[pub] is [= "rename"]` Generates a method that returns a boolean indicating whether the enum instance matches the specified variant.
+### Enums methods
+
+- `as_ref` - Returns an immutable reference to the associated data of the enum variant.
+- `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
+- `from` - Creates an instance of the enum variant from the associated data.
+- `into` - Converts the enum into the variant associated data.
+- `is` - Checks if the enum variant matches a specified variant.
+
+### Enums traits
+
+- `From` - Implements the [`From`] trait
+
+### Structures methods
+
+- `get` - A getter for the field.
+- `get_mut` - A mutable getter for the field.
+- `into` - Converts the structure into the field.
+- `set` - A setter for the field.
+- `with` - Returns the sutrcture with the field modified.
+
+### Structures traits
+
+- `Deref` - Implements the [`Deref`] trait
+- `DerefMut` - Implements the [`DerefMut`] trait
+- `From` - Implements the [`From`] trait
 
 [`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
+[`Deref`]: https://doc.rust-lang.org/std/ops/trait.Deref.html
+[`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
 
 ## Usage
 
