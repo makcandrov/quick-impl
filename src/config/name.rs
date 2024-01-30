@@ -5,7 +5,7 @@ macro_rules! build_enum_name {
         impl $crate::config::Configurable for $t {
             type Value = ::syn::Ident;
 
-            const IDENT: &'static str = crate::idents::config::CONFIG_NAME;
+            const IDENT: &'static str = $crate::idents::config::CONFIG_NAME;
 
             fn default<'a>(
                 _: &$crate::expand::Context<'_>,
