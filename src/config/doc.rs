@@ -10,13 +10,13 @@ macro_rules! build_enum_doc {
             fn default<'a>(
                 context: &$crate::expand::Context<'_>,
                 _: &$crate::attributes::Attribute,
-                item: &$crate::fields::VariantOrField<'a>,
+                item: &$crate::tokens::VariantOrField<'a>,
             ) -> syn::Result<Self::Value> {
                 match item {
-                    $crate::fields::VariantOrField::Variant(variant) => {
+                    $crate::tokens::VariantOrField::Variant(variant) => {
                         ::syn::Result::Ok(format!($pat, &context.ident, variant.ident))
                     },
-                    $crate::fields::VariantOrField::Field(field) => {
+                    $crate::tokens::VariantOrField::Field(field) => {
                         ::syn::Result::Ok(format!($pat, &context.ident, field.as_token().to_string()))
                     },
                 }

@@ -1,76 +1,10 @@
-use std::ops::Deref;
-
-use proc_macro2::{Delimiter, Ident, Span, TokenStream};
+use proc_macro2::{Delimiter, TokenStream};
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{Field, Fields, Index, Variant};
+use syn::{Field, Ident};
 
+use super::with_delimiter;
 use crate::idents::ARGUMENT;
-
-#[derive(Clone)]
-pub struct IndexedField<'a> {
-    pub field: &'a Field,
-    pub index: usize,
-}
-
-impl<'a> Deref for IndexedField<'a> {
-    type Target = &'a Field;
-
-    fn deref(&self) -> &Self::Target {
-        &self.field
-    }
-}
-
-impl<'a> IndexedField<'a> {
-    pub fn as_token(&self) -> TokenStream {
-        self.field
-            .ident
-            .as_ref()
-            .map(|x| x.to_token_stream())
-            .unwrap_or_else(|| Index::from(self.index).to_token_stream())
-    }
-
-    pub fn as_ident(&self) -> Ident {
-        self.field
-            .ident
-            .clone()
-            .unwrap_or_else(|| Ident::new(&format!("{ARGUMENT}{}", self.index), Span::call_site()))
-    }
-}
-
-pub fn to_indexed_field_iter<'a, I>(fields: I) -> impl Iterator<Item = IndexedField<'a>>
-where
-    I: IntoIterator<Item = &'a Field>,
-{
-    fields
-        .into_iter()
-        .enumerate()
-        .map(|(index, field)| IndexedField { field, index })
-}
-
-pub enum VariantOrField<'a> {
-    Variant(&'a Variant),
-    Field(&'a IndexedField<'a>),
-}
-
-impl<'a> From<&'a Variant> for VariantOrField<'a> {
-    fn from(variant: &'a Variant) -> Self {
-        Self::Variant(variant)
-    }
-}
-
-impl<'a> From<&'a IndexedField<'a>> for VariantOrField<'a> {
-    fn from(field: &'a IndexedField<'a>) -> Self {
-        Self::Field(field)
-    }
-}
-
-pub fn get_delimiter(fields: &Fields) -> Delimiter {
-    match fields {
-        Fields::Named(_) => Delimiter::Brace,
-        Fields::Unnamed(_) | Fields::Unit => Delimiter::Parenthesis,
-    }
-}
 
 pub fn destructure_types<'a, I>(
     fields: I,
@@ -199,13 +133,4 @@ where
     }
 
     with_delimiter(res, delimiter)
-}
-
-fn with_delimiter(input: TokenStream, delimiter: Delimiter) -> TokenStream {
-    match delimiter {
-        Delimiter::Parenthesis => quote! { ( #input ) },
-        Delimiter::Brace => quote! { { #input } },
-        Delimiter::Bracket => quote! { [ #input ] },
-        Delimiter::None => quote! { #input },
-    }
 }

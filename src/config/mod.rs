@@ -11,7 +11,7 @@ pub trait Configurable {
     fn default<'a>(
         context: &crate::expand::Context<'_>,
         attribute: &crate::attributes::Attribute,
-        item: &crate::fields::VariantOrField<'a>,
+        item: &crate::tokens::VariantOrField<'a>,
     ) -> syn::Result<Self::Value>;
 
     fn custom(lit: &syn::Lit) -> syn::Result<Self::Value>;
@@ -28,9 +28,9 @@ macro_rules! build_config {
             pub fn new<'a>(
                 context: &$crate::expand::Context<'_>,
                 attribute: &$crate::attributes::Attribute,
-                item: impl Into<$crate::fields::VariantOrField<'a>>
+                item: impl Into<$crate::tokens::VariantOrField<'a>>
             ) -> syn::Result<Self> {
-                let item = Into::<$crate::fields::VariantOrField<'a>>::into(item);
+                let item = Into::<$crate::tokens::VariantOrField<'a>>::into(item);
 
                 #[derive(::core::default::Default)]
                 struct ConfigInner {

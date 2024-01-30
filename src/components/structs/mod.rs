@@ -2,9 +2,9 @@ use syn::DataStruct;
 
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::fields::to_indexed_field_iter;
 use crate::idents::methods::{METHOD_GET, METHOD_GET_MUT, METHOD_INTO, METHOD_SET, METHOD_WITH};
 use crate::idents::traits::{TRAIT_DEREF, TRAIT_DEREF_MUT, TRAIT_INTO};
+use crate::tokens::to_indexed_field_iter;
 
 mod methods;
 mod traits;

@@ -7,8 +7,8 @@ mod attributes;
 mod components;
 mod config;
 mod expand;
-mod fields;
 mod idents;
+mod tokens;
 
 #[proc_macro_derive(QuickImpl, attributes(quick_impl))]
 pub fn derive_quick_impl(input: TokenStream) -> TokenStream {

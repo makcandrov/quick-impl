@@ -5,7 +5,7 @@ use syn::Variant;
 use crate::attributes::{Attribute, MethodAttribute};
 use crate::config::{build_config, build_enum_doc, build_enum_name};
 use crate::expand::Context;
-use crate::fields::{destructure_data, destructure_types, get_delimiter};
+use crate::tokens::{destructure_data, destructure_types, get_delimiter};
 
 build_enum_name! { ConfigName, "as_{}" }
 build_enum_doc! {

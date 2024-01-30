@@ -10,10 +10,10 @@ macro_rules! build_enum_name {
             fn default<'a>(
                 _: &$crate::expand::Context<'_>,
                 attribute: &$crate::attributes::Attribute,
-                item: &$crate::fields::VariantOrField<'a>,
+                item: &$crate::tokens::VariantOrField<'a>,
             ) -> syn::Result<Self::Value> {
                 match item {
-                    $crate::fields::VariantOrField::Variant(variant) => {
+                    $crate::tokens::VariantOrField::Variant(variant) => {
                         use convert_case::Casing;
 
                         let variant_name_snake_case = variant.ident.to_string().to_case(convert_case::Case::Snake);
@@ -22,7 +22,7 @@ macro_rules! build_enum_name {
                             attribute.ident.span(),
                         ))
                     },
-                    $crate::fields::VariantOrField::Field(field) => ::syn::Result::Ok(::syn::Ident::new(
+                    $crate::tokens::VariantOrField::Field(field) => ::syn::Result::Ok(::syn::Ident::new(
                         &format!($pat, field.as_token().to_string()),
                         attribute.ident.span(),
                     )),

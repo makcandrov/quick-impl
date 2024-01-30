@@ -4,7 +4,7 @@ use quote::quote;
 use crate::attributes::{Attribute, MethodAttribute};
 use crate::config::{build_config, build_enum_doc, build_enum_name};
 use crate::expand::Context;
-use crate::fields::IndexedField;
+use crate::tokens::IndexedField;
 
 build_enum_name! { ConfigName, "set_{}" }
 build_enum_doc! {

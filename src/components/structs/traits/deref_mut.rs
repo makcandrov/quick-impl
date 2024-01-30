@@ -4,7 +4,7 @@ use quote::quote;
 use crate::attributes::Attribute;
 use crate::config::{build_config, build_enum_doc};
 use crate::expand::Context;
-use crate::fields::IndexedField;
+use crate::tokens::IndexedField;
 
 build_enum_doc! {
     ConfigDoc,
