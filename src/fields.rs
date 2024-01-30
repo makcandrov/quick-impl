@@ -49,8 +49,8 @@ pub fn get_delimiter(fields: &Fields) -> Delimiter {
 
 pub fn destructure_types<'a, I>(
     fields: I,
-    prefix: TokenStream,
-    empty: TokenStream,
+    prefix: impl ToTokens,
+    empty: impl ToTokens,
     parenthesize_empty: bool,
 ) -> TokenStream
 where
@@ -59,7 +59,7 @@ where
     let mut fields = fields.into_iter().peekable();
 
     let Some(first) = fields.next() else {
-        return empty;
+        return empty.to_token_stream();
     };
 
     let first_type = &first.ty;
@@ -84,9 +84,9 @@ where
 
 pub fn destructure_data<'a, I>(
     fields: I,
-    prefix: TokenStream,
+    prefix: impl ToTokens,
+    empty: impl ToTokens,
     delimiter: Delimiter,
-    empty: TokenStream,
     parenthesize_empty: bool,
 ) -> TokenStream
 where
@@ -95,7 +95,7 @@ where
     let mut fields = fields.into_iter().peekable();
 
     let Some(first) = fields.next() else {
-        return empty;
+        return empty.to_token_stream();
     };
 
     let mut res = if let Some(ident) = &first.ident {
@@ -129,8 +129,8 @@ where
 
 pub fn destructure_data_with_types<'a, I>(
     fields: I,
+    empty: impl ToTokens,
     delimiter: Delimiter,
-    empty: TokenStream,
     parenthesize_empty: bool,
 ) -> TokenStream
 where
@@ -139,7 +139,7 @@ where
     let mut fields = fields.into_iter().peekable();
 
     let Some(first) = fields.next() else {
-        return empty;
+        return empty.to_token_stream();
     };
 
     let first_type = &first.ty;

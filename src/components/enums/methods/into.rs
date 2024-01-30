@@ -74,11 +74,10 @@ pub fn enum_method_into(
     let delimiter = get_delimiter(fields);
 
     let ty = destructure_types(fields, quote! {}, quote! { () }, false);
-    let destruct = destructure_data(fields, quote! {}, delimiter, quote! {}, true);
-    let ret = destructure_data(fields, quote! {}, Delimiter::Parenthesis, quote! { () }, false);
+    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
+    let ret = destructure_data(fields, quote! {}, quote! { () }, Delimiter::Parenthesis, false);
 
     let keywords = method_attr.keywords();
-
     let doc = config.doc;
     let name = config.name;
 

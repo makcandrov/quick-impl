@@ -77,7 +77,6 @@ pub fn enum_method_is(
     };
 
     let keywords = method_attr.keywords();
-
     let doc = config.doc;
     let name = config.name;
 

@@ -72,12 +72,10 @@ pub fn enum_method_from(
     let config = Config::new(&context.ident, variant_ident, &attribute)?;
 
     let delimiter = get_delimiter(fields);
-
-    let input = destructure_data_with_types(fields, Delimiter::Parenthesis, quote! { () }, true);
-    let destruct = destructure_data(fields, quote! {}, delimiter, quote! {}, true);
+    let input = destructure_data_with_types(fields, quote! { () }, Delimiter::Parenthesis, true);
+    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
 
     let keywords = method_attr.keywords();
-
     let doc = config.doc;
     let name = config.name;
 
