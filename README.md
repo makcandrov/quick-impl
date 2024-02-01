@@ -14,7 +14,7 @@
 
 ### Enums traits
 
-- `From` - Implements the [`From`] trait
+- `From` - Implements the [`From`] trait.
 
 ### Structures methods
 
@@ -26,13 +26,14 @@
 
 ### Structures traits
 
-- `Deref` - Implements the [`Deref`] trait
-- `DerefMut` - Implements the [`DerefMut`] trait
-- `From` - Implements the [`From`] trait
+- `Deref` - Implements the [`Deref`] trait.
+- `DerefMut` - Implements the [`DerefMut`] trait.
+- `Into` - Implements the [`Into`] trait.
 
-[`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
 [`Deref`]: https://doc.rust-lang.org/std/ops/trait.Deref.html
 [`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
+[`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
+[`Into`]: https://doc.rust-lang.org/std/convert/trait.Into.html
 
 ## Usage
 
