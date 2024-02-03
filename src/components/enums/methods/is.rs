@@ -35,11 +35,11 @@ pub fn enum_method_is(
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();
     let doc = config.doc;
-    let name = config.name;
+    let method_ident = config.name;
 
     Ok(quote! {
         #[doc = #doc]
-        #keywords fn #name(&self) -> bool {
+        #keywords fn #method_ident(&self) -> bool {
             match self {
                 Self::#variant_ident #destruct => true,
                 _ => false,

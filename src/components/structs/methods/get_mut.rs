@@ -27,15 +27,14 @@ pub fn struct_method_get_mut(
     let config = Config::new(context, attribute, indexed_field)?;
 
     let doc = &config.doc;
-
-    let ty = &indexed_field.ty;
     let keywords = method_attr.keywords();
-    let name = &config.name;
+    let ty = &indexed_field.ty;
+    let method_ident = &config.name;
     let field_ident = indexed_field.as_token();
 
     Ok(quote! {
         #[doc = #doc]
-        #keywords fn #name (&mut self) -> &mut #ty {
+        #keywords fn #method_ident (&mut self) -> &mut #ty {
             &mut self.#field_ident
         }
     })

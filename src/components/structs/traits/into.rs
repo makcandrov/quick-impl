@@ -26,15 +26,15 @@ pub fn struct_trait_into(
     let doc = &config.doc;
     let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
-    let deref_trait = Ident::new("Into", attribute.ident.span());
-    let name = Ident::new("into", attribute.ident.span());
+    let trait_ident = Ident::new("Into", attribute.ident.span());
+    let method_ident = Ident::new("into", attribute.ident.span());
 
     let content = quote! {
         #[doc = #doc]
-        fn #name (self) -> #field_type {
+        fn #method_ident (self) -> #field_type {
             self.#field_ident
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::convert::#deref_trait<#field_type> for }, &content))
+    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#field_type> for }, &content))
 }

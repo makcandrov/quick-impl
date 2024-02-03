@@ -26,17 +26,17 @@ pub fn struct_trait_deref(
     let doc = &config.doc;
     let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
-    let deref_trait = Ident::new("Deref", attribute.ident.span());
-    let name = Ident::new("deref", attribute.ident.span());
+    let trait_ident = Ident::new("Deref", attribute.ident.span());
+    let method_ident = Ident::new("deref", attribute.ident.span());
 
     let content = quote! {
         type Target = #field_type;
 
         #[doc = #doc]
-        fn #name (&self) -> &Self::Target {
+        fn #method_ident (&self) -> &Self::Target {
             &self.#field_ident
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::ops::#deref_trait for }, &content))
+    Ok(context.in_impl(quote! { ::core::ops::#trait_ident for }, &content))
 }

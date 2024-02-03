@@ -37,11 +37,11 @@ pub fn enum_method_into(
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();
     let doc = config.doc;
-    let name = config.name;
+    let method_ident = config.name;
 
     Ok(quote! {
         #[doc = #doc]
-        #keywords fn #name(self) -> Option<#ty> {
+        #keywords fn #method_ident(self) -> Option<#ty> {
             match self {
                 Self::#variant_ident #destruct => Some(#ret),
                 _ => None,

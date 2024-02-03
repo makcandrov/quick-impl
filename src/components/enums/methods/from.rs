@@ -36,11 +36,11 @@ pub fn enum_method_from(
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();
     let doc = config.doc;
-    let name = config.name;
+    let method_ident = config.name;
 
     Ok(quote! {
         #[doc = #doc]
-        #keywords fn #name #input -> Self {
+        #keywords fn #method_ident #input -> Self {
             Self::#variant_ident #destruct
         }
     })

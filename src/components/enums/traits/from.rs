@@ -29,15 +29,15 @@ pub fn enum_trait_from(context: &Context, variant: &Variant, attribute: &Attribu
 
     let variant_ident = &variant.ident;
     let doc = &config.doc;
-    let from_trait = syn::Ident::new("From", attribute.ident.span());
-    let name = Ident::new("from", attribute.ident.span());
+    let trait_ident = syn::Ident::new("From", attribute.ident.span());
+    let method_ident = Ident::new("from", attribute.ident.span());
 
     let content = quote! {
         #[doc = #doc]
-        fn #name (#ret: #ty) -> Self {
+        fn #method_ident (#ret: #ty) -> Self {
             Self::#variant_ident #destruct
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::convert::#from_trait<#ty> for }, &content))
+    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content))
 }

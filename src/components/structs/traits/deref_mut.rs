@@ -25,15 +25,15 @@ pub fn struct_trait_deref_mut(
 
     let doc = &config.doc;
     let field_ident = indexed_field.as_token();
-    let deref_mut_trait = Ident::new("DerefMut", attribute.ident.span());
-    let name = Ident::new("deref_mut", attribute.ident.span());
+    let trait_ident = Ident::new("DerefMut", attribute.ident.span());
+    let method_ident = Ident::new("deref_mut", attribute.ident.span());
 
     let content = quote! {
         #[doc = #doc]
-        fn #name (&mut self) -> &mut <Self as ::core::ops::Deref>::Target {
+        fn #method_ident (&mut self) -> &mut <Self as ::core::ops::Deref>::Target {
             &mut self.#field_ident
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::ops::#deref_mut_trait for }, &content))
+    Ok(context.in_impl(quote! { ::core::ops::#trait_ident for }, &content))
 }
