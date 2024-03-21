@@ -1,3 +1,9 @@
+mod as_mut;
+pub use as_mut::struct_trait_as_mut;
+
+mod as_ref;
+pub use as_ref::struct_trait_as_ref;
+
 mod deref;
 pub use deref::struct_trait_deref;
 
