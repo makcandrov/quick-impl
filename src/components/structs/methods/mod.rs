@@ -1,6 +1,9 @@
 mod get;
 pub use get::struct_method_get;
 
+mod get_clone;
+pub use get_clone::struct_method_get_clone;
+
 mod get_mut;
 pub use get_mut::struct_method_get_mut;
 

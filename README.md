@@ -18,7 +18,8 @@
 
 ### Structures methods
 
-- `get` - A getter for the field.
+- `get` - A getter for the field. Returns a reference to the field.
+- `get_clone` - A getter for the field. Returns a clone of the field.
 - `get_mut` - A mutable getter for the field.
 - `into` - Converts the structure into the field.
 - `set` - A setter for the field.
@@ -26,10 +27,14 @@
 
 ### Structures traits
 
+- `AsRef` - Implements the [`AsRef`] trait.
+- `AsMut` - Implements the [`AsMut`] trait.
 - `Deref` - Implements the [`Deref`] trait.
 - `DerefMut` - Implements the [`DerefMut`] trait.
 - `Into` - Implements the [`Into`] trait.
 
+[`AsRef`]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
+[`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
 [`Deref`]: https://doc.rust-lang.org/std/ops/trait.Deref.html
 [`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
 [`From`]: https://doc.rust-lang.org/std/convert/trait.From.html

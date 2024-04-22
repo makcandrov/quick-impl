@@ -11,6 +11,7 @@ pub mod methods {
     pub const METHOD_AS_REF_MUT: &str = "as_ref_mut";
     pub const METHOD_FROM: &str = "from";
     pub const METHOD_GET: &str = "get";
+    pub const METHOD_GET_CLONE: &str = "get_clone";
     pub const METHOD_GET_MUT: &str = "get_mut";
     pub const METHOD_INTO: &str = "into";
     pub const METHOD_IS: &str = "is";

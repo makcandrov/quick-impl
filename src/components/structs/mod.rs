@@ -2,7 +2,7 @@ use syn::DataStruct;
 
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::idents::methods::{METHOD_GET, METHOD_GET_MUT, METHOD_INTO, METHOD_SET, METHOD_WITH};
+use crate::idents::methods::{METHOD_GET, METHOD_GET_CLONE, METHOD_GET_MUT, METHOD_INTO, METHOD_SET, METHOD_WITH};
 use crate::idents::traits::{TRAIT_AS_MUT, TRAIT_AS_REF, TRAIT_DEREF, TRAIT_DEREF_MUT, TRAIT_INTO};
 use crate::tokens::to_indexed_field_iter;
 
@@ -18,6 +18,9 @@ pub fn struct_impl(context: &Context<'_>, implems: &mut Implems, data_struct: &D
                 AttributeType::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {
                         METHOD_GET => methods::struct_method_get(context, &indexed_field, attribute, method_attr)?,
+                        METHOD_GET_CLONE => {
+                            methods::struct_method_get_clone(context, &indexed_field, attribute, method_attr)?
+                        },
                         METHOD_GET_MUT => {
                             methods::struct_method_get_mut(context, &indexed_field, attribute, method_attr)?
                         },
