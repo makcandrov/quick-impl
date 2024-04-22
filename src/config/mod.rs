@@ -14,7 +14,7 @@ pub trait Configurable {
         item: &crate::tokens::VariantOrField<'a>,
     ) -> syn::Result<Self::Value>;
 
-    fn custom(lit: &syn::Lit) -> syn::Result<Self::Value>;
+    fn custom<'a>(item: &crate::tokens::VariantOrField<'a>, lit: &syn::Lit) -> syn::Result<Self::Value>;
 }
 
 macro_rules! build_config {
@@ -46,7 +46,7 @@ macro_rules! build_config {
                         if false { }
                         $(
                             else if $default {
-                                config.$name.replace(<$t as $crate::config::Configurable>::custom(lit)?);
+                                config.$name.replace(<$t as $crate::config::Configurable>::custom(&item, lit)?);
                             }
                         )*
                         else {
@@ -57,7 +57,7 @@ macro_rules! build_config {
                         for param in params {
                             match param.ident.to_string().as_str() {
                                 $(<$t as $crate::config::Configurable>::IDENT => {
-                                    if config.$name.replace(<$t as $crate::config::Configurable>::custom(&param.literal)?).is_some() {
+                                    if config.$name.replace(<$t as $crate::config::Configurable>::custom(&item, &param.literal)?).is_some() {
                                         return ::syn::Result::Err(::syn::Error::new_spanned(&param.ident, "Duplicate parameter."));
                                     }
                                 },)*

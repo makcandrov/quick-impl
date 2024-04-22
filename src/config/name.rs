@@ -2,6 +2,18 @@ macro_rules! build_enum_name {
     ($t: ident, $pat: literal $(,)?) => {
         struct $t;
 
+        impl $t {
+            fn get_item_name<'a>(item: &$crate::tokens::VariantOrField<'a>) -> String {
+                match item {
+                    $crate::tokens::VariantOrField::Variant(variant) => {
+                        use convert_case::Casing;
+                        variant.ident.to_string().to_case(::convert_case::Case::Snake)
+                    },
+                    $crate::tokens::VariantOrField::Field(field) => field.as_token().to_string(),
+                }
+            }
+        }
+
         impl $crate::config::Configurable for $t {
             type Value = ::syn::Ident;
 
@@ -12,28 +24,25 @@ macro_rules! build_enum_name {
                 attribute: &$crate::attributes::Attribute,
                 item: &$crate::tokens::VariantOrField<'a>,
             ) -> syn::Result<Self::Value> {
-                match item {
+                let item_name = match item {
                     $crate::tokens::VariantOrField::Variant(variant) => {
                         use convert_case::Casing;
-
-                        let variant_name_snake_case = variant.ident.to_string().to_case(convert_case::Case::Snake);
-                        ::syn::Result::Ok(::syn::Ident::new(
-                            &format!($pat, variant_name_snake_case),
-                            attribute.ident.span(),
-                        ))
+                        variant.ident.to_string().to_case(convert_case::Case::Snake)
                     },
-                    $crate::tokens::VariantOrField::Field(field) => ::syn::Result::Ok(::syn::Ident::new(
-                        &format!($pat, field.as_token().to_string()),
-                        attribute.ident.span(),
-                    )),
-                }
-            }
+                    $crate::tokens::VariantOrField::Field(field) => field.as_token().to_string(),
+                };
 
-            fn custom(lit: &::syn::Lit) -> ::syn::Result<Self::Value> {
+                ::syn::Result::Ok(::syn::Ident::new(
+                    &format!($pat, item_name),
+                    attribute.ident.span(),
+                ))
+            }
+            fn custom<'a>(item: &$crate::tokens::VariantOrField<'a>, lit: &::syn::Lit) -> ::syn::Result<Self::Value> {
                 let ::syn::Lit::Str(lit_str) = lit else {
                     return ::syn::Result::Err(::syn::Error::new_spanned(lit, "Expected string literal."));
                 };
-                ::syn::Result::Ok(::syn::Ident::new(&lit_str.value(), lit_str.span()))
+                let name = lit_str.value().replace("{}", &Self::get_item_name(item));
+                ::syn::Result::Ok(::syn::Ident::new(&name, lit_str.span()))
             }
         }
     };

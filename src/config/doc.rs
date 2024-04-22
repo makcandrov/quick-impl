@@ -22,7 +22,7 @@ macro_rules! build_enum_doc {
                 }
             }
 
-            fn custom(lit: &syn::Lit) -> syn::Result<Self::Value> {
+            fn custom<'a>(_: &$crate::tokens::VariantOrField<'a>, lit: &::syn::Lit) -> syn::Result<Self::Value> {
                 let ::syn::Lit::Str(lit_str) = lit else {
                     return ::syn::Result::Err(syn::Error::new_spanned(lit, "Expected string literal."));
                 };
