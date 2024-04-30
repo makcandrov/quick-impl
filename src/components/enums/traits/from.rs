@@ -39,5 +39,5 @@ pub fn enum_trait_from(context: &Context, variant: &Variant, attribute: &Attribu
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content))
+    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content, None))
 }

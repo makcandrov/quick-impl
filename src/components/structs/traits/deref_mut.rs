@@ -35,5 +35,5 @@ pub fn struct_trait_deref_mut(
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::ops::#trait_ident for }, &content))
+    Ok(context.in_impl(quote! { ::core::ops::#trait_ident for }, &content, None))
 }

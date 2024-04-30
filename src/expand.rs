@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput};
+use syn::{Data, DeriveInput, WhereClause};
 
 use crate::components::{enum_impl, struct_impl};
 use crate::idents::MACRO_DERIVE_HELPER;
@@ -30,8 +30,22 @@ impl<'a> Context<'a> {
         }
     }
 
-    pub fn in_impl(&self, trait_for: TokenStream, tokens: &TokenStream) -> TokenStream {
+    pub fn in_impl(
+        &self,
+        trait_for: TokenStream,
+        tokens: &TokenStream,
+        additional_where_clause: Option<WhereClause>,
+    ) -> TokenStream {
         let (impl_generics, ty_generics, where_clause) = self.generics.split_for_impl();
+        let where_clause = match (where_clause.cloned(), additional_where_clause) {
+            (None, None) => None,
+            (None, Some(where_clause)) => Some(where_clause),
+            (where_clause @ Some(_), None) => where_clause,
+            (Some(mut where_clause), Some(additional_where_clause)) => {
+                where_clause.predicates.extend(additional_where_clause.predicates);
+                Some(where_clause)
+            },
+        };
         let ident = self.ident;
         quote! {
             impl #impl_generics #trait_for #ident #ty_generics #where_clause {
@@ -60,7 +74,7 @@ impl Implems {
         if self.methods.is_empty() {
             None
         } else {
-            Some(context.in_impl(Default::default(), &self.methods))
+            Some(context.in_impl(Default::default(), &self.methods, None))
         }
     }
 

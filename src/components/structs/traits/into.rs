@@ -36,5 +36,9 @@ pub fn struct_trait_into(
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#field_type> for }, &content))
+    Ok(context.in_impl(
+        quote! { ::core::convert::#trait_ident<#field_type> for },
+        &content,
+        None,
+    ))
 }

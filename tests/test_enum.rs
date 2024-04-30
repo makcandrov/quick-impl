@@ -4,7 +4,7 @@ use quick_impl::QuickImpl;
 fn test_enum_variant_unit() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A,
     }
 
@@ -24,7 +24,7 @@ fn test_enum_variant_unit() {
 fn test_enum_variant_single_unnamed() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A(usize),
     }
 
@@ -44,7 +44,7 @@ fn test_enum_variant_single_unnamed() {
 fn test_enum_variant_single_named() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A { a: usize },
     }
 
@@ -64,7 +64,7 @@ fn test_enum_variant_single_named() {
 fn test_enum_variant_multiple_unnamed() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A(usize, isize, char),
     }
 
@@ -87,7 +87,7 @@ fn test_enum_variant_multiple_unnamed() {
 fn test_enum_variant_multiple_named() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A { a: usize, b: isize, c: char },
     }
 
@@ -110,7 +110,7 @@ fn test_enum_variant_multiple_named() {
 fn test_enum_generics() {
     #[derive(Debug, Eq, PartialEq, QuickImpl)]
     enum Test<T, U> {
-        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From)]
+        #[quick_impl(pub(crate) const is, const as_ref, pub as_ref_mut, pub(crate) from, pub(crate) into, impl From, impl Default)]
         A { a: T, b: U },
     }
 
