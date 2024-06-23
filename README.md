@@ -14,6 +14,7 @@
 
 ### Enums traits
 
+- `Default` - Implements the [`Default`] trait.
 - `From` - Implements the [`From`] trait.
 
 ### Structures methods
@@ -35,6 +36,7 @@
 
 [`AsRef`]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
+[`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
 [`Deref`]: https://doc.rust-lang.org/std/ops/trait.Deref.html
 [`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
 [`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
