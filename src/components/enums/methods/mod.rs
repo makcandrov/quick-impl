@@ -12,3 +12,6 @@ pub use into::enum_method_into;
 
 mod is;
 pub use is::enum_method_is;
+
+mod try_into;
+pub use try_into::enum_method_try_into;

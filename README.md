@@ -9,8 +9,9 @@
 - `as_ref` - Returns an immutable reference to the associated data of the enum variant.
 - `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
 - `from` - Creates an instance of the enum variant from the associated data.
-- `into` - Converts the enum into the variant associated data.
+- `into` - Converts the enum into the variant associated data, returning an [`Option`].
 - `is` - Checks if the enum variant matches a specified variant.
+- `try_into` - Converts the enum into the variant associated data, returning a [`Result`].
 
 ### Enums traits
 
@@ -41,6 +42,8 @@
 [`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
 [`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
 [`Into`]: https://doc.rust-lang.org/std/convert/trait.Into.html
+[`Option`]: https://doc.rust-lang.org/std/option/enum.Option.html
+[`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
 
 ## Usage
 
