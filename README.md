@@ -25,6 +25,7 @@
 - `get_mut` - A mutable getter for the field.
 - `into` - Converts the structure into the field.
 - `set` - A setter for the field.
+- `take` - Returns the field and replaces it with its default value.
 - `with` - Returns the sutrcture with the field modified.
 
 ### Structures traits

@@ -9,7 +9,7 @@ use crate::tokens::IndexedField;
 build_enum_name! { ConfigName, "take_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Replaces the field `{1}` of [`{0}`] with its default value.",
+    "Returns the field `{1}` of [`{0}`] and replaces it with its default value.",
 }
 
 build_config! {
