@@ -6,7 +6,7 @@ use quick_impl::QuickImpl;
 fn test_struct_single_named() {
     #[derive(QuickImpl)]
     struct Test {
-        #[quick_impl(pub const get = "{}", pub get_clone, get_mut, const into, pub(crate) set, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
+        #[quick_impl(pub const get = "{}", pub get_clone, get_mut, const into, pub(crate) set, pub take, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
         a: usize,
     }
 
@@ -24,14 +24,16 @@ fn test_struct_single_named() {
     assert_eq!(*a.get_a_mut(), 13);
 
     *a.get_a_mut() = 14;
-    assert_eq!(Into::<usize>::into(a), 14)
+    assert_eq!(Into::<usize>::into(a.clone()), 14);
+
+    assert_eq!(a.take_a(), 14);
 }
 
 #[test]
 fn test_struct_single_unnamed() {
     #[derive(QuickImpl)]
     struct Test(
-        #[quick_impl(pub const get, get_mut, const into, pub(crate) set, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
+        #[quick_impl(pub const get, get_mut, const into, pub(crate) set, take, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
          usize,
     );
 
@@ -49,5 +51,7 @@ fn test_struct_single_unnamed() {
     assert_eq!(*a.get_0_mut(), 13);
 
     *a.get_0_mut() = 14;
-    assert_eq!(Into::<usize>::into(a), 14)
+    assert_eq!(Into::<usize>::into(a.clone()), 14);
+
+    assert_eq!(a.take_0(), 14);
 }

@@ -16,6 +16,7 @@ pub mod methods {
     pub const METHOD_INTO: &str = "into";
     pub const METHOD_IS: &str = "is";
     pub const METHOD_SET: &str = "set";
+    pub const METHOD_TAKE: &str = "take";
     pub const METHOD_TRY_INTO: &str = "try_into";
     pub const METHOD_WITH: &str = "with";
 }
