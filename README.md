@@ -72,10 +72,10 @@ fn main() {
     let instance = YourEnum::Variant1;
 
     // Use generated methods on enum instances
-    assert!(instance.is_variant_1());
+    assert!(instance.is_variant1());
 
     let variant2_instance = YourEnum::from(42);
-    assert_eq!(*variant2_instance.as_variant_2().unwrap(), 42);
+    assert_eq!(*variant2_instance.as_variant2().unwrap(), 42);
 }
 ```
 

@@ -32,7 +32,13 @@ pub fn enum_method_as_ref_mut(
 
     let ty = destructure_types(fields, quote! { &mut }, quote! { () }, false);
     let destruct = destructure_data(fields, quote! { ref mut }, quote! {}, delimiter, true);
-    let ret = destructure_data(fields, quote! {}, quote! { () }, Delimiter::Parenthesis, false);
+    let ret = destructure_data(
+        fields,
+        quote! {},
+        quote! { () },
+        Delimiter::Parenthesis,
+        false,
+    );
 
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();

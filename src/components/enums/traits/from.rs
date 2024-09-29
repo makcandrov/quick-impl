@@ -17,7 +17,11 @@ build_config! {
     (doc, ConfigDoc, false),
 }
 
-pub fn enum_trait_from(context: &Context, variant: &Variant, attribute: &Attribute) -> syn::Result<TokenStream> {
+pub fn enum_trait_from(
+    context: &Context,
+    variant: &Variant,
+    attribute: &Attribute,
+) -> syn::Result<TokenStream> {
     let config = Config::new(context, attribute, variant)?;
 
     let fields = &variant.fields;
@@ -25,7 +29,13 @@ pub fn enum_trait_from(context: &Context, variant: &Variant, attribute: &Attribu
 
     let ty = destructure_types(fields, quote! {}, quote! { () }, false);
     let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
-    let ret = destructure_data(fields, quote! {}, quote! { () }, Delimiter::Parenthesis, false);
+    let ret = destructure_data(
+        fields,
+        quote! {},
+        quote! { () },
+        Delimiter::Parenthesis,
+        false,
+    );
 
     let variant_ident = &variant.ident;
     let doc = &config.doc;
@@ -39,5 +49,9 @@ pub fn enum_trait_from(context: &Context, variant: &Variant, attribute: &Attribu
         }
     };
 
-    Ok(context.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content, None))
+    Ok(context.in_impl(
+        quote! { ::core::convert::#trait_ident<#ty> for },
+        &content,
+        None,
+    ))
 }

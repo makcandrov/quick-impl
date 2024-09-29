@@ -6,9 +6,8 @@ macro_rules! build_enum_name {
             fn get_item_name<'a>(item: &$crate::tokens::VariantOrField<'a>) -> String {
                 match item {
                     $crate::tokens::VariantOrField::Variant(variant) => {
-                        use convert_case::Casing;
-                        variant.ident.to_string().to_case(::convert_case::Case::Snake)
-                    },
+                        $crate::utils::to_snake_case(&variant.ident.to_string())
+                    }
                     $crate::tokens::VariantOrField::Field(field) => field.as_token().to_string(),
                 }
             }
@@ -26,9 +25,8 @@ macro_rules! build_enum_name {
             ) -> syn::Result<Self::Value> {
                 let item_name = match item {
                     $crate::tokens::VariantOrField::Variant(variant) => {
-                        use convert_case::Casing;
-                        variant.ident.to_string().to_case(convert_case::Case::Snake)
-                    },
+                        $crate::utils::to_snake_case(&variant.ident.to_string())
+                    }
                     $crate::tokens::VariantOrField::Field(field) => field.as_token().to_string(),
                 };
 
@@ -37,9 +35,15 @@ macro_rules! build_enum_name {
                     attribute.ident.span(),
                 ))
             }
-            fn custom<'a>(item: &$crate::tokens::VariantOrField<'a>, lit: &::syn::Lit) -> ::syn::Result<Self::Value> {
+            fn custom<'a>(
+                item: &$crate::tokens::VariantOrField<'a>,
+                lit: &::syn::Lit,
+            ) -> ::syn::Result<Self::Value> {
                 let ::syn::Lit::Str(lit_str) = lit else {
-                    return ::syn::Result::Err(::syn::Error::new_spanned(lit, "Expected string literal."));
+                    return ::syn::Result::Err(::syn::Error::new_spanned(
+                        lit,
+                        "Expected string literal.",
+                    ));
                 };
                 let name = lit_str.value().replace("{}", &Self::get_item_name(item));
                 ::syn::Result::Ok(::syn::Ident::new(&name, lit_str.span()))

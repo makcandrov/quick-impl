@@ -14,7 +14,10 @@ pub trait Configurable {
         item: &crate::tokens::VariantOrField<'a>,
     ) -> syn::Result<Self::Value>;
 
-    fn custom<'a>(item: &crate::tokens::VariantOrField<'a>, lit: &syn::Lit) -> syn::Result<Self::Value>;
+    fn custom<'a>(
+        item: &crate::tokens::VariantOrField<'a>,
+        lit: &syn::Lit,
+    ) -> syn::Result<Self::Value>;
 }
 
 macro_rules! build_config {

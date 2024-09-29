@@ -92,18 +92,37 @@ fn test_enum_variant_multiple_named() {
         A { a: usize, b: isize, c: char },
     }
 
-    let a = Test::A { a: 12, b: -15, c: 'C' };
+    let a = Test::A {
+        a: 12,
+        b: -15,
+        c: 'C',
+    };
     assert!(a.is_a());
     assert_eq!(a.as_a().unwrap(), (&12, &-15, &'C'));
     assert_eq!(a.into_a().unwrap(), (12, -15, 'C'));
 
-    let mut a = Test::A { a: 12, b: -15, c: 'C' };
+    let mut a = Test::A {
+        a: 12,
+        b: -15,
+        c: 'C',
+    };
     assert_eq!(a.as_a_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
 
-    assert_eq!(Test::from_a(12, -15, 'C'), Test::A { a: 12, b: -15, c: 'C' });
+    assert_eq!(
+        Test::from_a(12, -15, 'C'),
+        Test::A {
+            a: 12,
+            b: -15,
+            c: 'C'
+        }
+    );
     assert_eq!(
         <Test as From<(usize, isize, char)>>::from((12, -15, 'C')),
-        Test::A { a: 12, b: -15, c: 'C' }
+        Test::A {
+            a: 12,
+            b: -15,
+            c: 'C'
+        }
     );
 }
 

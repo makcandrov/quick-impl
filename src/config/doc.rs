@@ -15,16 +15,24 @@ macro_rules! build_enum_doc {
                 match item {
                     $crate::tokens::VariantOrField::Variant(variant) => {
                         ::syn::Result::Ok(format!($pat, &context.ident, variant.ident))
-                    },
-                    $crate::tokens::VariantOrField::Field(field) => {
-                        ::syn::Result::Ok(format!($pat, &context.ident, field.as_token().to_string()))
-                    },
+                    }
+                    $crate::tokens::VariantOrField::Field(field) => ::syn::Result::Ok(format!(
+                        $pat,
+                        &context.ident,
+                        field.as_token().to_string()
+                    )),
                 }
             }
 
-            fn custom<'a>(_: &$crate::tokens::VariantOrField<'a>, lit: &::syn::Lit) -> syn::Result<Self::Value> {
+            fn custom<'a>(
+                _: &$crate::tokens::VariantOrField<'a>,
+                lit: &::syn::Lit,
+            ) -> syn::Result<Self::Value> {
                 let ::syn::Lit::Str(lit_str) = lit else {
-                    return ::syn::Result::Err(syn::Error::new_spanned(lit, "Expected string literal."));
+                    return ::syn::Result::Err(syn::Error::new_spanned(
+                        lit,
+                        "Expected string literal.",
+                    ));
                 };
                 ::syn::Result::Ok(lit_str.value())
             }

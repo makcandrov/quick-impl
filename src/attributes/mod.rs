@@ -109,7 +109,10 @@ impl Parse for Attribute {
                 false
             };
 
-            AttributeType::Method(MethodAttribute { visibility, constant })
+            AttributeType::Method(MethodAttribute {
+                visibility,
+                constant,
+            })
         };
 
         let ident = input.parse::<syn::Ident>()?;
@@ -151,7 +154,8 @@ impl Parse for AttributeParam {
 
 impl Parse for Attributes {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let content = syn::punctuated::Punctuated::<Attribute, syn::token::Comma>::parse_terminated(input)?;
+        let content =
+            syn::punctuated::Punctuated::<Attribute, syn::token::Comma>::parse_terminated(input)?;
         Ok(Self(content.into_iter().collect()))
     }
 }

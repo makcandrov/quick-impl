@@ -13,7 +13,7 @@ pub fn derive(input: &DeriveInput) -> TokenStream {
             quote! {
                 #error
             }
-        },
+        }
     }
 }
 
@@ -42,9 +42,11 @@ impl<'a> Context<'a> {
             (None, Some(where_clause)) => Some(where_clause),
             (where_clause @ Some(_), None) => where_clause,
             (Some(mut where_clause), Some(additional_where_clause)) => {
-                where_clause.predicates.extend(additional_where_clause.predicates);
+                where_clause
+                    .predicates
+                    .extend(additional_where_clause.predicates);
                 Some(where_clause)
-            },
+            }
         };
         let ident = self.ident;
         quote! {
@@ -100,7 +102,10 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
         .iter()
         .find(|attr| attr.path().is_ident(MACRO_DERIVE_HELPER))
     {
-        return Err(syn::Error::new_spanned(attr, "Global attributes unavailable."));
+        return Err(syn::Error::new_spanned(
+            attr,
+            "Global attributes unavailable.",
+        ));
     }
 
     match &input.data {

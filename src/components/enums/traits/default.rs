@@ -17,7 +17,11 @@ build_config! {
     (doc, ConfigDoc, false),
 }
 
-pub fn enum_trait_default(context: &Context, variant: &Variant, attribute: &Attribute) -> syn::Result<TokenStream> {
+pub fn enum_trait_default(
+    context: &Context,
+    variant: &Variant,
+    attribute: &Attribute,
+) -> syn::Result<TokenStream> {
     let config = Config::new(context, attribute, variant)?;
 
     let fields = &variant.fields;
