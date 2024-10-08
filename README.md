@@ -17,6 +17,7 @@
 
 - `Default` - Implements the [`Default`] trait.
 - `From` - Implements the [`From`] trait.
+- `TryInto` - Implements the [`TryInto`] trait.
 
 ### Structures methods
 
@@ -45,6 +46,7 @@
 [`Into`]: https://doc.rust-lang.org/std/convert/trait.Into.html
 [`Option`]: https://doc.rust-lang.org/std/option/enum.Option.html
 [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
+[`TryInto`]: https://doc.rust-lang.org/std/convert/trait.TryInto.html
 
 ## Usage
 

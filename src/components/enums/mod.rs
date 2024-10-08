@@ -1,5 +1,6 @@
 use methods::enum_method_try_into;
 use syn::DataEnum;
+use traits::enum_trait_try_into;
 
 use self::methods::{
     enum_method_as_ref, enum_method_as_ref_mut, enum_method_from, enum_method_into, enum_method_is,
@@ -10,7 +11,7 @@ use crate::expand::{Context, Implems};
 use crate::idents::methods::{
     METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS, METHOD_TRY_INTO,
 };
-use crate::idents::traits::{TRAIT_DEFAULT, TRAIT_FROM};
+use crate::idents::traits::{TRAIT_DEFAULT, TRAIT_FROM, TRAIT_TRY_INTO};
 
 mod methods;
 mod traits;
@@ -52,6 +53,7 @@ pub fn enum_impl(
                     let tokens = match attribute.ident.to_string().as_str() {
                         TRAIT_FROM => enum_trait_from(context, &variant, attribute)?,
                         TRAIT_DEFAULT => enum_trait_default(context, &variant, attribute)?,
+                        TRAIT_TRY_INTO => enum_trait_try_into(context, &variant, attribute)?,
                         _ => {
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,

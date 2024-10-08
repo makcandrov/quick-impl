@@ -1,13 +1,12 @@
-use proc_macro2::{Delimiter, TokenStream};
+use proc_macro2::{Delimiter, Ident, TokenStream};
 use quote::quote;
 use syn::Variant;
 
-use crate::attributes::{Attribute, MethodAttribute};
-use crate::config::{build_config, build_enum_doc, build_enum_name};
+use crate::attributes::Attribute;
+use crate::config::{build_config, build_enum_doc};
 use crate::expand::Context;
 use crate::tokens::{destructure_data, destructure_types, get_delimiter};
 
-build_enum_name! { ConfigName, "try_into_{}" }
 build_enum_doc! {
     ConfigDoc,
     "Converts into the associated data if it is the [`{}::{}`] variant. Otherwise, returns `Err(self)`.",
@@ -15,15 +14,13 @@ build_enum_doc! {
 
 build_config! {
     Config,
-    (name, ConfigName, true),
     (doc, ConfigDoc, false),
 }
 
-pub fn enum_method_try_into(
+pub fn enum_trait_try_into(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
-    method_attr: &MethodAttribute,
 ) -> syn::Result<TokenStream> {
     let config = Config::new(context, attribute, variant)?;
 
@@ -41,17 +38,25 @@ pub fn enum_method_try_into(
     );
 
     let variant_ident = &variant.ident;
-    let keywords = method_attr.keywords();
-    let doc = config.doc;
-    let method_ident = config.name;
+    let doc = &config.doc;
+    let trait_ident = syn::Ident::new("TryInto", attribute.ident.span());
+    let method_ident = Ident::new("try_into", attribute.ident.span());
 
-    Ok(quote! {
+    let content = quote! {
+        type Error = Self;
+
         #[doc = #doc]
-        #keywords fn #method_ident(self) -> Result<#ty, Self> {
+        fn #method_ident (self) -> Result<#ty, Self> {
             match self {
-                Self::#variant_ident #destruct => Ok(#ret),
+                Self:: #variant_ident #destruct => Ok(#ret),
                 other => Err(other),
             }
         }
-    })
+    };
+
+    Ok(context.in_impl(
+        quote! { ::core::convert::#trait_ident<#ty> for },
+        &content,
+        None,
+    ))
 }
