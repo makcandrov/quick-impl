@@ -4,12 +4,16 @@ use quick_impl::QuickImpl;
 pub enum WebEvent {
     #[quick_impl(pub const is)]
     PageLoad,
+
     #[quick_impl(pub const is)]
     PageUnload,
+
     #[quick_impl(pub as_ref, pub(crate) as_ref_mut, impl From)]
     KeyPress(char),
+
     #[quick_impl(pub as_ref, pub(crate) as_ref_mut, pub into)]
     Paste(String),
+
     #[quick_impl(pub from = "click_from_coordinates", pub const is, pub as_ref)]
     Click { x: i64, y: i64 },
 }

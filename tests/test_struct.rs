@@ -6,7 +6,20 @@ use quick_impl::QuickImpl;
 fn test_struct_single_named() {
     #[derive(QuickImpl)]
     struct Test {
-        #[quick_impl(pub const get = "{}", pub get_clone, get_mut, const into, pub(crate) set, pub take, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
+        #[quick_impl(
+            pub const get = "{}",
+            pub get_clone,
+            get_mut,
+            const into,
+            pub(crate) set,
+            pub take,
+            pub(crate) const with,
+            impl Deref,
+            impl DerefMut,
+            impl Into,
+            impl AsRef,
+            impl AsMut,
+        )]
         a: usize,
     }
 
@@ -33,8 +46,21 @@ fn test_struct_single_named() {
 fn test_struct_single_unnamed() {
     #[derive(QuickImpl)]
     struct Test(
-        #[quick_impl(pub const get, get_mut, const into, pub(crate) set, take, pub(crate) const with, impl Deref, impl DerefMut, impl Into, impl AsRef, impl AsMut)]
-         usize,
+        #[quick_impl(
+            pub const get,
+            pub get_clone = "get_clone_0",
+            get_mut,
+            const into,
+            pub(crate) set,
+            pub take,
+            pub(crate) const with,
+            impl Deref,
+            impl DerefMut,
+            impl Into,
+            impl AsRef,
+            impl AsMut,
+        )]
+        usize,
     );
 
     let a = Test(12);

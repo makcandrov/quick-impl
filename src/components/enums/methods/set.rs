@@ -5,12 +5,12 @@ use syn::Variant;
 use crate::attributes::{Attribute, MethodAttribute};
 use crate::config::{build_config, build_enum_doc, build_enum_name};
 use crate::expand::Context;
-use crate::tokens::{destructure_data, destructure_types, get_delimiter};
+use crate::tokens::{destructure_data, destructure_data_with_types, get_delimiter};
 
-build_enum_name! { ConfigName, "as_{}_mut" }
+build_enum_name! { ConfigName, "set_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns a mutable reference to the associated data if the variant is [`{}::{}`]. Otherwise, returns `None`.",
+    "Replaces the current instance with a new instance of the [`{}::{}`] variant, returning the original instance.",
 }
 
 build_config! {
@@ -19,7 +19,7 @@ build_config! {
     (doc, ConfigDoc, false),
 }
 
-pub fn enum_method_as_ref_mut(
+pub fn enum_method_set(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
@@ -30,15 +30,8 @@ pub fn enum_method_as_ref_mut(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(fields, quote! { &mut }, quote! { () }, false);
-    let destruct = destructure_data(fields, quote! { ref mut }, quote! {}, delimiter, true);
-    let ret = destructure_data(
-        fields,
-        quote! {},
-        quote! { () },
-        Delimiter::Parenthesis,
-        false,
-    );
+    let input = destructure_data_with_types(fields, quote! {}, Delimiter::None, false);
+    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
 
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();
@@ -47,11 +40,8 @@ pub fn enum_method_as_ref_mut(
 
     Ok(quote! {
         #[doc = #doc]
-        #keywords fn #method_ident(&mut self) -> Option<#ty> {
-            match self {
-                Self::#variant_ident #destruct => Some(#ret),
-                _ => None,
-            }
+        #keywords fn #method_ident(&mut self, #input) -> Self {
+            ::core::mem::replace(self, Self:: #variant_ident #destruct )
         }
     })
 }

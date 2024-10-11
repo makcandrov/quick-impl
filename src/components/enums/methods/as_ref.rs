@@ -10,7 +10,7 @@ use crate::tokens::{destructure_data, destructure_types, get_delimiter};
 build_enum_name! { ConfigName, "as_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns an immutable reference to the associated data if it is the [`{}::{}`] variant. Otherwise, returns `None`.",
+    "Returns an immutable reference to the associated data if the variant is [`{}::{}`]. Otherwise, returns `None`.",
 }
 
 build_config! {

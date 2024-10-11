@@ -9,7 +9,7 @@ use crate::tokens::{destructure_data, destructure_types, get_delimiter};
 
 build_enum_doc! {
     ConfigDoc,
-    "Converts into the associated data if it is the [`{}::{}`] variant. Otherwise, returns `Err(self)`.",
+    "Converts to the associated data if the variant is [`{}::{}`]. Otherwise, returns `Err(self)`.",
 }
 
 build_config! {

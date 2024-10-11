@@ -9,7 +9,7 @@ use crate::tokens::IndexedField;
 build_enum_name! { ConfigName, "with_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Changes the field `{1}` of the given [`{0}`] variable.",
+    "Returns an instance of [`{0}`] with the `{1}` field modified.",
 }
 
 build_config! {

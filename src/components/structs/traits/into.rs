@@ -8,7 +8,7 @@ use crate::tokens::IndexedField;
 
 build_enum_doc! {
     ConfigDoc,
-    "Converts into the field `{1}` of [`{0}`].",
+    "Converts into the `{1}` field of [`{0}`].",
 }
 
 build_config! {

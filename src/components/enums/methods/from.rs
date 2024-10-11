@@ -10,7 +10,7 @@ use crate::tokens::{destructure_data, destructure_data_with_types, get_delimiter
 build_enum_name! { ConfigName, "from_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Creates a [`{}::{}`] variant from the associated data.",
+    "Creates a [`{}::{}`] variant from the provided data.",
 }
 
 build_config! {

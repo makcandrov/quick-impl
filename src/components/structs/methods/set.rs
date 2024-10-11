@@ -9,7 +9,7 @@ use crate::tokens::IndexedField;
 build_enum_name! { ConfigName, "set_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "A setter for the field `{1}` of [`{0}`]. Returns the old value.",
+    "A setter for the `{1}` field of [`{0}`]. Returns the previous value.",
 }
 
 build_config! {

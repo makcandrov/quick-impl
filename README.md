@@ -1,6 +1,6 @@
 # quick-impl
 
-`quick-impl` is a Rust procedural macro that simplifies working with enums and structures by generating common methods and traits for each variant/field. This helps reduce boilerplate code and enhances the ergonomics of using enums and structures in your Rust projects.
+`quick-impl` is a Rust procedural macro that simplifies working with enums and structs by generating common methods and traits for each variant or field. This helps reduce boilerplate code and enhances the ergonomics of using enums and structs in your Rust projects.
 
 ## Features
 
@@ -9,9 +9,10 @@
 - `as_ref` - Returns an immutable reference to the associated data of the enum variant.
 - `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
 - `from` - Creates an instance of the enum variant from the associated data.
-- `into` - Converts the enum into the variant associated data, returning an [`Option`].
+- `into` - Converts the enum into the associated data of the variant, returning an [`Option`].
 - `is` - Checks if the enum variant matches a specified variant.
-- `try_into` - Converts the enum into the variant associated data, returning a [`Result`].
+- `set` - Replaces the current instance with a new instance of the specified variant.
+- `try_into` - Converts the enum into the associated data of the variant, returning a [`Result`].
 
 ### Enums traits
 
@@ -23,11 +24,11 @@
 
 - `get` - A getter for the field. Returns a reference to the field.
 - `get_clone` - A getter for the field. Returns a clone of the field.
-- `get_mut` - A mutable getter for the field.
-- `into` - Converts the structure into the field.
+- `get_mut` - A mutable getter for a field.
+- `into` - Converts the struct into the field.
 - `set` - A setter for the field.
 - `take` - Returns the field and replaces it with its default value.
-- `with` - Returns the sutrcture with the field modified.
+- `with` - Returns the struct with the field modified.
 
 ### Structures traits
 
@@ -66,6 +67,7 @@ use quick_impl::QuickImpl;
 enum YourEnum {
     #[quick_impl(pub const is)]
     Variant1,
+
     #[quick_impl(pub as_ref, pub(crate) as_ref_mut, impl From)]
     Variant2(i32),
     // ... add attributes to other variants as needed
@@ -82,6 +84,6 @@ fn main() {
 }
 ```
 
-More examples can be found in [examples].
+More examples can be found in the [examples].
 
 [examples]: https://github.com/makcandrov/quick-impl/tree/main/examples

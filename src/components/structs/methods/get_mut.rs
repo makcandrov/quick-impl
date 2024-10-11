@@ -9,7 +9,7 @@ use crate::tokens::IndexedField;
 build_enum_name! { ConfigName, "get_{}_mut" }
 build_enum_doc! {
     ConfigDoc,
-    "A mutable getter for the field `{1}` of [`{0}`].",
+    "A mutable getter for the `{1}` field of [`{0}`].",
 }
 
 build_config! {

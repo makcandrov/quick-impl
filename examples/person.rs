@@ -4,6 +4,7 @@ use quick_impl::QuickImpl;
 struct Person {
     #[quick_impl(pub get)]
     name: String,
+
     #[quick_impl(pub get, pub set, get_mut)]
     age: u32,
 }

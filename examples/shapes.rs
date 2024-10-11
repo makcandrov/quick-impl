@@ -4,10 +4,13 @@ use quick_impl::QuickImpl;
 pub enum Shape {
     #[quick_impl(pub const is)]
     Circle(f64),
+
     #[quick_impl(pub as_ref, as_ref_mut, impl From)]
     Rectangle(f64, f64),
+
     #[quick_impl(pub as_ref, as_ref_mut, pub into)]
     Square(f64),
+
     #[quick_impl(pub const from = "create_cuboid", pub const is, pub into)]
     Cuboid { width: f64, height: f64, depth: f64 },
 }

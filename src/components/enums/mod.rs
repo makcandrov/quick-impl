@@ -1,20 +1,14 @@
-use methods::enum_method_try_into;
 use syn::DataEnum;
-use traits::enum_trait_try_into;
 
-use self::methods::{
-    enum_method_as_ref, enum_method_as_ref_mut, enum_method_from, enum_method_into, enum_method_is,
-};
-use self::traits::{enum_trait_default, enum_trait_from};
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::idents::methods::{
-    METHOD_AS_REF, METHOD_AS_REF_MUT, METHOD_FROM, METHOD_INTO, METHOD_IS, METHOD_TRY_INTO,
-};
-use crate::idents::traits::{TRAIT_DEFAULT, TRAIT_FROM, TRAIT_TRY_INTO};
+use crate::idents::{methods::*, traits::*};
 
 mod methods;
+use methods::*;
+
 mod traits;
+use traits::*;
 
 pub fn enum_impl(
     context: &Context<'_>,
@@ -37,6 +31,7 @@ pub fn enum_impl(
                         METHOD_FROM => enum_method_from(context, &variant, attribute, method_attr)?,
                         METHOD_INTO => enum_method_into(context, &variant, attribute, method_attr)?,
                         METHOD_IS => enum_method_is(context, &variant, attribute, method_attr)?,
+                        METHOD_SET => enum_method_set(context, &variant, attribute, method_attr)?,
                         METHOD_TRY_INTO => {
                             enum_method_try_into(context, &variant, attribute, method_attr)?
                         }
