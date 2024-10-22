@@ -34,6 +34,7 @@ pub fn struct_method_get_mut(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident (&mut self) -> &mut #ty {
             &mut self.#field_ident
         }

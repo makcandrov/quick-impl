@@ -44,6 +44,7 @@ pub fn enum_trait_from(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident (#ret: #ty) -> Self {
             Self::#variant_ident #destruct
         }

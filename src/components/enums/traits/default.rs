@@ -52,6 +52,7 @@ pub fn enum_trait_default(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident () -> Self {
             Self::#variant_ident #default_data
         }

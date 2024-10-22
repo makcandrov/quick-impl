@@ -47,6 +47,7 @@ pub fn enum_method_as_ref_mut(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident(&mut self) -> Option<#ty> {
             match self {
                 Self::#variant_ident #destruct => Some(#ret),

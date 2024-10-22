@@ -34,6 +34,7 @@ pub fn struct_method_take(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident (&mut self) -> #ty where #ty: ::std::default::Default {
             ::core::mem::take(&mut self.#field_ident)
         }

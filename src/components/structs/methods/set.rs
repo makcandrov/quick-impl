@@ -35,6 +35,7 @@ pub fn struct_method_set(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident (&mut self, #arg_ident: #ty) -> #ty {
             ::core::mem::replace(&mut self.#field_ident, #arg_ident)
         }

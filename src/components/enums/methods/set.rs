@@ -40,6 +40,7 @@ pub fn enum_method_set(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident(&mut self, #input) -> Self {
             ::core::mem::replace(self, Self:: #variant_ident #destruct )
         }

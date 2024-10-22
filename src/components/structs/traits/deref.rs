@@ -33,6 +33,7 @@ pub fn struct_trait_deref(
         type Target = #field_type;
 
         #[doc = #doc]
+        #[inline]
         fn #method_ident (&self) -> &Self::Target {
             &self.#field_ident
         }

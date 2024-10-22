@@ -39,6 +39,7 @@ pub fn enum_method_is(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident(&self) -> bool {
             match self {
                 Self::#variant_ident #destruct => true,

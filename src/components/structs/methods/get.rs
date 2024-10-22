@@ -34,6 +34,7 @@ pub fn struct_method_get(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident (&self) -> & #ty {
             &self.#field_ident
         }

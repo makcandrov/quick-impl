@@ -30,6 +30,7 @@ pub fn struct_trait_deref_mut(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident (&mut self) -> &mut <Self as ::core::ops::Deref>::Target {
             &mut self.#field_ident
         }

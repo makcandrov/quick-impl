@@ -46,6 +46,7 @@ pub fn enum_trait_try_into(
         type Error = Self;
 
         #[doc = #doc]
+        #[inline]
         fn #method_ident (self) -> Result<#ty, Self> {
             match self {
                 Self:: #variant_ident #destruct => Ok(#ret),

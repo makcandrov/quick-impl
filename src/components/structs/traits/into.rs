@@ -31,6 +31,7 @@ pub fn struct_trait_into(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident (self) -> #field_type {
             self.#field_ident
         }

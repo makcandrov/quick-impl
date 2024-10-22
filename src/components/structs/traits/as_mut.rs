@@ -31,6 +31,7 @@ pub fn struct_trait_as_mut(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident (&mut self) -> &mut #field_ty {
             &mut self.#field_ident
         }

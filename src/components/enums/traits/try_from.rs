@@ -50,6 +50,7 @@ pub fn enum_trait_try_from(
             type Error = #ident #ty_generics;
 
             #[doc = #doc]
+            #[inline]
             fn #method_ident (value: #ident #ty_generics) -> Result<Self, #ident #ty_generics> {
                 match value {
                     #ident :: #variant_ident #destruct => Ok(#ret),

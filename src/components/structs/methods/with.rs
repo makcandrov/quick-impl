@@ -35,6 +35,7 @@ pub fn struct_method_with(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #[must_use]
         #keywords fn #method_ident (mut self, #arg_ident: #ty) -> Self {
             self.#field_ident = #arg_ident;

@@ -47,6 +47,7 @@ pub fn enum_method_try_into(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident(self) -> Result<#ty, Self> {
             match self {
                 Self::#variant_ident #destruct => Ok(#ret),

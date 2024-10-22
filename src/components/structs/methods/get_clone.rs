@@ -34,6 +34,7 @@ pub fn struct_method_get_clone(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident (&self) -> #ty where #ty: core::clone::Clone {
             self.#field_ident.clone()
         }

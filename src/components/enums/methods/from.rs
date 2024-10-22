@@ -40,6 +40,7 @@ pub fn enum_method_from(
 
     Ok(quote! {
         #[doc = #doc]
+        #[inline]
         #keywords fn #method_ident #input -> Self {
             Self::#variant_ident #destruct
         }

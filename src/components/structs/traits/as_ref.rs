@@ -31,6 +31,7 @@ pub fn struct_trait_as_ref(
 
     let content = quote! {
         #[doc = #doc]
+        #[inline]
         fn #method_ident (&self) -> &#field_ty {
             &self.#field_ident
         }
