@@ -1,3 +1,6 @@
+mod from;
+pub use from::struct_method_from;
+
 mod get;
 pub use get::struct_method_get;
 

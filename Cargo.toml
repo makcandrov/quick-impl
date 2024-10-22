@@ -5,7 +5,7 @@ edition = "2021"
 repository = "https://github.com/makcandrov/quick-impl"
 homepage = "https://github.com/makcandrov/quick-impl"
 documentation = "https://docs.rs/quick-impl"
-description = "A Rust procedural macro auto-generating common methods on enums ans structures."
+description = "A Rust procedural macro auto-generating common methods on enums and structs."
 license = "MIT OR Apache-2.0"
 keywords = ["quick", "impl", "derive"]
 

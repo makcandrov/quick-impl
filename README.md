@@ -23,7 +23,7 @@
 - `Default` - Implements the [`Default`] trait on the enum.
 - `From` - Implements the [`From`] trait on the enum.
 - `TryInto` - Implements the [`TryInto`] trait on the enum.
-- `TryFrom` - Implements the [`TryInto`] trait on the associated data.
+- `TryFrom` - Implements the [`TryFrom`] trait on the associated data.
 
 ### Structures methods
 
@@ -31,6 +31,7 @@
 - `get_clone` - A getter for the field. Returns a clone of the field.
 - `get_mut` - A mutable getter for a field.
 - `into` - Converts the struct into the field.
+- `from` - Creates an instance from the field. Sets the other fields to their default value.
 - `set` - A setter for the field.
 - `take` - Returns the field and replaces it with its default value.
 - `with` - Returns the struct with the field modified.
@@ -42,6 +43,7 @@
 - `Deref` - Implements the [`Deref`] trait on the struct.
 - `DerefMut` - Implements the [`DerefMut`] trait on the struct.
 - `Into` - Implements the [`Into`] trait on the struct.
+- `From` - Implements the [`From`] trait on the struct.
 
 [`AsRef`]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
@@ -52,6 +54,7 @@
 [`Into`]: https://doc.rust-lang.org/std/convert/trait.Into.html
 [`Option`]: https://doc.rust-lang.org/std/option/enum.Option.html
 [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
+[`TryFrom`]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
 [`TryInto`]: https://doc.rust-lang.org/std/convert/trait.TryInto.html
 
 ## Usage
