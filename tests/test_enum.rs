@@ -14,7 +14,7 @@ fn test_enum_variant_unit() {
             pub try_into,
             impl Default,
             impl From,
-            impl TryInto
+            impl TryInto,
         )]
         A,
     }
@@ -45,7 +45,7 @@ fn test_enum_variant_single_unnamed() {
             pub try_into,
             impl Default,
             impl From,
-            impl TryInto
+            impl TryFrom
         )]
         A(usize),
     }
@@ -196,7 +196,7 @@ fn test_enum_generics() {
             pub try_into,
             impl Default,
             impl From,
-            impl TryInto
+            impl TryFrom,
         )]
         A { a: T, b: U },
         #[allow(dead_code)]
@@ -238,7 +238,7 @@ fn test_enum_lifetimes() {
             pub try_into,
             impl Default,
             impl From,
-            impl TryInto
+            impl TryFrom
         )]
         A(&'a usize, &'b mut isize),
     }

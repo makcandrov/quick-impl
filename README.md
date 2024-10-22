@@ -20,9 +20,10 @@
 
 ### Enums traits
 
-- `Default` - Implements the [`Default`] trait.
-- `From` - Implements the [`From`] trait.
-- `TryInto` - Implements the [`TryInto`] trait.
+- `Default` - Implements the [`Default`] trait on the enum.
+- `From` - Implements the [`From`] trait on the enum.
+- `TryInto` - Implements the [`TryInto`] trait on the enum.
+- `TryFrom` - Implements the [`TryInto`] trait on the associated data.
 
 ### Structures methods
 
@@ -36,11 +37,11 @@
 
 ### Structures traits
 
-- `AsRef` - Implements the [`AsRef`] trait.
-- `AsMut` - Implements the [`AsMut`] trait.
-- `Deref` - Implements the [`Deref`] trait.
-- `DerefMut` - Implements the [`DerefMut`] trait.
-- `Into` - Implements the [`Into`] trait.
+- `AsRef` - Implements the [`AsRef`] trait on the struct.
+- `AsMut` - Implements the [`AsMut`] trait on the struct.
+- `Deref` - Implements the [`Deref`] trait on the struct.
+- `DerefMut` - Implements the [`DerefMut`] trait on the struct.
+- `Into` - Implements the [`Into`] trait on the struct.
 
 [`AsRef`]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html

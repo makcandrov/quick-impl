@@ -48,6 +48,7 @@ pub fn enum_impl(
                     let tokens = match attribute.ident.to_string().as_str() {
                         TRAIT_FROM => enum_trait_from(context, &variant, attribute)?,
                         TRAIT_DEFAULT => enum_trait_default(context, &variant, attribute)?,
+                        TRAIT_TRY_FROM => enum_trait_try_from(context, &variant, attribute)?,
                         TRAIT_TRY_INTO => enum_trait_try_into(context, &variant, attribute)?,
                         _ => {
                             return Err(syn::Error::new_spanned(

@@ -29,5 +29,6 @@ pub mod traits {
     pub const TRAIT_DEREF_MUT: &str = "DerefMut";
     pub const TRAIT_FROM: &str = "From";
     pub const TRAIT_INTO: &str = "Into";
+    pub const TRAIT_TRY_FROM: &str = "TryFrom";
     pub const TRAIT_TRY_INTO: &str = "TryInto";
 }
