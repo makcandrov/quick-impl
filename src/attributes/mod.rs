@@ -1,4 +1,4 @@
-use std::ops::{Deref, DerefMut};
+use core::ops::{Deref, DerefMut};
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};

@@ -38,7 +38,7 @@ pub fn struct_trait_as_ref(
     };
 
     Ok(context.in_impl(
-        quote! { ::std::convert::#trait_ident<#field_ty> for },
+        quote! { ::core::convert::#trait_ident<#field_ty> for },
         &content,
         None,
     ))

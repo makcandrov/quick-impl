@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use core::ops::Deref;
 
 use proc_macro2::{Span, TokenStream};
 use quote::ToTokens;

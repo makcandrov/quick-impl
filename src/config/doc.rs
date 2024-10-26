@@ -3,7 +3,7 @@ macro_rules! build_enum_doc {
         struct $t;
 
         impl $crate::config::Configurable for $t {
-            type Value = std::string::String;
+            type Value = String;
 
             const IDENT: &'static str = $crate::idents::config::CONFIG_DOC;
 

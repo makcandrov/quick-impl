@@ -45,17 +45,17 @@
 - `Into` - Implements the [`Into`] trait on the struct.
 - `From` - Implements the [`From`] trait on the struct.
 
-[`AsRef`]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
-[`AsMut`]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
-[`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
-[`Deref`]: https://doc.rust-lang.org/std/ops/trait.Deref.html
-[`DerefMut`]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
-[`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
-[`Into`]: https://doc.rust-lang.org/std/convert/trait.Into.html
-[`Option`]: https://doc.rust-lang.org/std/option/enum.Option.html
-[`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
-[`TryFrom`]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
-[`TryInto`]: https://doc.rust-lang.org/std/convert/trait.TryInto.html
+[`AsRef`]: https://doc.rust-lang.org/core/convert/trait.AsRef.html
+[`AsMut`]: https://doc.rust-lang.org/core/convert/trait.AsMut.html
+[`Default`]: https://doc.rust-lang.org/core/default/trait.Default.html
+[`Deref`]: https://doc.rust-lang.org/core/ops/trait.Deref.html
+[`DerefMut`]: https://doc.rust-lang.org/core/ops/trait.DerefMut.html
+[`From`]: https://doc.rust-lang.org/core/convert/trait.From.html
+[`Into`]: https://doc.rust-lang.org/core/convert/trait.Into.html
+[`Option`]: https://doc.rust-lang.org/core/option/enum.Option.html
+[`Result`]: https://doc.rust-lang.org/core/result/enum.Result.html
+[`TryFrom`]: https://doc.rust-lang.org/core/convert/trait.TryFrom.html
+[`TryInto`]: https://doc.rust-lang.org/core/convert/trait.TryInto.html
 
 ## Usage
 

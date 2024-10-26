@@ -37,7 +37,7 @@ macro_rules! build_config {
 
                 #[derive(::core::default::Default)]
                 struct ConfigInner {
-                    $($name: ::std::option::Option<<$t as $crate::config::Configurable>::Value>,)*
+                    $($name: ::core::option::Option<<$t as $crate::config::Configurable>::Value>,)*
                 }
 
                 let mut config = ConfigInner::default();
@@ -72,7 +72,7 @@ macro_rules! build_config {
 
                 Ok(Self {
                     $($name: {
-                        if let ::std::option::Option::Some(value) = config.$name {
+                        if let ::core::option::Option::Some(value) = config.$name {
                             value
                         } else {
                             <$t as $crate::config::Configurable>::default(context, attribute, &item)?

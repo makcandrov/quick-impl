@@ -47,13 +47,13 @@ pub fn struct_method_from<'a>(
         let other_field_ident = &other_indexed_field.as_ident();
         let other_field_ty = &other_indexed_field.ty;
         where_clause.extend(quote! {
-            #other_field_ty: ::std::default::Default,
+            #other_field_ty: ::core::default::Default,
         });
 
         if other_indexed_field.ident.is_some() {
-            other_fields.extend(quote! { #other_field_ident: ::std::default::Default::default(), });
+            other_fields.extend(quote! { #other_field_ident: ::core::default::Default::default(), });
         } else {
-            other_fields.extend(quote! { ::std::default::Default::default(), });
+            other_fields.extend(quote! { ::core::default::Default::default(), });
         }
     }
 
