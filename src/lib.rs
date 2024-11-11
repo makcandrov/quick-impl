@@ -1,3 +1,4 @@
+#![cfg_attr(not(test), warn(unused_crate_dependencies))]
 #![doc = include_str!("../README.md")]
 
 use proc_macro::TokenStream;
