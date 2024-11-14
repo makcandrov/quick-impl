@@ -29,7 +29,7 @@ pub fn enum_method_is(
     let destruct = match &variant.fields {
         Fields::Named(_) => quote! { { .. } },
         Fields::Unnamed(_) => quote! { ( .. ) },
-        Fields::Unit => quote! {},
+        Fields::Unit => TokenStream::new(),
     };
 
     let variant_ident = &variant.ident;

@@ -30,11 +30,17 @@ pub fn enum_method_try_into(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(fields, quote! {}, quote! { () }, false);
-    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
+    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, false);
+    let destruct = destructure_data(
+        fields,
+        TokenStream::new(),
+        TokenStream::new(),
+        delimiter,
+        true,
+    );
     let ret = destructure_data(
         fields,
-        quote! {},
+        TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
         false,

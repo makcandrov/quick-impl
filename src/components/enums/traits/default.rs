@@ -33,7 +33,7 @@ pub fn enum_trait_default(
     let method_ident = Ident::new("default", attribute.ident.span());
 
     let default = quote! { ::core::default:: #trait_ident :: #method_ident () };
-    let mut default_data = quote! {};
+    let mut default_data = TokenStream::new();
     let mut where_clause = quote! { where };
 
     for field in &variant.fields {

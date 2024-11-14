@@ -7,7 +7,8 @@ use crate::idents::methods::{
     METHOD_TAKE, METHOD_WITH,
 };
 use crate::idents::traits::{
-    TRAIT_AS_MUT, TRAIT_AS_REF, TRAIT_DEREF, TRAIT_DEREF_MUT, TRAIT_FROM, TRAIT_INTO,
+    TRAIT_AS_MUT, TRAIT_AS_REF, TRAIT_BORROW, TRAIT_BORROW_MUT, TRAIT_DEREF, TRAIT_DEREF_MUT,
+    TRAIT_FROM, TRAIT_INTO,
 };
 use crate::tokens::to_indexed_field_iter;
 
@@ -93,6 +94,12 @@ pub fn struct_impl(
                         }
                         TRAIT_AS_REF => {
                             traits::struct_trait_as_ref(context, indexed_field, attribute)?
+                        }
+                        TRAIT_BORROW => {
+                            traits::struct_trait_borrow(context, indexed_field, attribute)?
+                        }
+                        TRAIT_BORROW_MUT => {
+                            traits::struct_trait_borrow_mut(context, indexed_field, attribute)?
                         }
                         TRAIT_DEREF => {
                             traits::struct_trait_deref(context, indexed_field, attribute)?

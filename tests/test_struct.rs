@@ -21,6 +21,8 @@ fn test_struct_single_named() {
             impl From,
             impl AsRef,
             impl AsMut,
+            impl Borrow,
+            impl BorrowMut,
         )]
         a: usize,
         #[allow(dead_code)]
@@ -65,6 +67,8 @@ fn test_struct_single_unnamed() {
             impl From,
             impl AsRef,
             impl AsMut,
+            impl Borrow,
+            impl BorrowMut,
         )]
         usize,
     );
@@ -106,6 +110,8 @@ fn test_struct_generics_unnamed() {
             impl AsRef,
             impl AsMut,
             impl From,
+            impl Borrow,
+            impl BorrowMut,
         )]
         A,
         B,
@@ -128,4 +134,48 @@ fn test_struct_generics_unnamed() {
     assert_eq!(Into::<usize>::into(a.clone()), 14);
 
     assert_eq!(a.take_0(), 14);
+}
+
+#[test]
+fn test_struct_lifetimes() {
+    #[derive(QuickImpl)]
+    struct Test<'a>(
+        #[quick_impl(
+            pub const get,
+            get_mut,
+            const into,
+            pub(crate) set,
+            pub take,
+            pub(crate) const with,
+            pub from,
+            impl Deref,
+            impl DerefMut,
+            impl Into,
+            impl From,
+            impl AsRef,
+            impl AsMut,
+            impl Borrow,
+            impl BorrowMut,
+        )]
+        &'a usize,
+    );
+
+    let n = 12;
+    let m = 13;
+
+    let a = Test(&n);
+    assert_eq!(**a.get_0(), 12);
+    assert_eq!(**Deref::deref(&a), 12);
+
+    let a = a.with_0(&m);
+    assert_eq!(*a.into_0(), 13);
+
+    let mut a = Test(&n);
+    assert_eq!(**<Test as DerefMut>::deref_mut(&mut a), 12);
+
+    assert_eq!(*a.set_0(&m), 12);
+    assert_eq!(**a.get_0_mut(), 13);
+
+    *a.get_0_mut() = &n;
+    assert_eq!(*Into::<&usize>::into(a), 12);
 }

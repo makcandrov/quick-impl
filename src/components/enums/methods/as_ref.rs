@@ -31,10 +31,10 @@ pub fn enum_method_as_ref(
     let delimiter = get_delimiter(fields);
 
     let ty = destructure_types(fields, quote! { & }, quote! { () }, false);
-    let destruct = destructure_data(fields, quote! { ref }, quote! {}, delimiter, true);
+    let destruct = destructure_data(fields, quote! { ref }, TokenStream::new(), delimiter, true);
     let ret = destructure_data(
         fields,
-        quote! {},
+        TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
         false,

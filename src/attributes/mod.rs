@@ -30,7 +30,7 @@ impl MethodAttribute {
         let const_kw = if self.constant {
             quote! { const }
         } else {
-            quote! {}
+            TokenStream::new()
         };
         let visibility = self.visibility.to_token_stream();
         quote! { #visibility #const_kw }

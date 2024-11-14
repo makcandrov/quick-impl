@@ -4,6 +4,12 @@ pub use as_mut::struct_trait_as_mut;
 mod as_ref;
 pub use as_ref::struct_trait_as_ref;
 
+mod borrow;
+pub use borrow::struct_trait_borrow;
+
+mod borrow_mut;
+pub use borrow_mut::struct_trait_borrow_mut;
+
 mod deref;
 pub use deref::struct_trait_deref;
 

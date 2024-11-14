@@ -24,6 +24,8 @@ pub mod methods {
 pub mod traits {
     pub const TRAIT_AS_MUT: &str = "AsMut";
     pub const TRAIT_AS_REF: &str = "AsRef";
+    pub const TRAIT_BORROW: &str = "Borrow";
+    pub const TRAIT_BORROW_MUT: &str = "BorrowMut";
     pub const TRAIT_DEFAULT: &str = "Default";
     pub const TRAIT_DEREF: &str = "Deref";
     pub const TRAIT_DEREF_MUT: &str = "DerefMut";

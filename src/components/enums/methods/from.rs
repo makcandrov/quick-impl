@@ -31,7 +31,13 @@ pub fn enum_method_from(
     let delimiter = get_delimiter(fields);
 
     let input = destructure_data_with_types(fields, quote! { () }, Delimiter::Parenthesis, true);
-    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
+    let destruct = destructure_data(
+        fields,
+        TokenStream::new(),
+        TokenStream::new(),
+        delimiter,
+        true,
+    );
 
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();

@@ -40,6 +40,8 @@
 
 - `AsRef` - Implements the [`AsRef`] trait on the struct.
 - `AsMut` - Implements the [`AsMut`] trait on the struct.
+- `Borrow` - Implements the [`Borrow`] trait on the struct.
+- `BorrowMut` - Implements the [`BorrowMut`] trait on the struct.
 - `Deref` - Implements the [`Deref`] trait on the struct.
 - `DerefMut` - Implements the [`DerefMut`] trait on the struct.
 - `Into` - Implements the [`Into`] trait on the struct.
@@ -47,6 +49,8 @@
 
 [`AsRef`]: https://doc.rust-lang.org/core/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/core/convert/trait.AsMut.html
+[`Borrow`]: https://doc.rust-lang.org/core/borrow/trait.Borrow.html
+[`BorrowMut`]: https://doc.rust-lang.org/core/borrow/trait.BorrowMut.html
 [`Default`]: https://doc.rust-lang.org/core/default/trait.Default.html
 [`Deref`]: https://doc.rust-lang.org/core/ops/trait.Deref.html
 [`DerefMut`]: https://doc.rust-lang.org/core/ops/trait.DerefMut.html

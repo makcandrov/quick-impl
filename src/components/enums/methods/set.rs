@@ -30,8 +30,14 @@ pub fn enum_method_set(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let input = destructure_data_with_types(fields, quote! {}, Delimiter::None, false);
-    let destruct = destructure_data(fields, quote! {}, quote! {}, delimiter, true);
+    let input = destructure_data_with_types(fields, TokenStream::new(), Delimiter::None, false);
+    let destruct = destructure_data(
+        fields,
+        TokenStream::new(),
+        TokenStream::new(),
+        delimiter,
+        true,
+    );
 
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();

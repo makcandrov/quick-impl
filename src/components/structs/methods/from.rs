@@ -36,10 +36,10 @@ pub fn struct_method_from<'a>(
     let mut where_clause = if indexed_fields.len() > 1 {
         quote! { where }
     } else {
-        quote! {}
+        TokenStream::new()
     };
 
-    let mut other_fields = quote! {};
+    let mut other_fields = TokenStream::new();
     for other_indexed_field in indexed_fields {
         if other_indexed_field.index == indexed_field.index {
             continue;
@@ -51,7 +51,8 @@ pub fn struct_method_from<'a>(
         });
 
         if other_indexed_field.ident.is_some() {
-            other_fields.extend(quote! { #other_field_ident: ::core::default::Default::default(), });
+            other_fields
+                .extend(quote! { #other_field_ident: ::core::default::Default::default(), });
         } else {
             other_fields.extend(quote! { ::core::default::Default::default(), });
         }
