@@ -5,7 +5,7 @@ use syn::Variant;
 use crate::attributes::Attribute;
 use crate::config::{build_config, build_enum_doc};
 use crate::expand::Context;
-use crate::tokens::{destructure_data, destructure_types, get_delimiter};
+use crate::tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter};
 
 build_enum_doc! {
     ConfigDoc,
@@ -31,7 +31,7 @@ pub fn enum_trait_from(
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
-        TokenStream::new(),
+        with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
     );

@@ -262,3 +262,61 @@ fn test_enum_lifetimes() {
         Test::A(&12, &mut s4)
     );
 }
+
+#[test]
+fn test_empty_enums() {
+    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    enum TestA {
+        #[quick_impl(
+            pub(crate) const is,
+            const as_ref,
+            pub as_ref_mut,
+            pub(crate) from,
+            pub(crate) into,
+            set,
+            pub try_into,
+            impl Default,
+            impl From,
+            impl TryFrom
+        )]
+        A,
+    }
+
+    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    enum TestB {
+        #[quick_impl(
+            pub(crate) const is,
+            const as_ref,
+            pub as_ref_mut,
+            pub(crate) from,
+            pub(crate) into,
+            set,
+            pub try_into,
+            impl Default,
+            impl From,
+            impl TryFrom
+        )]
+        B(),
+    }
+
+    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    enum TestC {
+        #[quick_impl(
+            pub(crate) const is,
+            const as_ref,
+            pub as_ref_mut,
+            pub(crate) from,
+            pub(crate) into,
+            set,
+            pub try_into,
+            impl Default,
+            impl From,
+            impl TryFrom
+        )]
+        C {},
+    }
+
+    assert_eq!(TestA::A.into_a().unwrap(), ());
+    assert_eq!(TestB::B().into_b().unwrap(), ());
+    assert_eq!(TestC::C {}.into_c().unwrap(), ());
+}

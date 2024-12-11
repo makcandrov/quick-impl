@@ -44,11 +44,7 @@ pub fn enum_trait_default(
         default_data.extend(quote! { #default, });
         where_clause.extend(quote! { #field_ty : ::core::default:: #trait_ident, });
     }
-    let default_data = if variant.fields.is_empty() {
-        default_data
-    } else {
-        with_delimiter(default_data, delimiter)
-    };
+    let default_data = with_delimiter(default_data, delimiter);
 
     let content = quote! {
         #[doc = #doc]

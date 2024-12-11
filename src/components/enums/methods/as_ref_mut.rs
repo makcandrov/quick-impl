@@ -5,7 +5,7 @@ use syn::Variant;
 use crate::attributes::{Attribute, MethodAttribute};
 use crate::config::{build_config, build_enum_doc, build_enum_name};
 use crate::expand::Context;
-use crate::tokens::{destructure_data, destructure_types, get_delimiter};
+use crate::tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter};
 
 build_enum_name! { ConfigName, "as_{}_mut" }
 build_enum_doc! {
@@ -34,7 +34,7 @@ pub fn enum_method_as_ref_mut(
     let destruct = destructure_data(
         fields,
         quote! { ref mut },
-        TokenStream::new(),
+        with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
     );

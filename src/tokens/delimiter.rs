@@ -5,7 +5,8 @@ use syn::Fields;
 pub fn get_delimiter(fields: &Fields) -> Delimiter {
     match fields {
         Fields::Named(_) => Delimiter::Brace,
-        Fields::Unnamed(_) | Fields::Unit => Delimiter::Parenthesis,
+        Fields::Unnamed(_) => Delimiter::Parenthesis,
+        Fields::Unit => Delimiter::None,
     }
 }
 

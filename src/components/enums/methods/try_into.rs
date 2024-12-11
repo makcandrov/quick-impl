@@ -5,7 +5,7 @@ use syn::Variant;
 use crate::attributes::{Attribute, MethodAttribute};
 use crate::config::{build_config, build_enum_doc, build_enum_name};
 use crate::expand::Context;
-use crate::tokens::{destructure_data, destructure_types, get_delimiter};
+use crate::tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter};
 
 build_enum_name! { ConfigName, "try_into_{}" }
 build_enum_doc! {
@@ -34,7 +34,7 @@ pub fn enum_method_try_into(
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
-        TokenStream::new(),
+        with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
     );
