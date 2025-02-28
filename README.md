@@ -14,7 +14,8 @@
 - `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
 - `from` - Creates an instance of the enum variant from the associated data.
 - `into` - Converts the enum into the associated data of the variant, returning an [`Option`].
-- `is` - Checks if the enum variant matches a specified variant.
+- `is` - Returns `true` if the enum matches the specified variant.
+- `is_and` - Returns `true` if the enum matches the specified variant and the associated data matches a predicate.
 - `set` - Replaces the current instance with a new instance of the specified variant.
 - `try_into` - Converts the enum into the associated data of the variant, returning a [`Result`].
 

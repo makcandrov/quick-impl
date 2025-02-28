@@ -6,6 +6,14 @@ use syn::{Field, Ident};
 use super::with_delimiter;
 use crate::idents::ARGUMENT;
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub enum RenameField {
+    #[default]
+    Auto,
+    Always,
+    AlwaysIgnoreOriginal,
+}
+
 pub fn destructure_types<'a, I>(
     fields: I,
     prefix: impl ToTokens,
@@ -47,6 +55,7 @@ pub fn destructure_data<'a, I>(
     empty: impl ToTokens,
     delimiter: Delimiter,
     parenthesize_empty: bool,
+    rename: RenameField,
 ) -> TokenStream
 where
     I: IntoIterator<Item = &'a Field>,
@@ -58,9 +67,19 @@ where
     };
 
     let mut res = if let Some(ident) = &first.ident {
-        quote! { #prefix #ident }
+        match rename {
+            RenameField::Auto => quote! { #prefix #ident },
+            RenameField::Always => {
+                let rename_ident = field_rename(first, 0);
+                quote! { #ident: #prefix #rename_ident }
+            }
+            RenameField::AlwaysIgnoreOriginal => {
+                let rename_ident = field_rename(first, 0);
+                quote! { #prefix #rename_ident }
+            }
+        }
     } else {
-        let first_ident = Ident::new(&format!("{ARGUMENT}0",), first.span());
+        let first_ident = field_rename(first, 0);
         quote! { #prefix #first_ident }
     };
 
@@ -74,13 +93,24 @@ where
 
     let mut i = 1;
     while let Some(field) = fields.next() {
-        let field_ident = if let Some(ident) = &field.ident {
-            ident.clone()
+        let ext = if let Some(ident) = &field.ident {
+            match rename {
+                RenameField::Auto => quote! { , #prefix #ident },
+                RenameField::Always => {
+                    let rename_ident = field_rename(field, i);
+                    quote! { , #ident: #prefix #rename_ident }
+                }
+                RenameField::AlwaysIgnoreOriginal => {
+                    let rename_ident = field_rename(first, i);
+                    quote! { , #prefix #rename_ident }
+                }
+            }
         } else {
-            Ident::new(&format!("{ARGUMENT}{i}"), field.span())
+            let ident = field_rename(field, i);
+            quote! { , #prefix #ident }
         };
 
-        res.extend(quote! { , #prefix #field_ident });
+        res.extend(ext);
         i += 1
     }
 
@@ -107,7 +137,7 @@ where
     let mut res = if let Some(ident) = &first.ident {
         quote! { #ident: #first_type }
     } else {
-        let first_ident = Ident::new(&format!("{ARGUMENT}0",), first.span());
+        let first_ident = field_rename(first, 0);
         quote! { #first_ident: #first_type }
     };
 
@@ -124,7 +154,7 @@ where
         let field_ident = if let Some(ident) = &field.ident {
             ident.clone()
         } else {
-            Ident::new(&format!("{ARGUMENT}{i}"), field.span())
+            field_rename(field, i)
         };
         let field_type = &field.ty;
 
@@ -133,4 +163,8 @@ where
     }
 
     with_delimiter(res, delimiter)
+}
+
+fn field_rename(field: &Field, index: usize) -> Ident {
+    Ident::new(&format!("{ARGUMENT}{index}"), field.span())
 }

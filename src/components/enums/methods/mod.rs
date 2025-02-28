@@ -10,6 +10,9 @@ pub use from::enum_method_from;
 mod into;
 pub use into::enum_method_into;
 
+mod is_and;
+pub use is_and::enum_method_is_and;
+
 mod is;
 pub use is::enum_method_is;
 

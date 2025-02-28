@@ -5,7 +5,9 @@ use syn::Variant;
 use crate::attributes::Attribute;
 use crate::config::{build_config, build_enum_doc};
 use crate::expand::Context;
-use crate::tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter};
+use crate::tokens::{
+    destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField,
+};
 
 build_enum_doc! {
     ConfigDoc,
@@ -34,6 +36,7 @@ pub fn enum_trait_from(
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
+        RenameField::Auto,
     );
     let ret = destructure_data(
         fields,
@@ -41,6 +44,7 @@ pub fn enum_trait_from(
         quote! { () },
         Delimiter::Parenthesis,
         false,
+        RenameField::Auto,
     );
 
     let variant_ident = &variant.ident;

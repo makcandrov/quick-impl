@@ -6,6 +6,7 @@ fn test_enum_variant_unit() {
     enum Test {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -37,6 +38,7 @@ fn test_enum_variant_single_unnamed() {
     enum Test {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -70,6 +72,7 @@ fn test_enum_variant_single_named() {
     enum Test {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -101,6 +104,7 @@ fn test_enum_variant_multiple_unnamed() {
     enum Test {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -135,6 +139,7 @@ fn test_enum_variant_multiple_named() {
     enum Test {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -188,6 +193,7 @@ fn test_enum_generics() {
     enum Test<T, U> {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -230,6 +236,7 @@ fn test_enum_lifetimes() {
     enum Test<'a, 'b> {
         #[quick_impl(
             pub(crate) is,
+            pub(self) is_and,
             as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -269,6 +276,7 @@ fn test_empty_enums() {
     enum TestA {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -286,6 +294,7 @@ fn test_empty_enums() {
     enum TestB {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -303,6 +312,7 @@ fn test_empty_enums() {
     enum TestC {
         #[quick_impl(
             pub(crate) const is,
+            pub(self) is_and,
             const as_ref,
             pub as_ref_mut,
             pub(crate) from,
@@ -319,4 +329,23 @@ fn test_empty_enums() {
     assert_eq!(TestA::A.into_a().unwrap(), ());
     assert_eq!(TestB::B().into_b().unwrap(), ());
     assert_eq!(TestC::C {}.into_c().unwrap(), ());
+}
+
+#[test]
+fn test_is_and_rename() {
+    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    enum TestA {
+        #[quick_impl(pub is_and)]
+        A { a: usize, b: usize, c: usize },
+    }
+
+    assert!(TestA::A { a: 1, b: 2, c: 3 }.is_a_and(|a, _, _| *a == 1));
+
+    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    enum TestF {
+        #[quick_impl(pub is_and)]
+        A { f: usize, b: usize, c: usize },
+    }
+
+    assert!(TestF::A { f: 1, b: 2, c: 3 }.is_a_and(|f, _, _| *f == 1));
 }

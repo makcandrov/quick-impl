@@ -30,6 +30,9 @@ pub fn enum_impl(
                         }
                         METHOD_FROM => enum_method_from(context, &variant, attribute, method_attr)?,
                         METHOD_INTO => enum_method_into(context, &variant, attribute, method_attr)?,
+                        METHOD_IS_AND => {
+                            enum_method_is_and(context, &variant, attribute, method_attr)?
+                        }
                         METHOD_IS => enum_method_is(context, &variant, attribute, method_attr)?,
                         METHOD_SET => enum_method_set(context, &variant, attribute, method_attr)?,
                         METHOD_TRY_INTO => {

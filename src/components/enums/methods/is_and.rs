@@ -9,10 +9,10 @@ use crate::tokens::{
     destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField,
 };
 
-build_enum_name! { ConfigName, "as_{}_mut" }
+build_enum_name! { ConfigName, "is_{}_and" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns a mutable reference to the associated data if the variant is [`{}::{}`]. Otherwise, returns `None`.",
+    "Returns `true` if the variant is [`{}::{}`] and the value inside of it matches a predicate. Otherwise, returns `false`.",
 }
 
 build_config! {
@@ -21,7 +21,7 @@ build_config! {
     (doc, ConfigDoc, false),
 }
 
-pub fn enum_method_as_ref_mut(
+pub fn enum_method_is_and(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
@@ -32,22 +32,38 @@ pub fn enum_method_as_ref_mut(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(fields, quote! { &mut }, quote! { () }, false);
+    let need_rename = fields.iter().any(|field| {
+        field
+            .ident
+            .as_ref()
+            .is_some_and(|ident| ident.to_string() == "f")
+    });
+
+    let ty = destructure_types(fields, quote! { & }, quote! { () }, true);
+
     let destruct = destructure_data(
         fields,
-        quote! { ref mut },
+        quote! { ref },
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
-        RenameField::Auto,
+        if need_rename {
+            RenameField::Always
+        } else {
+            RenameField::Auto
+        },
     );
-    let ret = destructure_data(
+    let args = destructure_data(
         fields,
         TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
-        false,
-        RenameField::Auto,
+        true,
+        if need_rename {
+            RenameField::AlwaysIgnoreOriginal
+        } else {
+            RenameField::Auto
+        },
     );
 
     let variant_ident = &variant.ident;
@@ -58,10 +74,10 @@ pub fn enum_method_as_ref_mut(
     Ok(quote! {
         #[doc = #doc]
         #[inline]
-        #keywords fn #method_ident(&mut self) -> Option<#ty> {
+        #keywords fn #method_ident(&self, f: impl FnOnce #ty -> bool) -> bool {
             match self {
-                Self::#variant_ident #destruct => Some(#ret),
-                _ => None,
+                Self::#variant_ident #destruct => f #args,
+                _ => false,
             }
         }
     })
