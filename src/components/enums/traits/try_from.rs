@@ -11,7 +11,7 @@ use crate::tokens::{
 
 build_enum_doc! {
     ConfigDoc,
-    "Converts to the associated data if the variant is [`{}::{}`]. Otherwise, returns `Err(self)`.",
+    "Converts the instance into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.",
 }
 
 build_config! {

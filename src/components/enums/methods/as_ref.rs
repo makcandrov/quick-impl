@@ -12,7 +12,7 @@ use crate::tokens::{
 build_enum_name! { ConfigName, "as_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns an immutable reference to the associated data if the variant is [`{}::{}`]. Otherwise, returns `None`.",
+    "Returns an immutable reference to the associated data if the variant is [`{}::{}`]; otherwise, returns `None`.",
 }
 
 build_config! {

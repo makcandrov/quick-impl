@@ -9,7 +9,7 @@ use crate::expand::Context;
 build_enum_name! { ConfigName, "is_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns `true` if the variant is [`{}::{}`]. Otherwise, returns `false`.",
+    "Returns `true` if the variant is [`{}::{}`]; otherwise, returns `false`.",
 }
 
 build_config! {

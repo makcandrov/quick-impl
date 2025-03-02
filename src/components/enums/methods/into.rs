@@ -12,7 +12,7 @@ use crate::tokens::{
 build_enum_name! { ConfigName, "into_{}" }
 build_enum_doc! {
     ConfigDoc,
-    "onverts to the associated data if the variant is [`{}::{}`]. Otherwise, returns `None`.",
+    "Converts `self` into the associated data if the variant is [`{}::{}`]; otherwise, returns `None`.",
 }
 
 build_config! {

@@ -12,7 +12,7 @@ use crate::tokens::{
 build_enum_name! { ConfigName, "is_{}_and" }
 build_enum_doc! {
     ConfigDoc,
-    "Returns `true` if the variant is [`{}::{}`] and the value inside of it matches a predicate. Otherwise, returns `false`.",
+    "Returns `true` if the variant is [`{}::{}`] and its associated data matches the predicate; otherwise, returns `false`.",
 }
 
 build_config! {
