@@ -1,6 +1,6 @@
 [package]
 name = "quick-impl"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 repository = "https://github.com/makcandrov/quick-impl"
 homepage = "https://github.com/makcandrov/quick-impl"
@@ -15,4 +15,4 @@ proc-macro = true
 [dependencies]
 proc-macro2 = "1"
 quote = "1"
-syn = { version = "2", features = ["full"] }
+syn = "2"

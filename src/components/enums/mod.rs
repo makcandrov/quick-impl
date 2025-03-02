@@ -42,7 +42,7 @@ pub fn enum_impl(
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
                                 "Invalid method name.",
-                            ))
+                            ));
                         }
                     };
                     implems.extend_methods(tokens);
@@ -57,7 +57,7 @@ pub fn enum_impl(
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
                                 "Invalid trait name.",
-                            ))
+                            ));
                         }
                     };
                     implems.extend_traits(tokens);
