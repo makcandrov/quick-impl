@@ -43,7 +43,7 @@ pub fn enum_method_is_and(
 
     let destruct = destructure_data(
         fields,
-        quote! { ref },
+        TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,

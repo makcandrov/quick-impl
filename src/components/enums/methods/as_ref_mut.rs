@@ -35,7 +35,7 @@ pub fn enum_method_as_ref_mut(
     let ty = destructure_types(fields, quote! { &mut }, quote! { () }, false);
     let destruct = destructure_data(
         fields,
-        quote! { ref mut },
+        TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         true,
