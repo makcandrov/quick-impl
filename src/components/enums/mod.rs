@@ -4,17 +4,32 @@ use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
 use crate::idents::{methods::*, traits::*};
 
-mod methods;
-use methods::*;
-
-mod traits;
-use traits::*;
+mod variant_methods;
+mod variant_traits;
 
 pub fn enum_impl(
     context: &Context<'_>,
     implems: &mut Implems,
+    global_attributes: &Attributes,
     data_enum: &DataEnum,
 ) -> syn::Result<()> {
+    for attribute in global_attributes.iter() {
+        match &attribute.typ {
+            AttributeType::Method(_) => {
+                return Err(syn::Error::new_spanned(
+                    &attribute.ident,
+                    "invalid method name",
+                ));
+            }
+            AttributeType::Trait => {
+                return Err(syn::Error::new_spanned(
+                    &attribute.ident,
+                    "invalid trait name",
+                ));
+            }
+        }
+    }
+
     for variant in &data_enum.variants {
         let variant_attributes = Attributes::from_attributes(&variant.attrs)?;
 
@@ -22,26 +37,46 @@ pub fn enum_impl(
             match &attribute.typ {
                 AttributeType::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {
-                        METHOD_AS_REF_MUT => {
-                            enum_method_as_ref_mut(context, &variant, attribute, method_attr)?
+                        METHOD_AS_REF_MUT => variant_methods::expand_as_ref_mut(
+                            context,
+                            &variant,
+                            attribute,
+                            method_attr,
+                        )?,
+                        METHOD_AS_REF => variant_methods::expand_as_ref(
+                            context,
+                            &variant,
+                            attribute,
+                            method_attr,
+                        )?,
+                        METHOD_FROM => {
+                            variant_methods::expand_from(context, &variant, attribute, method_attr)?
                         }
-                        METHOD_AS_REF => {
-                            enum_method_as_ref(context, &variant, attribute, method_attr)?
+                        METHOD_INTO => {
+                            variant_methods::expand_into(context, &variant, attribute, method_attr)?
                         }
-                        METHOD_FROM => enum_method_from(context, &variant, attribute, method_attr)?,
-                        METHOD_INTO => enum_method_into(context, &variant, attribute, method_attr)?,
-                        METHOD_IS_AND => {
-                            enum_method_is_and(context, &variant, attribute, method_attr)?
+                        METHOD_IS_AND => variant_methods::expand_is_and(
+                            context,
+                            &variant,
+                            attribute,
+                            method_attr,
+                        )?,
+                        METHOD_IS => {
+                            variant_methods::expand_is(context, &variant, attribute, method_attr)?
                         }
-                        METHOD_IS => enum_method_is(context, &variant, attribute, method_attr)?,
-                        METHOD_SET => enum_method_set(context, &variant, attribute, method_attr)?,
-                        METHOD_TRY_INTO => {
-                            enum_method_try_into(context, &variant, attribute, method_attr)?
+                        METHOD_SET => {
+                            variant_methods::expand_set(context, &variant, attribute, method_attr)?
                         }
+                        METHOD_TRY_INTO => variant_methods::expand_try_into(
+                            context,
+                            &variant,
+                            attribute,
+                            method_attr,
+                        )?,
                         _ => {
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
-                                "Invalid method name.",
+                                "invalid method name",
                             ));
                         }
                     };
@@ -49,14 +84,20 @@ pub fn enum_impl(
                 }
                 AttributeType::Trait => {
                     let tokens = match attribute.ident.to_string().as_str() {
-                        TRAIT_FROM => enum_trait_from(context, &variant, attribute)?,
-                        TRAIT_DEFAULT => enum_trait_default(context, &variant, attribute)?,
-                        TRAIT_TRY_FROM => enum_trait_try_from(context, &variant, attribute)?,
-                        TRAIT_TRY_INTO => enum_trait_try_into(context, &variant, attribute)?,
+                        TRAIT_FROM => variant_traits::expand_from(context, &variant, attribute)?,
+                        TRAIT_DEFAULT => {
+                            variant_traits::expand_default(context, &variant, attribute)?
+                        }
+                        TRAIT_TRY_FROM => {
+                            variant_traits::expand_try_from(context, &variant, attribute)?
+                        }
+                        TRAIT_TRY_INTO => {
+                            variant_traits::expand_try_into(context, &variant, attribute)?
+                        }
                         _ => {
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
-                                "Invalid trait name.",
+                                "invalid trait name",
                             ));
                         }
                     };

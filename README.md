@@ -6,9 +6,38 @@
 
 `quick-impl` is a Rust procedural macro that simplifies working with enums and structs by generating common methods and traits for each variant or field. This helps reduce boilerplate code and enhances the ergonomics of using enums and structs in your Rust projects.
 
+## Usage
+
+```rust
+use quick_impl::QuickImpl;
+
+#[derive(QuickImpl)]
+enum YourEnum {
+    #[quick_impl(pub const is)]
+    Variant1,
+
+    #[quick_impl(pub as_ref, pub(crate) as_ref_mut, impl From)]
+    Variant2(i32),
+}
+
+fn main() {
+    let instance = YourEnum::Variant1;
+
+    // Use generated methods on enum instances
+    assert!(instance.is_variant1());
+
+    let variant2_instance = YourEnum::from(42);
+    assert_eq!(*variant2_instance.as_variant2().unwrap(), 42);
+}
+```
+
+More examples can be found in the [examples folder].
+
+[examples folder]: https://github.com/makcandrov/quick-impl/tree/main/examples
+
 ## Features
 
-### Enums methods
+### Enum variant methods
 
 - `as_ref` - Returns an immutable reference to the associated data of the enum variant.
 - `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
@@ -19,14 +48,14 @@
 - `set` - Replaces the current instance with a new instance of the specified variant.
 - `try_into` - Converts the enum into the associated data of the variant, returning a [`Result`].
 
-### Enums traits
+### Enum variant traits
 
 - `Default` - Implements the [`Default`] trait on the enum.
 - `From` - Implements the [`From`] trait on the enum.
 - `TryInto` - Implements the [`TryInto`] trait on the enum.
 - `TryFrom` - Implements the [`TryFrom`] trait on the associated data.
 
-### Structures methods
+### Structure field methods
 
 - `get` - A getter for the field. Returns a reference to the field.
 - `get_clone` - A getter for the field. Returns a clone of the field.
@@ -37,7 +66,7 @@
 - `take` - Returns the field and replaces it with its default value.
 - `with` - Returns the struct with the field modified.
 
-### Structures traits
+### Structure field traits
 
 - `AsRef` - Implements the [`AsRef`] trait on the struct.
 - `AsMut` - Implements the [`AsMut`] trait on the struct.
@@ -47,6 +76,11 @@
 - `DerefMut` - Implements the [`DerefMut`] trait on the struct.
 - `Into` - Implements the [`Into`] trait on the struct.
 - `From` - Implements the [`From`] trait on the struct.
+
+### Structure global methods
+
+- `into_parts` - Destructures the instance into its fields values.
+- `new` - Constructs a new instance from the specified field values.
 
 [`AsRef`]: https://doc.rust-lang.org/core/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/core/convert/trait.AsMut.html
@@ -62,7 +96,7 @@
 [`TryFrom`]: https://doc.rust-lang.org/core/convert/trait.TryFrom.html
 [`TryInto`]: https://doc.rust-lang.org/core/convert/trait.TryInto.html
 
-## Usage
+## Installation
 
 Add `quick-impl` to your `Cargo.toml`:
 
@@ -71,32 +105,8 @@ Add `quick-impl` to your `Cargo.toml`:
 quick-impl = "0.1"
 ```
 
-In your Rust code:
+Or run the following command:
 
-```rust
-use quick_impl::QuickImpl;
-
-#[derive(QuickImpl)]
-enum YourEnum {
-    #[quick_impl(pub const is)]
-    Variant1,
-
-    #[quick_impl(pub as_ref, pub(crate) as_ref_mut, impl From)]
-    Variant2(i32),
-    // ... add attributes to other variants as needed
-}
-
-fn main() {
-    let instance = YourEnum::Variant1;
-
-    // Use generated methods on enum instances
-    assert!(instance.is_variant1());
-
-    let variant2_instance = YourEnum::from(42);
-    assert_eq!(*variant2_instance.as_variant2().unwrap(), 42);
-}
+```shell
+cargo add quick-impl
 ```
-
-More examples can be found in the [examples].
-
-[examples]: https://github.com/makcandrov/quick-impl/tree/main/examples

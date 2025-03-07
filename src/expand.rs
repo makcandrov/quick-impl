@@ -2,8 +2,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, WhereClause};
 
+use crate::attributes::Attributes;
 use crate::components::{enum_impl, struct_impl};
-use crate::idents::MACRO_DERIVE_HELPER;
 
 pub fn derive(input: &DeriveInput) -> TokenStream {
     match try_expand(input) {
@@ -97,20 +97,13 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
     let context = Context::new(input);
     let mut implems = Implems::default();
 
-    if let Some(attr) = input
-        .attrs
-        .iter()
-        .find(|attr| attr.path().is_ident(MACRO_DERIVE_HELPER))
-    {
-        return Err(syn::Error::new_spanned(
-            attr,
-            "Global attributes unavailable.",
-        ));
-    }
+    let global_attributes = Attributes::from_attributes(&input.attrs)?;
 
     match &input.data {
-        Data::Struct(data_struct) => struct_impl(&context, &mut implems, data_struct)?,
-        Data::Enum(data_enum) => enum_impl(&context, &mut implems, data_enum)?,
+        Data::Struct(data_struct) => {
+            struct_impl(&context, &mut implems, &global_attributes, data_struct)?
+        }
+        Data::Enum(data_enum) => enum_impl(&context, &mut implems, &global_attributes, data_enum)?,
         Data::Union(_) => return Err(syn::Error::new_spanned(input, "Unions are not supported")),
     }
 

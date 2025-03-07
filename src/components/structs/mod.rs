@@ -2,24 +2,49 @@ use syn::DataStruct;
 
 use crate::attributes::{AttributeType, Attributes};
 use crate::expand::{Context, Implems};
-use crate::idents::methods::{
-    METHOD_FROM, METHOD_GET, METHOD_GET_CLONE, METHOD_GET_MUT, METHOD_INTO, METHOD_SET,
-    METHOD_TAKE, METHOD_WITH,
-};
-use crate::idents::traits::{
-    TRAIT_AS_MUT, TRAIT_AS_REF, TRAIT_BORROW, TRAIT_BORROW_MUT, TRAIT_DEREF, TRAIT_DEREF_MUT,
-    TRAIT_FROM, TRAIT_INTO,
-};
+use crate::idents::methods::*;
+use crate::idents::traits::*;
 use crate::tokens::to_indexed_field_iter;
 
-mod methods;
-mod traits;
+mod field_methods;
+mod field_traits;
+mod global_methods;
 
 pub fn struct_impl(
     context: &Context<'_>,
     implems: &mut Implems,
+    global_attributes: &Attributes,
     data_struct: &DataStruct,
 ) -> syn::Result<()> {
+    for attribute in global_attributes.iter() {
+        match &attribute.typ {
+            AttributeType::Method(method_attr) => {
+                let tokens = match attribute.ident.to_string().as_str() {
+                    METHOD_NEW => global_methods::expand_new(
+                        context,
+                        attribute,
+                        method_attr,
+                        &data_struct.fields,
+                    )?,
+                    METHOD_INTO_PARTS => global_methods::expand_into_parts(
+                        context,
+                        attribute,
+                        method_attr,
+                        &data_struct.fields,
+                    )?,
+                    _ => {
+                        return Err(syn::Error::new_spanned(
+                            &attribute.ident,
+                            "invalid method name",
+                        ));
+                    }
+                };
+                implems.extend_methods(tokens);
+            }
+            AttributeType::Trait => todo!(),
+        }
+    }
+
     let indexed_fields = to_indexed_field_iter(&data_struct.fields).collect::<Vec<_>>();
 
     for indexed_field in &indexed_fields {
@@ -29,50 +54,50 @@ pub fn struct_impl(
             match &attribute.typ {
                 AttributeType::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {
-                        METHOD_FROM => methods::struct_method_from(
+                        METHOD_FROM => field_methods::expand_from(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                             &indexed_fields,
                         )?,
-                        METHOD_GET => methods::struct_method_get(
+                        METHOD_GET => field_methods::expand_get(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_GET_CLONE => methods::struct_method_get_clone(
+                        METHOD_GET_CLONE => field_methods::expand_get_clone(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_GET_MUT => methods::struct_method_get_mut(
+                        METHOD_GET_MUT => field_methods::expand_get_mut(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_INTO => methods::struct_method_into(
+                        METHOD_INTO => field_methods::expand_into(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_SET => methods::struct_method_set(
+                        METHOD_SET => field_methods::expand_set(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_TAKE => methods::struct_method_take(
+                        METHOD_TAKE => field_methods::expand_take(
                             context,
                             indexed_field,
                             attribute,
                             method_attr,
                         )?,
-                        METHOD_WITH => methods::struct_method_with(
+                        METHOD_WITH => field_methods::expand_with(
                             context,
                             indexed_field,
                             attribute,
@@ -81,7 +106,7 @@ pub fn struct_impl(
                         _ => {
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
-                                "Invalid method name.",
+                                "invalid method name",
                             ));
                         }
                     };
@@ -90,34 +115,34 @@ pub fn struct_impl(
                 AttributeType::Trait => {
                     let tokens = match attribute.ident.to_string().as_str() {
                         TRAIT_AS_MUT => {
-                            traits::struct_trait_as_mut(context, indexed_field, attribute)?
+                            field_traits::expand_as_mut(context, indexed_field, attribute)?
                         }
                         TRAIT_AS_REF => {
-                            traits::struct_trait_as_ref(context, indexed_field, attribute)?
+                            field_traits::expand_as_ref(context, indexed_field, attribute)?
                         }
                         TRAIT_BORROW => {
-                            traits::struct_trait_borrow(context, indexed_field, attribute)?
+                            field_traits::expand_borrow(context, indexed_field, attribute)?
                         }
                         TRAIT_BORROW_MUT => {
-                            traits::struct_trait_borrow_mut(context, indexed_field, attribute)?
+                            field_traits::expand_borrow_mut(context, indexed_field, attribute)?
                         }
                         TRAIT_DEREF => {
-                            traits::struct_trait_deref(context, indexed_field, attribute)?
+                            field_traits::expand_deref(context, indexed_field, attribute)?
                         }
                         TRAIT_DEREF_MUT => {
-                            traits::struct_trait_deref_mut(context, indexed_field, attribute)?
+                            field_traits::expand_deref_mut(context, indexed_field, attribute)?
                         }
-                        TRAIT_FROM => traits::struct_trait_from(
+                        TRAIT_FROM => field_traits::expand_from(
                             context,
                             indexed_field,
                             attribute,
                             &indexed_fields,
                         )?,
-                        TRAIT_INTO => traits::struct_trait_into(context, indexed_field, attribute)?,
+                        TRAIT_INTO => field_traits::expand_into(context, indexed_field, attribute)?,
                         _ => {
                             return Err(syn::Error::new_spanned(
                                 &attribute.ident,
-                                "Invalid trait name.",
+                                "invalid trait name",
                             ));
                         }
                     };

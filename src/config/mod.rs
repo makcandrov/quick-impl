@@ -1,4 +1,6 @@
 mod doc;
+use std::collections::BTreeMap;
+
 pub(crate) use doc::build_enum_doc;
 
 mod name;
@@ -85,3 +87,76 @@ macro_rules! build_config {
 }
 
 pub(crate) use build_config;
+
+use proc_macro2::Span;
+use syn::{Lit, LitStr};
+
+use crate::attributes::AttributeConfig;
+
+#[must_use]
+pub struct Config(BTreeMap<String, (Span, Lit)>);
+
+impl Config {
+    pub fn new(attribute_config: &AttributeConfig, main: Option<&str>) -> syn::Result<Self> {
+        let mut map = BTreeMap::new();
+        match attribute_config {
+            AttributeConfig::None => Ok(Self(map)),
+            AttributeConfig::Single(lit) => {
+                if let Some(main) = main {
+                    map.insert(main.to_string(), (lit.span(), lit.clone()));
+                } else {
+                    return Err(syn::Error::new_spanned(
+                        lit,
+                        "no configuration is available",
+                    ));
+                };
+                Ok(Self(map))
+            }
+            AttributeConfig::Multiple(attribute_params) => {
+                for attribute_param in attribute_params {
+                    let old = map.insert(
+                        attribute_param.ident.to_string(),
+                        (
+                            attribute_param.ident.span(),
+                            attribute_param.literal.clone(),
+                        ),
+                    );
+
+                    if old.is_some() {
+                        return Err(syn::Error::new_spanned(
+                            &attribute_param.ident,
+                            "duplicate config parameter",
+                        ));
+                    }
+                }
+
+                Ok(Self(map))
+            }
+        }
+    }
+
+    pub fn finish(self) -> syn::Result<()> {
+        if let Some((ident, (span, _))) = self.0.into_iter().next() {
+            return Err(syn::Error::new(
+                span,
+                format!("unknown config parameter `{}`", ident),
+            ));
+        } else {
+            Ok(())
+        }
+    }
+}
+
+impl Config {
+    pub fn get_lit(&mut self, ident: &str) -> Option<Lit> {
+        self.0.remove(ident).map(|(_, lit)| lit)
+    }
+
+    pub fn get_lit_str(&mut self, ident: &'static str) -> syn::Result<Option<LitStr>> {
+        match self.get_lit(ident) {
+            Some(Lit::Str(lit_str)) => Ok(Some(lit_str)),
+            None => Ok(None),
+            Some(lit) => Err(syn::Error::new_spanned(lit, "expected string literal")),
+        }
+    }
+}

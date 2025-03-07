@@ -5,6 +5,7 @@ use quick_impl::QuickImpl;
 #[test]
 fn test_struct_single_named() {
     #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts)]
     struct Test {
         #[quick_impl(
             pub const get = "{}",
@@ -51,6 +52,7 @@ fn test_struct_single_named() {
 #[test]
 fn test_struct_single_unnamed() {
     #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts)]
     struct Test(
         #[quick_impl(
             pub const get,
@@ -95,6 +97,7 @@ fn test_struct_single_unnamed() {
 #[test]
 fn test_struct_generics_unnamed() {
     #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts)]
     struct Test<A, B>(
         #[quick_impl(
             pub get,
@@ -139,6 +142,7 @@ fn test_struct_generics_unnamed() {
 #[test]
 fn test_struct_lifetimes() {
     #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts)]
     struct Test<'a>(
         #[quick_impl(
             pub const get,
