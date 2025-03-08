@@ -1,6 +1,6 @@
-use proc_macro2::{Delimiter, Ident, Span, TokenStream};
+use proc_macro2::{Delimiter, TokenStream};
 use quote::quote;
-use syn::{LitStr, Variant};
+use syn::{Fields, Ident};
 
 use crate::{
     attributes::Attribute,
@@ -10,24 +10,22 @@ use crate::{
     tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField},
 };
 
-const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant from the provided data.";
+const DEFAULT_DOC: &str = "Creates a tuple from each field of the instance of [`{}`].";
 
-pub fn expand_from(
-    context: &Context,
-    variant: &Variant,
-    attribute: &Attribute,
+pub fn expand_into<'a>(
+    context: &'a Context,
+    attribute: &'a Attribute,
+    fields: &'a Fields,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
-    let doc = config.get_formatted_lit_str(
-        CONFIG_DOC,
-        LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string(), &variant.ident.to_string()],
-    )?;
+    let doc = config.get_lit_str_tokens(CONFIG_DOC)?.unwrap_or_else(|| {
+        let doc = DEFAULT_DOC.replace("{}", &context.ident.to_string());
+        quote! { #doc }
+    });
 
     config.finish()?;
 
-    let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
     let ty = destructure_types(fields, TokenStream::new(), quote! { () }, false);
@@ -48,21 +46,21 @@ pub fn expand_from(
         RenameField::Auto,
     );
 
-    let variant_ident = &variant.ident;
     let trait_ident = syn::Ident::new("From", attribute.ident.span());
     let method_ident = Ident::new("from", attribute.ident.span());
 
+    let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
+    let ident = context.ident;
+
     let content = quote! {
-        #[doc = #doc]
-        #[inline]
-        fn #method_ident (#ret: #ty) -> Self {
-            Self::#variant_ident #destruct
+        impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {
+            #[doc = #doc]
+            #[inline]
+            fn #method_ident (#ident #destruct: #ident #ty_generics) -> Self {
+                #ret
+            }
         }
     };
 
-    Ok(context.in_impl(
-        quote! { ::core::convert::#trait_ident<#ty> for },
-        &content,
-        None,
-    ))
+    Ok(content)
 }

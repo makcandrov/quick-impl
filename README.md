@@ -21,13 +21,12 @@ enum YourEnum {
 }
 
 fn main() {
-    let instance = YourEnum::Variant1;
+    let instance1 = YourEnum::Variant1;
 
-    // Use generated methods on enum instances
-    assert!(instance.is_variant1());
+    assert!(instance1.is_variant1());
 
-    let variant2_instance = YourEnum::from(42);
-    assert_eq!(*variant2_instance.as_variant2().unwrap(), 42);
+    let instance2 = YourEnum::from(42);
+    assert_eq!(*instance2.as_variant2().unwrap(), 42);
 }
 ```
 
@@ -68,19 +67,24 @@ More examples can be found in the [examples folder].
 
 ### Structure field traits
 
-- `AsRef` - Implements the [`AsRef`] trait on the struct.
-- `AsMut` - Implements the [`AsMut`] trait on the struct.
-- `Borrow` - Implements the [`Borrow`] trait on the struct.
-- `BorrowMut` - Implements the [`BorrowMut`] trait on the struct.
-- `Deref` - Implements the [`Deref`] trait on the struct.
-- `DerefMut` - Implements the [`DerefMut`] trait on the struct.
-- `Into` - Implements the [`Into`] trait on the struct.
-- `From` - Implements the [`From`] trait on the struct.
+- `AsRef` - Implements the [`AsRef`] trait for the struct.
+- `AsMut` - Implements the [`AsMut`] trait for the struct.
+- `Borrow` - Implements the [`Borrow`] trait for the struct.
+- `BorrowMut` - Implements the [`BorrowMut`] trait for the struct.
+- `Deref` - Implements the [`Deref`] trait for the struct.
+- `DerefMut` - Implements the [`DerefMut`] trait for the struct.
+- `From` - Implements the [`From`] trait for the struct, allowing it to be created from the field value while setting the other fields to their default values.
+- `Into` - Implements the [`Into`] trait for the struct, converting the structure instance into the field value.
 
 ### Structure global methods
 
 - `into_parts` - Destructures the instance into its fields values.
-- `new` - Constructs a new instance from the specified field values.
+- `new` - Constructs a new instance from the given field values.
+
+### Structure global traits
+
+- `From` - Implements the [`From`] trait for the struct, allowing it to be created from a tuple of its field values.
+- `Into` - Implements the [`Into`] trait for the struct, converting the structure instance into a tuple of its field values.
 
 [`AsRef`]: https://doc.rust-lang.org/core/convert/trait.AsRef.html
 [`AsMut`]: https://doc.rust-lang.org/core/convert/trait.AsMut.html
@@ -95,6 +99,51 @@ More examples can be found in the [examples folder].
 [`Result`]: https://doc.rust-lang.org/core/result/enum.Result.html
 [`TryFrom`]: https://doc.rust-lang.org/core/convert/trait.TryFrom.html
 [`TryInto`]: https://doc.rust-lang.org/core/convert/trait.TryInto.html
+
+## Configuration
+
+### Method configurations
+
+- `name` - Sets the name of the generated method. If not set, a default name is used.
+
+```rust
+#[derive(quick_impl::QuickImpl)]
+struct Foo {
+    #[quick_impl(pub get_clone = { name = "get_{}_unchecked"})]
+    bar: usize,
+    #[quick_impl(pub get_clone = "get_{}_unchecked")] // Shorter version
+    baz: usize,
+}
+
+let instance = Foo { bar: 1, baz: 2 };
+
+assert_eq!(instance.get_bar_unchecked(), 1);
+assert_eq!(instance.get_baz_unchecked(), 2);
+```
+
+- `doc` - Sets the documentation for the generated method. If not set, a default documentation is generated.
+
+```rust
+#[derive(quick_impl::QuickImpl)]
+#[quick_impl(pub const new = { doc = "Generates an awesome instance of [`Foo`]." })]
+struct Foo {
+    bar: usize,
+    baz: usize,
+}
+```
+
+### Traits configurations
+
+- `doc` - Sets the documentation of the generated trait method. If not set, a default documentation is generated.
+
+```rust
+#[derive(quick_impl::QuickImpl)]
+enum Foo {
+    #[quick_impl(impl TryFrom = { doc = "Attempts to extract the associated data from a [`Foo::Bar`] variant." })]
+    Bar(usize),
+    Baz(isize),
+}
+```
 
 ## Installation
 

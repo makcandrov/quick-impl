@@ -5,7 +5,7 @@ use quick_impl::QuickImpl;
 #[test]
 fn test_struct_single_named() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
     struct Test {
         #[quick_impl(
             pub const get = "{}",
@@ -97,7 +97,7 @@ fn test_struct_single_unnamed() {
 #[test]
 fn test_struct_generics_unnamed() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
     struct Test<A, B>(
         #[quick_impl(
             pub get,
@@ -142,8 +142,8 @@ fn test_struct_generics_unnamed() {
 #[test]
 fn test_struct_lifetimes() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts)]
-    struct Test<'a>(
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    struct Test<'a, 'b>(
         #[quick_impl(
             pub const get,
             get_mut,
@@ -162,19 +162,20 @@ fn test_struct_lifetimes() {
             impl BorrowMut,
         )]
         &'a usize,
+        &'b i32,
     );
 
     let n = 12;
     let m = 13;
 
-    let a = Test(&n);
+    let a = Test(&n, &12);
     assert_eq!(**a.get_0(), 12);
     assert_eq!(**Deref::deref(&a), 12);
 
     let a = a.with_0(&m);
     assert_eq!(*a.into_0(), 13);
 
-    let mut a = Test(&n);
+    let mut a = Test(&n, &12);
     assert_eq!(**<Test as DerefMut>::deref_mut(&mut a), 12);
 
     assert_eq!(*a.set_0(&m), 12);
@@ -182,4 +183,19 @@ fn test_struct_lifetimes() {
 
     *a.get_0_mut() = &n;
     assert_eq!(*Into::<&usize>::into(a), 12);
+}
+
+#[test]
+fn test_empty_struct() {
+    #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    struct Test1;
+
+    #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    struct Test2 {}
+
+    #[derive(QuickImpl)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    struct Test3();
 }

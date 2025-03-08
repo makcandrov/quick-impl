@@ -1,7 +1,6 @@
 use proc_macro2::{Delimiter, TokenStream};
 use quote::{quote, ToTokens};
-use syn::spanned::Spanned;
-use syn::{Field, Ident};
+use syn::{spanned::Spanned, Field, Ident};
 
 use super::with_delimiter;
 use crate::idents::ARGUMENT;
@@ -18,7 +17,7 @@ pub fn destructure_types<'a, I>(
     fields: I,
     prefix: impl ToTokens,
     empty: impl ToTokens,
-    parenthesize_empty: bool,
+    parenthesize_alone: bool,
 ) -> TokenStream
 where
     I: IntoIterator<Item = &'a Field>,
@@ -34,7 +33,7 @@ where
     let mut res = quote! { #prefix #first_type };
 
     if fields.peek().is_none() {
-        return if parenthesize_empty {
+        return if parenthesize_alone {
             quote! { ( #res ) }
         } else {
             res
@@ -54,7 +53,7 @@ pub fn destructure_data<'a, I>(
     prefix: impl ToTokens,
     empty: impl ToTokens,
     delimiter: Delimiter,
-    parenthesize_empty: bool,
+    parenthesize_alone: bool,
     rename: RenameField,
 ) -> TokenStream
 where
@@ -84,7 +83,7 @@ where
     };
 
     if fields.peek().is_none() {
-        return if parenthesize_empty {
+        return if parenthesize_alone {
             with_delimiter(res, delimiter)
         } else {
             res
@@ -121,7 +120,7 @@ pub fn destructure_data_with_types<'a, I>(
     fields: I,
     empty: impl ToTokens,
     delimiter: Delimiter,
-    parenthesize_empty: bool,
+    parenthesize_alone: bool,
 ) -> TokenStream
 where
     I: IntoIterator<Item = &'a Field>,
@@ -142,7 +141,7 @@ where
     };
 
     if fields.peek().is_none() {
-        return if parenthesize_empty {
+        return if parenthesize_alone {
             with_delimiter(res, delimiter)
         } else {
             res

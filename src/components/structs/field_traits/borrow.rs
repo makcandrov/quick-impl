@@ -1,30 +1,33 @@
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
+use syn::LitStr;
 
-use crate::attributes::Attribute;
-use crate::config::{build_config, build_enum_doc};
-use crate::expand::Context;
-use crate::tokens::IndexedField;
+use crate::{
+    attributes::Attribute, config::Config, expand::Context, idents::config::CONFIG_DOC,
+    tokens::IndexedField,
+};
 
-build_enum_doc! {
-    ConfigDoc,
-    "Immutably borrows from an owned value.{0:.0}{1:.0}",
-}
-
-build_config! {
-    Config,
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_DOC: &str = "Immutably borrows from an owned value.";
 
 pub fn expand_borrow(
     context: &Context,
     indexed_field: &IndexedField<'_>,
     attribute: &Attribute,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, indexed_field)?;
+    let mut config = Config::new(&attribute.config, None)?;
+
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [
+            &context.ident.to_string(),
+            &indexed_field.as_token().to_string(),
+        ],
+    )?;
+
+    config.finish()?;
 
     let span = attribute.ident.span();
-    let doc = &config.doc;
     let field_ident = indexed_field.as_token();
     let trait_ident = Ident::new("Borrow", span);
     let method_ident = Ident::new("borrow", span);

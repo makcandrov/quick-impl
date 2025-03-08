@@ -1,30 +1,31 @@
-use proc_macro2::{Delimiter, Ident, TokenStream};
+use proc_macro2::{Delimiter, Ident, Span, TokenStream};
 use quote::quote;
-use syn::Variant;
+use syn::{LitStr, Variant};
 
-use crate::attributes::Attribute;
-use crate::config::{build_config, build_enum_doc};
-use crate::expand::Context;
-use crate::tokens::{
-    destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField,
+use crate::{
+    attributes::Attribute,
+    config::Config,
+    expand::Context,
+    idents::config::CONFIG_DOC,
+    tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField},
 };
 
-build_enum_doc! {
-    ConfigDoc,
-    "Converts `self` into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.",
-}
-
-build_config! {
-    Config,
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_DOC: &str = "Converts `self` into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
 
 pub fn expand_try_into(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, variant)?;
+    let mut config = Config::new(&attribute.config, None)?;
+
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [&context.ident.to_string(), &variant.ident.to_string()],
+    )?;
+
+    config.finish()?;
 
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
@@ -48,7 +49,6 @@ pub fn expand_try_into(
     );
 
     let variant_ident = &variant.ident;
-    let doc = &config.doc;
     let trait_ident = syn::Ident::new("TryInto", attribute.ident.span());
     let method_ident = Ident::new("try_into", attribute.ident.span());
 

@@ -1,25 +1,18 @@
-use proc_macro2::{Delimiter, TokenStream};
+use proc_macro2::{Delimiter, Span, TokenStream};
 use quote::quote;
-use syn::Variant;
+use syn::{LitStr, Variant};
 
-use crate::attributes::{Attribute, MethodAttribute};
-use crate::config::{build_config, build_enum_doc, build_enum_name};
-use crate::expand::Context;
-use crate::tokens::{
-    destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField,
+use crate::{
+    attributes::{Attribute, MethodAttribute},
+    config::Config,
+    expand::Context,
+    idents::config::{CONFIG_DOC, CONFIG_NAME},
+    tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField},
+    utils::to_snake_case,
 };
 
-build_enum_name! { ConfigName, "as_{}" }
-build_enum_doc! {
-    ConfigDoc,
-    "Returns an immutable reference to the associated data if the variant is [`{}::{}`]; otherwise, returns `None`.",
-}
-
-build_config! {
-    Config,
-    (name, ConfigName, true),
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_NAME: &str = "as_{}";
+const DEFAULT_DOC: &str = "Returns an immutable reference to the associated data if the variant is [`{}::{}`]; otherwise, returns `None`.";
 
 pub fn expand_as_ref(
     context: &Context,
@@ -27,7 +20,21 @@ pub fn expand_as_ref(
     attribute: &Attribute,
     method_attr: &MethodAttribute,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, variant)?;
+    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
+
+    let method_ident = config.get_formatted_lit_str_ident(
+        CONFIG_NAME,
+        LitStr::new(DEFAULT_NAME, attribute.ident.span()),
+        [&to_snake_case(&variant.ident.to_string())],
+    )?;
+
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [&context.ident.to_string(), &variant.ident.to_string()],
+    )?;
+
+    config.finish()?;
 
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
@@ -52,9 +59,6 @@ pub fn expand_as_ref(
 
     let variant_ident = &variant.ident;
     let keywords = method_attr.keywords();
-    let doc = config.doc;
-    let method_ident = config.name;
-
     Ok(quote! {
         #[doc = #doc]
         #[inline]

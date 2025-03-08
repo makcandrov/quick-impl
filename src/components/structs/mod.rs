@@ -1,14 +1,16 @@
 use syn::DataStruct;
 
-use crate::attributes::{AttributeType, Attributes};
-use crate::expand::{Context, Implems};
-use crate::idents::methods::*;
-use crate::idents::traits::*;
-use crate::tokens::to_indexed_field_iter;
+use crate::{
+    attributes::{AttributeType, Attributes},
+    expand::{Context, Implems},
+    idents::{methods::*, traits::*},
+    tokens::to_indexed_field_iter,
+};
 
 mod field_methods;
 mod field_traits;
 mod global_methods;
+mod global_traits;
 
 pub fn struct_impl(
     context: &Context<'_>,
@@ -41,7 +43,23 @@ pub fn struct_impl(
                 };
                 implems.extend_methods(tokens);
             }
-            AttributeType::Trait => todo!(),
+            AttributeType::Trait => {
+                let tokens = match attribute.ident.to_string().as_str() {
+                    TRAIT_FROM => {
+                        global_traits::expand_from(context, attribute, &data_struct.fields)?
+                    }
+                    TRAIT_INTO => {
+                        global_traits::expand_into(context, attribute, &data_struct.fields)?
+                    }
+                    _ => {
+                        return Err(syn::Error::new_spanned(
+                            &attribute.ident,
+                            "invalid trait name",
+                        ));
+                    }
+                };
+                implems.extend_traits(tokens);
+            }
         }
     }
 

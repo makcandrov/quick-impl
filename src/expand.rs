@@ -2,8 +2,10 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, WhereClause};
 
-use crate::attributes::Attributes;
-use crate::components::{enum_impl, struct_impl};
+use crate::{
+    attributes::Attributes,
+    components::{enum_impl, struct_impl},
+};
 
 pub fn derive(input: &DeriveInput) -> TokenStream {
     match try_expand(input) {

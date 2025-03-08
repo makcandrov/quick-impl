@@ -1,34 +1,36 @@
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::Variant;
+use syn::{LitStr, Variant};
 
-use crate::attributes::Attribute;
-use crate::config::{build_config, build_enum_doc};
-use crate::expand::Context;
-use crate::tokens::{get_delimiter, with_delimiter};
+use crate::{
+    attributes::Attribute,
+    config::Config,
+    expand::Context,
+    idents::config::CONFIG_DOC,
+    tokens::{get_delimiter, with_delimiter},
+};
 
-build_enum_doc! {
-    ConfigDoc,
-    "Creates a [`{}::{}`] variant with the default associated data.",
-}
-
-build_config! {
-    Config,
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant with the default associated data.";
 
 pub fn expand_default(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, variant)?;
+    let mut config = Config::new(&attribute.config, None)?;
+
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [&context.ident.to_string(), &variant.ident.to_string()],
+    )?;
+
+    config.finish()?;
 
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
     let variant_ident = &variant.ident;
-    let doc = &config.doc;
     let trait_ident = syn::Ident::new("Default", attribute.ident.span());
     let method_ident = Ident::new("default", attribute.ident.span());
 

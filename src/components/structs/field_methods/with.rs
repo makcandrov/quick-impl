@@ -1,22 +1,17 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
+use syn::LitStr;
 
-use crate::attributes::{Attribute, MethodAttribute};
-use crate::config::{build_config, build_enum_doc, build_enum_name};
-use crate::expand::Context;
-use crate::tokens::IndexedField;
+use crate::{
+    attributes::{Attribute, MethodAttribute},
+    config::Config,
+    expand::Context,
+    idents::config::{CONFIG_DOC, CONFIG_NAME},
+    tokens::IndexedField,
+};
 
-build_enum_name! { ConfigName, "with_{}" }
-build_enum_doc! {
-    ConfigDoc,
-    "Returns an instance of [`{0}`] with the `{1}` field modified.",
-}
-
-build_config! {
-    Config,
-    (name, ConfigName, true),
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_NAME: &str = "with_{}";
+const DEFAULT_DOC: &str = "Returns an instance of [`{0}`] with the `{1}` field modified.";
 
 pub fn expand_with(
     context: &Context,
@@ -24,13 +19,28 @@ pub fn expand_with(
     attribute: &Attribute,
     method_attr: &MethodAttribute,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, indexed_field)?;
+    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
-    let doc = &config.doc;
+    let method_ident = config.get_formatted_lit_str_ident(
+        CONFIG_NAME,
+        LitStr::new(DEFAULT_NAME, attribute.ident.span()),
+        [&indexed_field.as_token().to_string()],
+    )?;
+
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [
+            &context.ident.to_string(),
+            &indexed_field.as_token().to_string(),
+        ],
+    )?;
+
+    config.finish()?;
+
     let keywords = method_attr.keywords();
     let ty = &indexed_field.ty;
     let arg_ident = indexed_field.as_ident();
-    let method_ident = &config.name;
     let field_ident = indexed_field.as_token();
 
     Ok(quote! {

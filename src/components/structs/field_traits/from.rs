@@ -1,21 +1,13 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{parse2, Ident};
+use syn::{parse2, Ident, LitStr};
 
-use crate::attributes::Attribute;
-use crate::config::{build_config, build_enum_doc};
-use crate::expand::Context;
-use crate::tokens::IndexedField;
+use crate::{
+    attributes::Attribute, config::Config, expand::Context, idents::config::CONFIG_DOC,
+    tokens::IndexedField,
+};
 
-build_enum_doc! {
-    ConfigDoc,
-    "Creates an instance of [`{0}`] from the `{1}` field. Sets the other fields to their default value.",
-}
-
-build_config! {
-    Config,
-    (doc, ConfigDoc, false),
-}
+const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. Sets the other fields to their default value.";
 
 pub fn expand_from<'a>(
     context: &Context,
@@ -23,9 +15,19 @@ pub fn expand_from<'a>(
     attribute: &Attribute,
     indexed_fields: &'a Vec<IndexedField<'a>>,
 ) -> syn::Result<TokenStream> {
-    let config = Config::new(context, attribute, indexed_field)?;
+    let mut config = Config::new(&attribute.config, None)?;
 
-    let doc = &config.doc;
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [
+            &context.ident.to_string(),
+            &indexed_field.as_token().to_string(),
+        ],
+    )?;
+
+    config.finish()?;
+
     let field_ty = &indexed_field.ty;
     let field_ident = indexed_field.as_ident();
     let trait_ident = Ident::new("From", attribute.ident.span());

@@ -1,8 +1,10 @@
 use syn::DataEnum;
 
-use crate::attributes::{AttributeType, Attributes};
-use crate::expand::{Context, Implems};
-use crate::idents::{methods::*, traits::*};
+use crate::{
+    attributes::{AttributeType, Attributes},
+    expand::{Context, Implems},
+    idents::{methods::*, traits::*},
+};
 
 mod variant_methods;
 mod variant_traits;

@@ -8,6 +8,3 @@ pub use destructure::{
 
 mod indexed_field;
 pub use indexed_field::{to_indexed_field_iter, IndexedField};
-
-mod variant_or_field;
-pub use variant_or_field::VariantOrField;

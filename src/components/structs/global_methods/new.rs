@@ -1,12 +1,15 @@
-use proc_macro2::{Delimiter, TokenStream};
-use quote::{quote, quote_spanned};
-use syn::{Fields, Ident};
+use proc_macro2::{Delimiter, Span, TokenStream};
+use quote::quote;
+use syn::{Fields, Ident, LitStr};
 
-use crate::attributes::{Attribute, MethodAttribute};
-use crate::config::Config;
-use crate::expand::Context;
-use crate::tokens::{
-    destructure_data, destructure_data_with_types, get_delimiter, with_delimiter, RenameField,
+use crate::{
+    attributes::{Attribute, MethodAttribute},
+    config::Config,
+    expand::Context,
+    idents::config::{CONFIG_DOC, CONFIG_NAME},
+    tokens::{
+        destructure_data, destructure_data_with_types, get_delimiter, with_delimiter, RenameField,
+    },
 };
 
 const DEFAULT_NAME: &str = "new";
@@ -18,22 +21,17 @@ pub fn expand_new<'a>(
     method_attr: &'a MethodAttribute,
     fields: &'a Fields,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, Some("name"))?;
+    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
-    let method_ident = if let Some(lit_str) = config.get_lit_str("name")? {
-        Ident::new(&lit_str.value(), lit_str.span())
-    } else {
-        Ident::new(DEFAULT_NAME, attribute.ident.span())
-    };
+    let method_ident = config
+        .get_lit_str_ident(CONFIG_NAME)?
+        .unwrap_or_else(|| Ident::new(DEFAULT_NAME, attribute.ident.span()));
 
-    let doc = if let Some(lit_str) = config.get_lit_str("doc")? {
-        let span = lit_str.span();
-        let doc = lit_str.value();
-        quote_spanned! {span=> #doc}
-    } else {
-        let doc = DEFAULT_DOC.replace("{}", &context.ident.to_string());
-        quote! { #doc }
-    };
+    let doc = config.get_formatted_lit_str(
+        CONFIG_DOC,
+        LitStr::new(DEFAULT_DOC, Span::call_site()),
+        [&context.ident.to_string()],
+    )?;
 
     config.finish()?;
 
