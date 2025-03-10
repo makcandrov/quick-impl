@@ -74,23 +74,33 @@ impl Implems {
         self.traits.push(tokens)
     }
 
-    pub fn get_methods(&self, context: &Context) -> Option<TokenStream> {
+    pub fn get_methods(&self, context: &Context) -> TokenStream {
         if self.methods.is_empty() {
-            None
+            TokenStream::new()
         } else {
-            Some(context.in_impl(Default::default(), &self.methods, None))
+            let methods_impl = context.in_impl(Default::default(), &self.methods, None);
+            quote! {
+                #[allow(non_snake_case)]
+                #methods_impl
+            }
         }
     }
 
-    pub fn get_traits(&self) -> Option<TokenStream> {
+    pub fn get_traits(&self) -> TokenStream {
+        let mut traits_impl = TokenStream::new();
+
         if self.traits.is_empty() {
-            None
-        } else {
-            let mut res = TokenStream::new();
-            for t in &self.traits {
-                res.extend(quote! { #t })
-            }
-            Some(res)
+            return traits_impl;
+        }
+
+        for t in &self.traits {
+            traits_impl.extend(quote! { #t })
+        }
+        quote! {
+            #[allow(non_snake_case)]
+            const _: () = {
+                #traits_impl
+            };
         }
     }
 }
@@ -109,8 +119,8 @@ fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
         Data::Union(_) => return Err(syn::Error::new_spanned(input, "Unions are not supported")),
     }
 
-    let methods = implems.get_methods(&context).unwrap_or_default();
-    let traits = implems.get_traits().unwrap_or_default();
+    let methods = implems.get_methods(&context);
+    let traits = implems.get_traits();
 
     Ok(quote! {
         #methods
