@@ -8,15 +8,16 @@ use crate::{
     expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     tokens::{
-        destructure_data, destructure_data_with_types, get_delimiter, with_delimiter,
-        AloneDecoration, RenameField,
+        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
+        RenameField,
     },
 };
 
-const DEFAULT_NAME: &str = "new";
-const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] with the specified field values.";
+const DEFAULT_NAME: &str = "from_tuple";
+const DEFAULT_DOC: &str =
+    "Constructs a new instance of [`{}`] from a tuple with the specified field values .";
 
-pub fn expand_new<'a>(
+pub fn expand_from_tuple<'a>(
     context: &'a Context,
     attribute: &'a Attribute,
     method_attr: &'a MethodAttribute,
@@ -39,11 +40,19 @@ pub fn expand_new<'a>(
     let keywords = method_attr.keywords();
     let delimiter = get_delimiter(fields);
 
-    let input = destructure_data_with_types(
+    let input = destructure_data(
         fields,
+        TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
-        AloneDecoration::DelimitedNoComma,
+        AloneDecoration::DelimitedWithComma,
+        RenameField::Auto,
+    );
+    let tuple_ty = destructure_types(
+        fields,
+        TokenStream::new(),
+        quote! { () },
+        AloneDecoration::DelimitedWithComma,
     );
     let structure_creation = destructure_data(
         fields,
@@ -57,7 +66,7 @@ pub fn expand_new<'a>(
     Ok(quote! {
         #[doc = #doc]
         #[inline]
-        #keywords fn #method_ident #input -> Self {
+        #keywords fn #method_ident (#input: #tuple_ty) -> Self {
             Self #structure_creation
         }
     })

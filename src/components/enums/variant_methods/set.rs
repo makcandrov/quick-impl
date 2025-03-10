@@ -8,7 +8,8 @@ use crate::{
     expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     tokens::{
-        destructure_data, destructure_data_with_types, get_delimiter, with_delimiter, RenameField,
+        destructure_data, destructure_data_with_types, get_delimiter, with_delimiter,
+        AloneDecoration, RenameField,
     },
     utils::to_snake_case,
 };
@@ -41,13 +42,18 @@ pub fn expand_set(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let input = destructure_data_with_types(fields, TokenStream::new(), Delimiter::None, false);
+    let input = destructure_data_with_types(
+        fields,
+        TokenStream::new(),
+        Delimiter::None,
+        AloneDecoration::None,
+    );
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
-        true,
+        AloneDecoration::DelimitedNoComma,
         RenameField::Auto,
     );
 

@@ -7,7 +7,10 @@ use crate::{
     config::Config,
     expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
-    tokens::{destructure_data, destructure_types, get_delimiter, with_delimiter, RenameField},
+    tokens::{
+        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
+        RenameField,
+    },
     utils::to_snake_case,
 };
 
@@ -46,14 +49,19 @@ pub fn expand_is_and(
             .is_some_and(|ident| ident.to_string() == "f")
     });
 
-    let ty = destructure_types(fields, quote! { & }, quote! { () }, true);
+    let ty = destructure_types(
+        fields,
+        quote! { & },
+        quote! { () },
+        AloneDecoration::DelimitedNoComma,
+    );
 
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
-        true,
+        AloneDecoration::DelimitedNoComma,
         if need_rename {
             RenameField::Always
         } else {
@@ -65,7 +73,7 @@ pub fn expand_is_and(
         TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
-        true,
+        AloneDecoration::DelimitedNoComma,
         if need_rename {
             RenameField::AlwaysIgnoreOriginal
         } else {

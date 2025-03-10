@@ -5,7 +5,7 @@ use quick_impl::QuickImpl;
 #[test]
 fn test_struct_single_named() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test {
         #[quick_impl(
             pub const get = "{}",
@@ -52,7 +52,7 @@ fn test_struct_single_named() {
 #[test]
 fn test_struct_single_unnamed() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test(
         #[quick_impl(
             pub const get,
@@ -92,12 +92,20 @@ fn test_struct_single_unnamed() {
     assert_eq!(Into::<usize>::into(a.clone()), 14);
 
     assert_eq!(a.take_0(), 14);
+
+    let Test(_) = Test::new(0);
+    let Test(_) = Test::from_tuple((0,));
+    let Test(_) = Test::from(0);
+    let Test(_) = Test::from((0,));
+    assert_eq!(usize::from(Test(1)), 1usize);
+    assert_eq!(<(usize,)>::from(Test(1)), (1usize,));
+    assert_eq!(Test(1).into_parts(), 1usize);
 }
 
 #[test]
 fn test_struct_generics_unnamed() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub from_tuple, pub into_parts, impl From, impl Into)]
     struct Test<A, B>(
         #[quick_impl(
             pub get,
@@ -142,7 +150,7 @@ fn test_struct_generics_unnamed() {
 #[test]
 fn test_struct_lifetimes() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test<'a, 'b>(
         #[quick_impl(
             pub const get,
@@ -188,14 +196,32 @@ fn test_struct_lifetimes() {
 #[test]
 fn test_empty_struct() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test1;
 
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test2 {}
 
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
+    #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test3();
+
+    let Test1 = Test1::new();
+    let Test1 = Test1::from_tuple(());
+    let Test1 = Test1::from(());
+    let () = Test1.into_parts();
+    let () = Test1.into();
+
+    let Test2 {} = Test2::new();
+    let Test2 {} = Test2::from_tuple(());
+    let Test2 {} = Test2::from(());
+    let () = Test2 {}.into_parts();
+    let () = Test2 {}.into();
+
+    let Test3() = Test3::new();
+    let Test3() = Test3::from_tuple(());
+    let Test3() = Test3::from(());
+    let () = Test3().into_parts();
+    let () = Test3().into();
 }

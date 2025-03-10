@@ -78,8 +78,9 @@ More examples can be found in the [examples folder].
 
 ### Structure global methods
 
-- `into_parts` - Destructures the instance into its fields values.
 - `new` - Constructs a new instance from the given field values.
+- `from_tuple` - Constructs a new instance from a tuple of the given field values.
+- `into_parts` - Destructures the instance into its fields values.
 
 ### Structure global traits
 

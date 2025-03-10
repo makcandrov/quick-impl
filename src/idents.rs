@@ -10,6 +10,7 @@ pub mod methods {
     pub const METHOD_AS_REF_MUT: &str = "as_ref_mut";
     pub const METHOD_AS_REF: &str = "as_ref";
     pub const METHOD_FROM: &str = "from";
+    pub const METHOD_FROM_TUPLE: &str = "from_tuple";
     pub const METHOD_GET: &str = "get";
     pub const METHOD_GET_CLONE: &str = "get_clone";
     pub const METHOD_GET_MUT: &str = "get_mut";

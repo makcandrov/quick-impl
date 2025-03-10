@@ -7,7 +7,7 @@ use crate::{
     config::Config,
     expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
-    tokens::{destructure_types, to_indexed_field_iter},
+    tokens::{destructure_types, to_indexed_field_iter, AloneDecoration},
 };
 
 const DEFAULT_NAME: &str = "into_parts";
@@ -35,7 +35,12 @@ pub fn expand_into_parts<'a>(
 
     let keywords = method_attr.keywords();
 
-    let ret = destructure_types(fields, TokenStream::new(), quote! { () }, false);
+    let ret = destructure_types(
+        fields,
+        TokenStream::new(),
+        quote! { () },
+        AloneDecoration::None,
+    );
 
     let mut destruct = TokenStream::new();
 

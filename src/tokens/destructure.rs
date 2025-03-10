@@ -13,11 +13,32 @@ pub enum RenameField {
     AlwaysIgnoreOriginal,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub enum AloneDecoration {
+    #[default]
+    /// item
+    None,
+    /// (item)
+    DelimitedNoComma,
+    /// (item,)
+    DelimitedWithComma,
+}
+
+impl AloneDecoration {
+    pub fn apply(&self, tokens: TokenStream, delimiter: Delimiter) -> TokenStream {
+        match self {
+            AloneDecoration::None => tokens,
+            AloneDecoration::DelimitedNoComma => with_delimiter(tokens, delimiter),
+            AloneDecoration::DelimitedWithComma => with_delimiter(quote! { #tokens, }, delimiter),
+        }
+    }
+}
+
 pub fn destructure_types<'a, I>(
     fields: I,
     prefix: impl ToTokens,
     empty: impl ToTokens,
-    parenthesize_alone: bool,
+    alone: AloneDecoration,
 ) -> TokenStream
 where
     I: IntoIterator<Item = &'a Field>,
@@ -33,11 +54,7 @@ where
     let mut res = quote! { #prefix #first_type };
 
     if fields.peek().is_none() {
-        return if parenthesize_alone {
-            quote! { ( #res ) }
-        } else {
-            res
-        };
+        return alone.apply(res, Delimiter::Parenthesis);
     }
 
     while let Some(field) = fields.next() {
@@ -53,7 +70,7 @@ pub fn destructure_data<'a, I>(
     prefix: impl ToTokens,
     empty: impl ToTokens,
     delimiter: Delimiter,
-    parenthesize_alone: bool,
+    alone: AloneDecoration,
     rename: RenameField,
 ) -> TokenStream
 where
@@ -83,11 +100,7 @@ where
     };
 
     if fields.peek().is_none() {
-        return if parenthesize_alone {
-            with_delimiter(res, delimiter)
-        } else {
-            res
-        };
+        return alone.apply(res, delimiter);
     }
 
     let mut i = 1;
@@ -120,7 +133,7 @@ pub fn destructure_data_with_types<'a, I>(
     fields: I,
     empty: impl ToTokens,
     delimiter: Delimiter,
-    parenthesize_alone: bool,
+    alone: AloneDecoration,
 ) -> TokenStream
 where
     I: IntoIterator<Item = &'a Field>,
@@ -141,11 +154,7 @@ where
     };
 
     if fields.peek().is_none() {
-        return if parenthesize_alone {
-            with_delimiter(res, delimiter)
-        } else {
-            res
-        };
+        return alone.apply(res, delimiter);
     }
 
     let mut i = 1;

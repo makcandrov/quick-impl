@@ -22,13 +22,19 @@ pub fn struct_impl(
         match &attribute.typ {
             AttributeType::Method(method_attr) => {
                 let tokens = match attribute.ident.to_string().as_str() {
-                    METHOD_NEW => global_methods::expand_new(
+                    METHOD_FROM_TUPLE => global_methods::expand_from_tuple(
                         context,
                         attribute,
                         method_attr,
                         &data_struct.fields,
                     )?,
                     METHOD_INTO_PARTS => global_methods::expand_into_parts(
+                        context,
+                        attribute,
+                        method_attr,
+                        &data_struct.fields,
+                    )?,
+                    METHOD_NEW => global_methods::expand_new(
                         context,
                         attribute,
                         method_attr,
