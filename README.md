@@ -102,7 +102,7 @@ More examples can be found in the [examples folder].
 
 ## Configuration
 
-### Method configurations
+### Methods configurations
 
 - `name` - Sets the name of the generated method. If not set, a default name is used.
 

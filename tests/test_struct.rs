@@ -52,7 +52,7 @@ fn test_struct_single_named() {
 #[test]
 fn test_struct_single_unnamed() {
     #[derive(QuickImpl)]
-    #[quick_impl(pub const new, pub into_parts)]
+    #[quick_impl(pub const new, pub into_parts, impl From, impl Into)]
     struct Test(
         #[quick_impl(
             pub const get,
@@ -65,8 +65,8 @@ fn test_struct_single_unnamed() {
             pub from,
             impl Deref,
             impl DerefMut,
-            impl Into,
-            impl From,
+            // impl Into,
+            // impl From,
             impl AsRef,
             impl AsMut,
             impl Borrow,

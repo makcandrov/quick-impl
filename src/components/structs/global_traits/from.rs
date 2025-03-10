@@ -37,7 +37,7 @@ pub fn expand_from<'a>(
         true,
         RenameField::Auto,
     );
-    let ret = destructure_data(
+    let arg = destructure_data(
         fields,
         TokenStream::new(),
         quote! { () },
@@ -52,14 +52,36 @@ pub fn expand_from<'a>(
     let content = quote! {
         #[doc = #doc]
         #[inline]
-        fn #method_ident (#ret: #ty) -> Self {
+        fn #method_ident (#arg: #ty) -> Self {
             Self #destruct
         }
     };
 
-    Ok(context.in_impl(
+    let mut result = context.in_impl(
         quote! { ::core::convert::#trait_ident<#ty> for },
         &content,
         None,
-    ))
+    );
+
+    // If there is exactly one field of type T, we need to implement both `From<T>` and `From<(T,)>`.
+    if fields.len() == 1 {
+        let ty = quote! { (#ty,) };
+        let arg = quote! { (#arg,) };
+
+        let content = quote! {
+            #[doc = #doc]
+            #[inline]
+            fn #method_ident (#arg: #ty) -> Self {
+                Self #destruct
+            }
+        };
+
+        result.extend(context.in_impl(
+            quote! { ::core::convert::#trait_ident<#ty> for },
+            &content,
+            None,
+        ));
+    }
+
+    Ok(result)
 }
