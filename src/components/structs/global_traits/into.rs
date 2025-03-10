@@ -52,7 +52,7 @@ pub fn expand_into<'a>(
     let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
     let ident = context.ident;
 
-    let content = quote! {
+    let mut result = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {
             #[doc = #doc]
             #[inline]
@@ -62,5 +62,21 @@ pub fn expand_into<'a>(
         }
     };
 
-    Ok(content)
+    // If there is exactly one field of type T, we need to implement both `Into<T>` and `Into<(T,)>`.
+    if fields.len() == 1 {
+        let ty = quote! { (#ty,) };
+        let ret = quote! { (#ret,) };
+
+        result.extend(quote! {
+            impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {
+                #[doc = #doc]
+                #[inline]
+                fn #method_ident (#ident #destruct: #ident #ty_generics) -> Self {
+                    #ret
+                }
+            }
+        });
+    }
+
+    Ok(result)
 }
