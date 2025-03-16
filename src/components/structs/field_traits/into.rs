@@ -27,22 +27,21 @@ pub fn expand_into(
 
     config.finish()?;
 
+    let struct_ident = &context.ident;
     let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
-    let trait_ident = Ident::new("Into", attribute.ident.span());
-    let method_ident = Ident::new("into", attribute.ident.span());
+    let trait_ident = Ident::new("From", attribute.ident.span());
+    let method_ident = Ident::new("from", attribute.ident.span());
 
-    let content = quote! {
-        #[doc = #doc]
-        #[inline]
-        fn #method_ident (self) -> #field_type {
-            self.#field_ident
+    let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
+
+    Ok(quote! {
+        impl #impl_generics ::core::convert:: #trait_ident <#struct_ident #ty_generics> for #field_type #where_clause {
+            #[doc = #doc]
+            #[inline]
+            fn #method_ident (value: #struct_ident #ty_generics) -> #field_type {
+                value.#field_ident
+            }
         }
-    };
-
-    Ok(context.in_impl(
-        quote! { ::core::convert::#trait_ident<#field_type> for },
-        &content,
-        None,
-    ))
+    })
 }
