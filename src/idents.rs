@@ -19,6 +19,7 @@ pub mod methods {
     pub const METHOD_IS_AND: &str = "is_and";
     pub const METHOD_IS: &str = "is";
     pub const METHOD_NEW: &str = "new";
+    pub const METHOD_REPLACE: &str = "replace";
     pub const METHOD_SET: &str = "set";
     pub const METHOD_TAKE: &str = "take";
     pub const METHOD_TRY_INTO: &str = "try_into";

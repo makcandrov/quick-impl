@@ -109,6 +109,12 @@ pub fn struct_impl(
                             attribute,
                             method_attr,
                         )?,
+                        METHOD_REPLACE => field_methods::expand_replace(
+                            context,
+                            indexed_field,
+                            attribute,
+                            method_attr,
+                        )?,
                         METHOD_SET => field_methods::expand_set(
                             context,
                             indexed_field,

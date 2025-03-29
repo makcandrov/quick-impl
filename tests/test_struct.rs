@@ -12,6 +12,7 @@ fn test_struct_single_named() {
             pub get_clone,
             get_mut,
             const into,
+            pub(crate) replace,
             pub(crate) set,
             pub take,
             pub(crate) const with,
@@ -40,7 +41,8 @@ fn test_struct_single_named() {
     let mut a = Test { a: 12, b: 14 };
     assert_eq!(*<Test as DerefMut>::deref_mut(&mut a), 12);
 
-    assert_eq!(a.set_a(13), 12);
+    assert_eq!(a.set_a(11).a, 11);
+    assert_eq!(a.replace_a(13), 11);
     assert_eq!(*a.get_a_mut(), 13);
 
     *a.get_a_mut() = 14;
@@ -59,6 +61,7 @@ fn test_struct_single_unnamed() {
             pub get_clone = "get_clone_0",
             get_mut,
             const into,
+            replace,
             pub(crate) set,
             pub take,
             pub(crate) const with,
@@ -85,7 +88,7 @@ fn test_struct_single_unnamed() {
     let mut a = Test(12);
     assert_eq!(*<Test as DerefMut>::deref_mut(&mut a), 12);
 
-    assert_eq!(a.set_0(13), 12);
+    assert_eq!(a.replace_0(13), 12);
     assert_eq!(*a.get_0_mut(), 13);
 
     *a.get_0_mut() = 14;
@@ -112,6 +115,7 @@ fn test_struct_generics_unnamed() {
             pub get_clone = "get_clone_0",
             get_mut,
             into,
+            replace,
             pub(crate) set,
             pub take,
             pub(crate) with,
@@ -138,7 +142,7 @@ fn test_struct_generics_unnamed() {
     let mut a = Test(12usize, 12usize);
     assert_eq!(*<Test<usize, usize> as DerefMut>::deref_mut(&mut a), 12);
 
-    assert_eq!(a.set_0(13), 12);
+    assert_eq!(a.replace_0(13), 12);
     assert_eq!(*a.get_0_mut(), 13);
 
     *a.get_0_mut() = 14;
@@ -156,6 +160,7 @@ fn test_struct_lifetimes() {
             pub const get,
             get_mut,
             const into,
+            replace,
             pub(crate) set,
             pub take,
             pub(crate) const with,
@@ -186,7 +191,7 @@ fn test_struct_lifetimes() {
     let mut a = Test(&n, &12);
     assert_eq!(**<Test as DerefMut>::deref_mut(&mut a), 12);
 
-    assert_eq!(*a.set_0(&m), 12);
+    assert_eq!(*a.replace_0(&m), 12);
     assert_eq!(**a.get_0_mut(), 13);
 
     *a.get_0_mut() = &n;

@@ -61,7 +61,8 @@ More examples can be found in the [examples folder].
 - `get_mut` - A mutable getter for a field.
 - `into` - Converts the struct into the field.
 - `from` - Creates an instance from the field. Sets the other fields to their default value.
-- `set` - A setter for the field.
+- `replace` - A setter for the field, returning the previous value.
+- `set` - A setter for the field, returning a mutable reference to the instance.
 - `take` - Returns the field and replaces it with its default value.
 - `with` - Returns the struct with the field modified.
 

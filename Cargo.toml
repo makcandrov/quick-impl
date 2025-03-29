@@ -1,6 +1,6 @@
 [package]
 name = "quick-impl"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2021"
 repository = "https://github.com/makcandrov/quick-impl"
 homepage = "https://github.com/makcandrov/quick-impl"

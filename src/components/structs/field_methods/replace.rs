@@ -10,11 +10,11 @@ use crate::{
     tokens::IndexedField,
 };
 
-const DEFAULT_NAME: &str = "set_{}";
+const DEFAULT_NAME: &str = "replace_{}";
 const DEFAULT_DOC: &str =
-    "A setter for the `{1}` field of [`{0}`]. Returns a mutable reference to the instance.";
+    "Replaces the `{1}` field of [`{0}`] by the given value. Returns the previous value.";
 
-pub fn expand_set(
+pub fn expand_replace(
     context: &Context,
     indexed_field: &IndexedField,
     attribute: &Attribute,
@@ -47,9 +47,8 @@ pub fn expand_set(
     Ok(quote! {
         #[doc = #doc]
         #[inline]
-        #keywords fn #method_ident (&mut self, #arg_ident: #ty) -> &mut Self {
-            self.#field_ident = #arg_ident;
-            self
+        #keywords fn #method_ident (&mut self, #arg_ident: #ty) -> #ty {
+            ::core::mem::replace(&mut self.#field_ident, #arg_ident)
         }
     })
 }

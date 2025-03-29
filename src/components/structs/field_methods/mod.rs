@@ -13,6 +13,9 @@ pub use get_mut::expand_get_mut;
 mod into;
 pub use into::expand_into;
 
+mod replace;
+pub use replace::expand_replace;
+
 mod set;
 pub use set::expand_set;
 
