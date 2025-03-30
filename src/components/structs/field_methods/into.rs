@@ -44,6 +44,7 @@ pub fn expand_into(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident (self) -> #ty {
             self.#field_ident

@@ -70,6 +70,7 @@ pub fn expand_as_ref_mut(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident(&mut self) -> Option<#ty> {
             match self {

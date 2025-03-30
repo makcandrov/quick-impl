@@ -44,6 +44,7 @@ pub fn expand_get_mut(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident (&mut self) -> &mut #ty {
             &mut self.#field_ident

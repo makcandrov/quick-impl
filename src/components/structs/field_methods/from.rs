@@ -80,6 +80,7 @@ pub fn expand_from<'a>(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident (#field_ident: #field_ty) -> Self #where_clause {
             #structure_creation

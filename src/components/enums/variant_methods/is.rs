@@ -47,6 +47,7 @@ pub fn expand_is(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident(&self) -> bool {
             match self {

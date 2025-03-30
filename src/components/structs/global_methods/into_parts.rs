@@ -56,6 +56,7 @@ pub fn expand_into_parts<'a>(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident (self) -> #ret {
             #destruct

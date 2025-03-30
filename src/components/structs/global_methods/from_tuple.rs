@@ -65,6 +65,7 @@ pub fn expand_from_tuple<'a>(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident (#input: #tuple_ty) -> Self {
             Self #structure_creation

@@ -62,6 +62,7 @@ pub fn expand_from(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident #input -> Self {
             Self::#variant_ident #destruct

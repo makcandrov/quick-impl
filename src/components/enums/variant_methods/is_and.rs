@@ -86,6 +86,7 @@ pub fn expand_is_and(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident(&self, f: impl FnOnce #ty -> bool) -> bool {
             match self {

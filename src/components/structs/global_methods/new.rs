@@ -56,6 +56,7 @@ pub fn expand_new<'a>(
 
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident #input -> Self {
             Self #structure_creation

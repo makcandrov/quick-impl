@@ -64,6 +64,7 @@ pub fn expand_as_ref(
     let keywords = method_attr.keywords();
     Ok(quote! {
         #[doc = #doc]
+        #[must_use]
         #[inline]
         #keywords fn #method_ident(&self) -> Option<#ty> {
             match self {

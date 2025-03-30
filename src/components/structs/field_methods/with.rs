@@ -45,8 +45,8 @@ pub fn expand_with(
 
     Ok(quote! {
         #[doc = #doc]
-        #[inline]
         #[must_use]
+        #[inline]
         #keywords fn #method_ident (mut self, #arg_ident: #ty) -> Self {
             self.#field_ident = #arg_ident;
             self
