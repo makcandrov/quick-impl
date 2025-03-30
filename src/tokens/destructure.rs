@@ -1,5 +1,5 @@
 use proc_macro2::{Delimiter, TokenStream};
-use quote::{quote, ToTokens};
+use quote::{format_ident, quote, ToTokens};
 use syn::{spanned::Spanned, Field, Ident};
 
 use super::with_delimiter;
@@ -174,5 +174,5 @@ where
 }
 
 fn field_rename(field: &Field, index: usize) -> Ident {
-    Ident::new(&format!("{ARGUMENT}{index}"), field.span())
+    format_ident!("{}{}", ARGUMENT, index, span = field.span())
 }

@@ -54,7 +54,7 @@ pub fn expand_from<'a>(
         RenameField::Auto,
     );
 
-    let trait_ident = syn::Ident::new("From", attribute.ident.span());
+    let trait_ident = Ident::new("From", attribute.ident.span());
     let method_ident = Ident::new("from", attribute.ident.span());
 
     let content = quote! {

@@ -31,7 +31,7 @@ pub fn expand_default(
     let delimiter = get_delimiter(fields);
 
     let variant_ident = &variant.ident;
-    let trait_ident = syn::Ident::new("Default", attribute.ident.span());
+    let trait_ident = Ident::new("Default", attribute.ident.span());
     let method_ident = Ident::new("default", attribute.ident.span());
 
     let default = quote! { ::core::default:: #trait_ident :: #method_ident () };

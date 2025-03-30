@@ -1,7 +1,7 @@
 use core::ops::Deref;
 
-use proc_macro2::{Span, TokenStream};
-use quote::ToTokens;
+use proc_macro2::TokenStream;
+use quote::{format_ident, ToTokens};
 use syn::{Field, Ident, Index};
 
 use crate::idents::ARGUMENT;
@@ -33,7 +33,7 @@ impl<'a> IndexedField<'a> {
         self.field
             .ident
             .clone()
-            .unwrap_or_else(|| Ident::new(&format!("{ARGUMENT}{}", self.index), Span::call_site()))
+            .unwrap_or_else(|| format_ident!("{}{}", ARGUMENT, self.index))
     }
 }
 

@@ -57,7 +57,7 @@ pub fn expand_try_from(
     );
 
     let variant_ident = &variant.ident;
-    let trait_ident = syn::Ident::new("TryFrom", attribute.ident.span());
+    let trait_ident = Ident::new("TryFrom", attribute.ident.span());
     let method_ident = Ident::new("try_from", attribute.ident.span());
 
     let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
