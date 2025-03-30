@@ -13,6 +13,7 @@ fn test_enum_variant_unit() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryInto,
@@ -45,25 +46,26 @@ fn test_enum_variant_single_unnamed() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom
         )]
-        A(usize),
+        Variant1(usize),
     }
 
-    let a = Test::A(12);
-    assert!(a.is_a());
-    assert_eq!(*a.as_a().unwrap(), 12);
-    assert_eq!(a.clone().into_a().unwrap(), 12);
-    assert_eq!(a.clone().try_into_a().unwrap(), 12);
+    let a = Test::Variant1(12);
+    assert!(a.is_variant1());
+    assert_eq!(*a.as_variant1().unwrap(), 12);
+    assert_eq!(a.clone().into_variant1().unwrap(), 12);
+    assert_eq!(a.clone().try_into_variant1().unwrap(), 12);
     assert_eq!(TryInto::<usize>::try_into(a.clone()).unwrap(), 12);
 
-    let mut a = Test::A(12);
-    assert_eq!(*a.as_a_mut().unwrap(), 12);
+    let mut a = Test::Variant1(12);
+    assert_eq!(*a.as_variant1_mut().unwrap(), 12);
 
-    assert_eq!(Test::from_a(12), Test::A(12));
-    assert_eq!(<Test as From<usize>>::from(12), Test::A(12));
+    assert_eq!(Test::from_variant1(12), Test::Variant1(12));
+    assert_eq!(<Test as From<usize>>::from(12), Test::Variant1(12));
 }
 
 #[test]
@@ -79,23 +81,24 @@ fn test_enum_variant_single_named() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryInto
         )]
-        A { a: usize },
+        Variant1 { a: usize },
     }
 
-    let a = Test::A { a: 12 };
-    assert!(a.is_a());
-    assert_eq!(*a.as_a().unwrap(), 12);
-    assert_eq!(a.into_a().unwrap(), 12);
+    let a = Test::Variant1 { a: 12 };
+    assert!(a.is_variant1());
+    assert_eq!(*a.as_variant1().unwrap(), 12);
+    assert_eq!(a.into_variant1().unwrap(), 12);
 
-    let mut a = Test::A { a: 12 };
-    assert_eq!(*a.as_a_mut().unwrap(), 12);
+    let mut a = Test::Variant1 { a: 12 };
+    assert_eq!(*a.as_variant1_mut().unwrap(), 12);
 
-    assert_eq!(Test::from_a(12), Test::A { a: 12 });
-    assert_eq!(<Test as From<usize>>::from(12), Test::A { a: 12 });
+    assert_eq!(Test::from_variant1(12), Test::Variant1 { a: 12 });
+    assert_eq!(<Test as From<usize>>::from(12), Test::Variant1 { a: 12 });
 }
 
 #[test]
@@ -111,25 +114,29 @@ fn test_enum_variant_multiple_unnamed() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryInto
         )]
-        A(usize, isize, char),
+        Variant1(usize, isize, char),
     }
 
-    let a = Test::A(12, -15, 'C');
-    assert!(a.is_a());
-    assert_eq!(a.as_a().unwrap(), (&12, &-15, &'C'));
-    assert_eq!(a.into_a().unwrap(), (12, -15, 'C'));
+    let a = Test::Variant1(12, -15, 'C');
+    assert!(a.is_variant1());
+    assert_eq!(a.as_variant1().unwrap(), (&12, &-15, &'C'));
+    assert_eq!(a.into_variant1().unwrap(), (12, -15, 'C'));
 
-    let mut a = Test::A(12, -15, 'C');
-    assert_eq!(a.as_a_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
+    let mut a = Test::Variant1(12, -15, 'C');
+    assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
 
-    assert_eq!(Test::from_a(12, -15, 'C'), Test::A(12, -15, 'C'));
+    assert_eq!(
+        Test::from_variant1(12, -15, 'C'),
+        Test::Variant1(12, -15, 'C')
+    );
     assert_eq!(
         <Test as From<(usize, isize, char)>>::from((12, -15, 'C')),
-        Test::A(12, -15, 'C')
+        Test::Variant1(12, -15, 'C')
     );
 }
 
@@ -150,28 +157,28 @@ fn test_enum_variant_multiple_named() {
             impl From,
             impl TryInto
         )]
-        A { a: usize, b: isize, c: char },
+        Variant1 { a: usize, b: isize, c: char },
     }
 
-    let a = Test::A {
+    let a = Test::Variant1 {
         a: 12,
         b: -15,
         c: 'C',
     };
-    assert!(a.is_a());
-    assert_eq!(a.as_a().unwrap(), (&12, &-15, &'C'));
-    assert_eq!(a.into_a().unwrap(), (12, -15, 'C'));
+    assert!(a.is_variant1());
+    assert_eq!(a.as_variant1().unwrap(), (&12, &-15, &'C'));
+    assert_eq!(a.into_variant1().unwrap(), (12, -15, 'C'));
 
-    let mut a = Test::A {
+    let mut a = Test::Variant1 {
         a: 12,
         b: -15,
         c: 'C',
     };
-    assert_eq!(a.as_a_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
+    assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
 
     assert_eq!(
-        Test::from_a(12, -15, 'C'),
-        Test::A {
+        Test::from_variant1(12, -15, 'C'),
+        Test::Variant1 {
             a: 12,
             b: -15,
             c: 'C'
@@ -179,7 +186,7 @@ fn test_enum_variant_multiple_named() {
     );
     assert_eq!(
         <Test as From<(usize, isize, char)>>::from((12, -15, 'C')),
-        Test::A {
+        Test::Variant1 {
             a: 12,
             b: -15,
             c: 'C'
@@ -200,33 +207,37 @@ fn test_enum_generics() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom,
         )]
-        A { a: T, b: U },
+        Variant1 { a: T, b: U },
         #[allow(dead_code)]
-        B { a: T, b: U },
+        Variant2 { a: T, b: U },
     }
 
-    let a = Test::A {
+    let a = Test::Variant1 {
         a: 12usize,
         b: -15isize,
     };
-    assert!(a.is_a());
-    assert_eq!(a.as_a().unwrap(), (&12, &-15));
-    assert_eq!(a.into_a().unwrap(), (12, -15));
+    assert!(a.is_variant1());
+    assert_eq!(a.as_variant1().unwrap(), (&12, &-15));
+    assert_eq!(a.into_variant1().unwrap(), (12, -15));
 
-    let mut a = Test::A {
+    let mut a = Test::Variant1 {
         a: 12usize,
         b: -15isize,
     };
-    assert_eq!(a.as_a_mut().unwrap(), (&mut 12, &mut -15));
+    assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15));
 
-    assert_eq!(Test::from_a(12, -15), Test::A { a: 12, b: -15 });
+    assert_eq!(
+        Test::from_variant1(12, -15),
+        Test::Variant1 { a: 12, b: -15 }
+    );
     assert_eq!(
         <Test<usize, isize> as From<(usize, isize)>>::from((12, -15)),
-        Test::A { a: 12, b: -15 }
+        Test::Variant1 { a: 12, b: -15 }
     );
 }
 
@@ -243,11 +254,12 @@ fn test_enum_lifetimes() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom
         )]
-        A(&'a usize, &'b mut isize),
+        Variant1(&'a usize, &'b mut isize),
     }
 
     let mut s1 = -15;
@@ -255,18 +267,21 @@ fn test_enum_lifetimes() {
     let mut s3 = -15;
     let mut s4 = -15;
 
-    let a = Test::A(&12, &mut s1);
-    assert!(a.is_a());
-    assert_eq!(a.as_a().unwrap(), (&&12, &&mut s2));
-    assert_eq!(a.into_a().unwrap(), (&12, &mut s2));
+    let a = Test::Variant1(&12, &mut s1);
+    assert!(a.is_variant1());
+    assert_eq!(a.as_variant1().unwrap(), (&&12, &&mut s2));
+    assert_eq!(a.into_variant1().unwrap(), (&12, &mut s2));
 
-    let mut a = Test::A(&12, &mut s2);
-    assert_eq!(a.as_a_mut().unwrap(), (&mut &12, &mut &mut s3));
+    let mut a = Test::Variant1(&12, &mut s2);
+    assert_eq!(a.as_variant1_mut().unwrap(), (&mut &12, &mut &mut s3));
 
-    assert_eq!(Test::from_a(&12, &mut -15), Test::A(&12, &mut s3));
+    assert_eq!(
+        Test::from_variant1(&12, &mut -15),
+        Test::Variant1(&12, &mut s3)
+    );
     assert_eq!(
         <Test as From<(&usize, &mut isize)>>::from((&12, &mut s3)),
-        Test::A(&12, &mut s4)
+        Test::Variant1(&12, &mut s4)
     );
 }
 
@@ -283,6 +298,7 @@ fn test_empty_enums() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom
@@ -301,6 +317,7 @@ fn test_empty_enums() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom
@@ -319,6 +336,7 @@ fn test_empty_enums() {
             pub(crate) into,
             set,
             pub try_into,
+            pub inspect,
             impl Default,
             impl From,
             impl TryFrom
@@ -332,20 +350,44 @@ fn test_empty_enums() {
 }
 
 #[test]
-fn test_is_and_rename() {
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
-    enum TestA {
-        #[quick_impl(pub is_and)]
-        A { a: usize, b: usize, c: usize },
+fn test_variable_rename() {
+    {
+        #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+        enum TestA {
+            #[quick_impl(pub is_and, pub inspect)]
+            Variant1 { a: usize, b: usize, c: usize },
+            #[allow(unused)]
+            Variant2 { a: usize, b: usize, c: usize },
+        }
+
+        let mut called = false;
+
+        let instance = TestA::Variant1 { a: 1, b: 2, c: 3 }.inspect_variant1(|a, b, c| {
+            called = true;
+            assert_eq!((*a, *b, *c), (1, 2, 3));
+        });
+
+        assert!(called);
+        assert!(instance.is_variant1_and(|a, _, _| *a == 1));
     }
 
-    assert!(TestA::A { a: 1, b: 2, c: 3 }.is_a_and(|a, _, _| *a == 1));
+    {
+        #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+        enum TestF {
+            #[quick_impl(pub is_and, pub inspect)]
+            Variant1 { f: usize, b: usize, c: usize },
+            #[allow(unused)]
+            Variant2 { f: usize, b: usize, c: usize },
+        }
 
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
-    enum TestF {
-        #[quick_impl(pub is_and)]
-        A { f: usize, b: usize, c: usize },
+        let mut called = false;
+
+        let instance = TestF::Variant1 { f: 1, b: 2, c: 3 }.inspect_variant1(|f, b, c| {
+            called = true;
+            assert_eq!((*f, *b, *c), (1, 2, 3));
+        });
+
+        assert!(called);
+        assert!(instance.is_variant1_and(|a, _, _| *a == 1));
     }
-
-    assert!(TestF::A { f: 1, b: 2, c: 3 }.is_a_and(|f, _, _| *f == 1));
 }

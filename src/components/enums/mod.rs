@@ -54,6 +54,12 @@ pub fn enum_impl(
                         METHOD_FROM => {
                             variant_methods::expand_from(context, &variant, attribute, method_attr)?
                         }
+                        METHOD_INSPECT => variant_methods::expand_inspect(
+                            context,
+                            variant,
+                            attribute,
+                            method_attr,
+                        )?,
                         METHOD_INTO => {
                             variant_methods::expand_into(context, &variant, attribute, method_attr)?
                         }

@@ -41,6 +41,7 @@ More examples can be found in the [examples folder].
 - `as_ref` - Returns an immutable reference to the associated data of the enum variant.
 - `as_ref_mut` - Returns a mutable reference to the associated data of the enum variant.
 - `from` - Creates an instance of the enum variant from the associated data.
+- `inspect` - Calls a function with a reference to the associated data if the instance is of the enum variant.
 - `into` - Converts the enum into the associated data of the variant, returning an [`Option`].
 - `is` - Returns `true` if the enum matches the specified variant.
 - `is_and` - Returns `true` if the enum matches the specified variant and the associated data matches a predicate.

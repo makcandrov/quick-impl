@@ -14,10 +14,10 @@ use crate::{
     utils::to_snake_case,
 };
 
-const DEFAULT_NAME: &str = "is_{}_and";
-const DEFAULT_DOC: &str = "Returns `true` if the variant is [`{}::{}`] and its associated data matches the predicate; otherwise, returns `false`.";
+const DEFAULT_NAME: &str = "inspect_{}";
+const DEFAULT_DOC: &str = "Calls a function with a reference to the associated data if the instance is of the variant [`{}::{}`]. Returns the original option.";
 
-pub fn expand_is_and(
+pub fn expand_inspect(
     context: &Context,
     variant: &Variant,
     attribute: &Attribute,
@@ -58,7 +58,7 @@ pub fn expand_is_and(
 
     let destruct = destructure_data(
         fields,
-        TokenStream::new(),
+        quote! { ref },
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         AloneDecoration::DelimitedNoComma,
@@ -86,13 +86,12 @@ pub fn expand_is_and(
 
     Ok(quote! {
         #[doc = #doc]
-        #[must_use]
         #[inline]
-        #keywords fn #method_ident(&self, f: impl ::core::ops::FnOnce #ty -> bool) -> bool {
-            match self {
-                Self::#variant_ident #destruct => f #args,
-                _ => false,
+        #keywords fn #method_ident(self, f: impl ::core::ops::FnOnce #ty) -> Self {
+            if let Self:: #variant_ident #destruct = self {
+                f #args;
             }
+            self
         }
     })
 }

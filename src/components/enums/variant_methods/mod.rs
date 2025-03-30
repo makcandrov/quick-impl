@@ -7,6 +7,9 @@ pub use as_ref::expand_as_ref;
 mod from;
 pub use from::expand_from;
 
+mod inspect;
+pub use inspect::expand_inspect;
+
 mod into;
 pub use into::expand_into;
 

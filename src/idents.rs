@@ -14,6 +14,7 @@ pub mod methods {
     pub const METHOD_GET: &str = "get";
     pub const METHOD_GET_CLONE: &str = "get_clone";
     pub const METHOD_GET_MUT: &str = "get_mut";
+    pub const METHOD_INSPECT: &str = "inspect";
     pub const METHOD_INTO: &str = "into";
     pub const METHOD_INTO_PARTS: &str = "into_parts";
     pub const METHOD_IS_AND: &str = "is_and";
