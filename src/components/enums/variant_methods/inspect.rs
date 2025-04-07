@@ -15,7 +15,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "inspect_{}";
-const DEFAULT_DOC: &str = "Calls a function with a reference to the associated data if the instance is of the variant [`{}::{}`]. Returns the original option.";
+const DEFAULT_DOC: &str = "Calls a function with a reference to the associated data if the instance is of the variant [`{}::{}`]. Returns the original instance.";
 
 pub fn expand_inspect(
     context: &Context,
