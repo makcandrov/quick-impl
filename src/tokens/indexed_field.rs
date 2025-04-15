@@ -20,7 +20,7 @@ impl<'a> Deref for IndexedField<'a> {
     }
 }
 
-impl<'a> IndexedField<'a> {
+impl IndexedField<'_> {
     pub fn as_token(&self) -> TokenStream {
         self.field
             .ident

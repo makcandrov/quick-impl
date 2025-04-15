@@ -42,12 +42,9 @@ pub fn expand_is_and(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let need_rename = fields.iter().any(|field| {
-        field
-            .ident
-            .as_ref()
-            .is_some_and(|ident| ident.to_string() == "f")
-    });
+    let need_rename = fields
+        .iter()
+        .any(|field| field.ident.as_ref().is_some_and(|ident| ident == "f"));
 
     let ty = destructure_types(
         fields,

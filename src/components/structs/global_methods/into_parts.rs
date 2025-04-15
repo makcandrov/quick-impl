@@ -35,12 +35,17 @@ pub fn expand_into_parts<'a>(
 
     let keywords = method_attr.keywords();
 
-    let ret = destructure_types(
-        fields,
-        TokenStream::new(),
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ret = if fields.is_empty() {
+        TokenStream::new()
+    } else {
+        let ret = destructure_types(
+            fields,
+            TokenStream::new(),
+            TokenStream::new(),
+            AloneDecoration::None,
+        );
+        quote! { -> #ret }
+    };
 
     let mut destruct = TokenStream::new();
 
@@ -58,7 +63,7 @@ pub fn expand_into_parts<'a>(
         #[doc = #doc]
         #[must_use]
         #[inline]
-        #keywords fn #method_ident (self) -> #ret {
+        #keywords fn #method_ident (self) #ret {
             #destruct
         }
     })

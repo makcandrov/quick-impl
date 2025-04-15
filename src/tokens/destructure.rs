@@ -57,7 +57,7 @@ where
         return alone.apply(res, Delimiter::Parenthesis);
     }
 
-    while let Some(field) = fields.next() {
+    for field in fields {
         let field_type = &field.ty;
         res.extend(quote! { , #prefix #field_type });
     }
@@ -104,7 +104,7 @@ where
     }
 
     let mut i = 1;
-    while let Some(field) = fields.next() {
+    for field in fields {
         let ext = if let Some(ident) = &field.ident {
             match rename {
                 RenameField::Auto => quote! { , #prefix #ident },
@@ -158,7 +158,7 @@ where
     }
 
     let mut i = 1;
-    while let Some(field) = fields.next() {
+    for field in fields {
         let field_ident = if let Some(ident) = &field.ident {
             ident.clone()
         } else {

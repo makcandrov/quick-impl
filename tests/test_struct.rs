@@ -46,7 +46,7 @@ fn test_struct_single_named() {
     assert_eq!(*a.get_a_mut(), 13);
 
     *a.get_a_mut() = 14;
-    assert_eq!(Into::<usize>::into(a.clone()), 14);
+    assert_eq!(Into::<usize>::into(*a), 14);
 
     assert_eq!(a.take_a(), 14);
 }
@@ -92,7 +92,7 @@ fn test_struct_single_unnamed() {
     assert_eq!(*a.get_0_mut(), 13);
 
     *a.get_0_mut() = 14;
-    assert_eq!(Into::<usize>::into(a.clone()), 14);
+    assert_eq!(Into::<usize>::into(*a), 14);
 
     assert_eq!(a.take_0(), 14);
 
@@ -146,7 +146,7 @@ fn test_struct_generics_unnamed() {
     assert_eq!(*a.get_0_mut(), 13);
 
     *a.get_0_mut() = 14;
-    assert_eq!(Into::<usize>::into(a.clone()), 14);
+    assert_eq!(Into::<usize>::into(*a), 14);
 
     assert_eq!(a.take_0(), 14);
 }

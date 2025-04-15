@@ -20,14 +20,12 @@ enum YourEnum {
     Variant2(i32),
 }
 
-fn main() {
-    let instance1 = YourEnum::Variant1;
+let instance1 = YourEnum::Variant1;
 
-    assert!(instance1.is_variant1());
+assert!(instance1.is_variant1());
 
-    let instance2 = YourEnum::from(42);
-    assert_eq!(*instance2.as_variant2().unwrap(), 42);
-}
+let instance2 = YourEnum::from(42);
+assert_eq!(*instance2.as_variant2().unwrap(), 42);
 ```
 
 More examples can be found in the [examples folder].

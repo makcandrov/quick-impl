@@ -10,12 +10,7 @@ use crate::{
 pub fn derive(input: &DeriveInput) -> TokenStream {
     match try_expand(input) {
         Ok(expanded) => expanded,
-        Err(err) => {
-            let error = err.to_compile_error();
-            quote! {
-                #error
-            }
-        }
+        Err(err) => err.to_compile_error(),
     }
 }
 

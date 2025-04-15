@@ -48,7 +48,7 @@ pub fn expand_into<'a>(
     let ret = destructure_data(
         fields,
         TokenStream::new(),
-        quote! { () },
+        TokenStream::new(),
         Delimiter::Parenthesis,
         AloneDecoration::None,
         RenameField::Auto,

@@ -84,7 +84,7 @@ impl Attributes {
         let syn::Meta::List(list) = &attr.meta else {
             return Err(syn::Error::new_spanned(
                 attr,
-                &format!("Expected `{MACRO_DERIVE_HELPER}(...)` attribute."),
+                format!("Expected `{MACRO_DERIVE_HELPER}(...)` attribute."),
             ));
         };
 

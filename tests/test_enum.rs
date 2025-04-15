@@ -23,11 +23,11 @@ fn test_enum_variant_unit() {
 
     let a = Test::A;
     assert!(a.is_a());
-    assert_eq!(a.as_a().unwrap(), ());
-    assert_eq!(a.into_a().unwrap(), ());
+    let _: () = a.as_a().unwrap();
+    let _: () = a.into_a().unwrap();
 
     let mut a = Test::A;
-    assert_eq!(a.as_a_mut().unwrap(), ());
+    let _: () = a.as_a_mut().unwrap();
 
     assert_eq!(Test::from_a(), Test::A);
     assert_eq!(<Test as From<()>>::from(()), Test::A);
@@ -344,9 +344,9 @@ fn test_empty_enums() {
         C {},
     }
 
-    assert_eq!(TestA::A.into_a().unwrap(), ());
-    assert_eq!(TestB::B().into_b().unwrap(), ());
-    assert_eq!(TestC::C {}.into_c().unwrap(), ());
+    let _: () = TestA::A.into_a().unwrap();
+    let _: () = TestB::B().into_b().unwrap();
+    let _: () = TestC::C {}.into_c().unwrap();
 }
 
 #[test]

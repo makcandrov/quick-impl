@@ -15,6 +15,7 @@ pub fn enum_impl(
     global_attributes: &Attributes,
     data_enum: &DataEnum,
 ) -> syn::Result<()> {
+    #[expect(clippy::never_loop)]
     for attribute in global_attributes.iter() {
         match &attribute.typ {
             AttributeType::Method(_) => {
@@ -41,18 +42,18 @@ pub fn enum_impl(
                     let tokens = match attribute.ident.to_string().as_str() {
                         METHOD_AS_REF_MUT => variant_methods::expand_as_ref_mut(
                             context,
-                            &variant,
+                            variant,
                             attribute,
                             method_attr,
                         )?,
                         METHOD_AS_REF => variant_methods::expand_as_ref(
                             context,
-                            &variant,
+                            variant,
                             attribute,
                             method_attr,
                         )?,
                         METHOD_FROM => {
-                            variant_methods::expand_from(context, &variant, attribute, method_attr)?
+                            variant_methods::expand_from(context, variant, attribute, method_attr)?
                         }
                         METHOD_INSPECT => variant_methods::expand_inspect(
                             context,
@@ -61,23 +62,23 @@ pub fn enum_impl(
                             method_attr,
                         )?,
                         METHOD_INTO => {
-                            variant_methods::expand_into(context, &variant, attribute, method_attr)?
+                            variant_methods::expand_into(context, variant, attribute, method_attr)?
                         }
                         METHOD_IS_AND => variant_methods::expand_is_and(
                             context,
-                            &variant,
+                            variant,
                             attribute,
                             method_attr,
                         )?,
                         METHOD_IS => {
-                            variant_methods::expand_is(context, &variant, attribute, method_attr)?
+                            variant_methods::expand_is(context, variant, attribute, method_attr)?
                         }
                         METHOD_SET => {
-                            variant_methods::expand_set(context, &variant, attribute, method_attr)?
+                            variant_methods::expand_set(context, variant, attribute, method_attr)?
                         }
                         METHOD_TRY_INTO => variant_methods::expand_try_into(
                             context,
-                            &variant,
+                            variant,
                             attribute,
                             method_attr,
                         )?,
@@ -92,15 +93,15 @@ pub fn enum_impl(
                 }
                 AttributeType::Trait => {
                     let tokens = match attribute.ident.to_string().as_str() {
-                        TRAIT_FROM => variant_traits::expand_from(context, &variant, attribute)?,
+                        TRAIT_FROM => variant_traits::expand_from(context, variant, attribute)?,
                         TRAIT_DEFAULT => {
-                            variant_traits::expand_default(context, &variant, attribute)?
+                            variant_traits::expand_default(context, variant, attribute)?
                         }
                         TRAIT_TRY_FROM => {
-                            variant_traits::expand_try_from(context, &variant, attribute)?
+                            variant_traits::expand_try_from(context, variant, attribute)?
                         }
                         TRAIT_TRY_INTO => {
-                            variant_traits::expand_try_into(context, &variant, attribute)?
+                            variant_traits::expand_try_into(context, variant, attribute)?
                         }
                         _ => {
                             return Err(syn::Error::new_spanned(
