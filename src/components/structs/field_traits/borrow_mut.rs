@@ -1,18 +1,17 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::LitStr;
+use syn::{ItemStruct, LitStr};
 
 use crate::{
-    attributes::Attribute, config::Config, expand::Context, idents::config::CONFIG_DOC,
-    tokens::IndexedField,
+    attr::Attr, config::Config, ctx::Context, idents::config::CONFIG_DOC, tokens::IndexedField,
 };
 
 const DEFAULT_DOC: &str = "Mutably borrows from an owned value.";
 
 pub fn expand_borrow_mut(
-    context: &Context,
+    input: &ItemStruct,
     indexed_field: &IndexedField<'_>,
-    attribute: &Attribute,
+    attribute: &Attr,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
@@ -20,7 +19,7 @@ pub fn expand_borrow_mut(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
         [
-            &context.ident.to_string(),
+            &input.ident.to_string(),
             &indexed_field.as_token().to_string(),
         ],
     )?;
@@ -41,7 +40,7 @@ pub fn expand_borrow_mut(
         }
     };
 
-    Ok(context.in_impl(
+    Ok(input.in_impl(
         quote! { ::core::borrow::#trait_ident<#field_ty> for },
         &content,
         None,

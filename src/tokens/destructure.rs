@@ -1,6 +1,6 @@
 use proc_macro2::{Delimiter, TokenStream};
-use quote::{format_ident, quote, ToTokens};
-use syn::{spanned::Spanned, Field, Ident};
+use quote::{ToTokens, format_ident, quote};
+use syn::{Field, Ident, spanned::Spanned};
 
 use super::with_delimiter;
 use crate::idents::ARGUMENT;

@@ -1,6 +1,6 @@
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
-#[derive(QuickImpl)]
+#[quick_impl]
 pub enum Shape {
     #[quick_impl(pub const is)]
     Circle(f64),

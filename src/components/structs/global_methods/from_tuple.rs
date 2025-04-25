@@ -1,15 +1,14 @@
 use proc_macro2::{Delimiter, Span, TokenStream};
 use quote::quote;
-use syn::{Fields, Ident, LitStr};
+use syn::{Ident, ItemStruct, LitStr};
 
 use crate::{
-    attributes::{Attribute, MethodAttribute},
+    attr::{Attr, AttrMethod},
     config::Config,
-    expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
 };
 
@@ -17,11 +16,10 @@ const DEFAULT_NAME: &str = "from_tuple";
 const DEFAULT_DOC: &str =
     "Constructs a new instance of [`{}`] from a tuple with the specified field values .";
 
-pub fn expand_from_tuple<'a>(
-    context: &'a Context,
-    attribute: &'a Attribute,
-    method_attr: &'a MethodAttribute,
-    fields: &'a Fields,
+pub fn expand_from_tuple(
+    input: &ItemStruct,
+    attribute: &Attr,
+    method_attr: &AttrMethod,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
@@ -32,16 +30,16 @@ pub fn expand_from_tuple<'a>(
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string()],
+        [&input.ident.to_string()],
     )?;
 
     config.finish()?;
 
     let keywords = method_attr.keywords();
-    let delimiter = get_delimiter(fields);
+    let delimiter = get_delimiter(&input.fields);
 
-    let input = destructure_data(
-        fields,
+    let input_tt = destructure_data(
+        &input.fields,
         TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
@@ -49,13 +47,13 @@ pub fn expand_from_tuple<'a>(
         RenameField::Auto,
     );
     let tuple_ty = destructure_types(
-        fields,
+        &input.fields,
         TokenStream::new(),
         quote! { () },
         AloneDecoration::DelimitedWithComma,
     );
     let structure_creation = destructure_data(
-        fields,
+        &input.fields,
         TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
@@ -67,7 +65,7 @@ pub fn expand_from_tuple<'a>(
         #[doc = #doc]
         #[must_use]
         #[inline]
-        #keywords fn #method_ident (#input: #tuple_ty) -> Self {
+        #keywords fn #method_ident (#input_tt: #tuple_ty) -> Self {
             Self #structure_creation
         }
     })

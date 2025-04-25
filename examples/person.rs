@@ -1,6 +1,6 @@
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
-#[derive(QuickImpl)]
+#[quick_impl]
 struct Person {
     #[quick_impl(pub get)]
     name: String,
@@ -10,7 +10,7 @@ struct Person {
 }
 
 // Define a struct PersonRef that holds a reference to a Person
-#[derive(QuickImpl)]
+#[quick_impl]
 struct PersonRef<'a> {
     #[quick_impl(impl Deref, pub(crate) get)]
     person: &'a Person,

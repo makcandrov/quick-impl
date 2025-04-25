@@ -1,11 +1,11 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::{LitStr, Variant};
+use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attributes::Attribute,
+    attr::Attr,
     config::Config,
-    expand::Context,
+    ctx::Context,
     idents::config::CONFIG_DOC,
     tokens::{get_delimiter, with_delimiter},
 };
@@ -13,16 +13,16 @@ use crate::{
 const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant with the default associated data.";
 
 pub fn expand_default(
-    context: &Context,
+    input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attribute,
+    attribute: &Attr,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string(), &variant.ident.to_string()],
+        [&input.ident.to_string(), &variant.ident.to_string()],
     )?;
 
     config.finish()?;
@@ -56,7 +56,7 @@ pub fn expand_default(
         }
     };
 
-    Ok(context.in_impl(
+    Ok(input.in_impl(
         quote! { ::core::default::#trait_ident for },
         &content,
         Some(syn::parse2(where_clause).unwrap()),

@@ -1,31 +1,31 @@
 use proc_macro2::{Delimiter, Ident, Span, TokenStream};
 use quote::quote;
-use syn::{LitStr, Variant};
+use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attributes::Attribute,
+    attr::Attr,
     config::Config,
-    expand::Context,
+    ctx::Context,
     idents::config::CONFIG_DOC,
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
 };
 
 const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant from the provided data.";
 
 pub fn expand_from(
-    context: &Context,
+    input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attribute,
+    attribute: &Attr,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string(), &variant.ident.to_string()],
+        [&input.ident.to_string(), &variant.ident.to_string()],
     )?;
 
     config.finish()?;
@@ -68,7 +68,7 @@ pub fn expand_from(
         }
     };
 
-    Ok(context.in_impl(
+    Ok(input.in_impl(
         quote! { ::core::convert::#trait_ident<#ty> for },
         &content,
         None,

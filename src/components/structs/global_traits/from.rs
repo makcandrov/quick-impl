@@ -1,29 +1,29 @@
 use proc_macro2::{Delimiter, TokenStream};
 use quote::quote;
-use syn::{Fields, Ident};
+use syn::{Fields, Ident, ItemStruct};
 
 use crate::{
-    attributes::Attribute,
+    attr::Attr,
     config::Config,
-    expand::Context,
+    ctx::Context,
     idents::config::CONFIG_DOC,
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
 };
 
 const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] from a tuple of its fields values.";
 
-pub fn expand_from<'a>(
-    context: &'a Context,
-    attribute: &'a Attribute,
-    fields: &'a Fields,
+pub fn expand_from(
+    input: &ItemStruct,
+    attribute: &Attr,
+    fields: &Fields,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
     let doc = config.get_lit_str_tokens(CONFIG_DOC)?.unwrap_or_else(|| {
-        let doc = DEFAULT_DOC.replace("{}", &context.ident.to_string());
+        let doc = DEFAULT_DOC.replace("{}", &input.ident.to_string());
         quote! { #doc }
     });
 
@@ -65,7 +65,7 @@ pub fn expand_from<'a>(
         }
     };
 
-    let mut result = context.in_impl(
+    let mut result = input.in_impl(
         quote! { ::core::convert::#trait_ident<#ty> for },
         &content,
         None,
@@ -84,7 +84,7 @@ pub fn expand_from<'a>(
             }
         };
 
-        result.extend(context.in_impl(
+        result.extend(input.in_impl(
             quote! { ::core::convert::#trait_ident<#ty> for },
             &content,
             None,

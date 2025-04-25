@@ -1,57 +1,82 @@
 use proc_macro2::TokenStream;
-use quote::quote;
-use syn::{Data, DeriveInput, WhereClause};
-
-use crate::{
-    attributes::Attributes,
-    components::{enum_impl, struct_impl},
+use quote::{ToTokens, quote};
+use syn::{
+    Attribute, ItemEnum, ItemStruct, Token, Visibility,
+    parse::{Parse, ParseStream},
+    parse2,
 };
 
-pub fn derive(input: &DeriveInput) -> TokenStream {
-    match try_expand(input) {
-        Ok(expanded) => expanded,
-        Err(err) => err.to_compile_error(),
+use crate::{
+    attr::Attrs,
+    components::{enum_impl, struct_impl},
+    ctx::Context,
+};
+
+#[derive(Clone)]
+pub enum Input {
+    Struct(ItemStruct),
+    Enum(ItemEnum),
+}
+
+impl Input {
+    pub fn attrs_mut(&mut self) -> &mut Vec<Attribute> {
+        match self {
+            Input::Struct(item) => &mut item.attrs,
+            Input::Enum(item) => &mut item.attrs,
+        }
     }
 }
 
-pub struct Context<'a> {
-    pub ident: &'a syn::Ident,
-    pub generics: &'a syn::Generics,
+impl Parse for Input {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+        let fork = input.fork();
+        let _ = fork.call(Attribute::parse_outer)?;
+        let _ = fork.parse::<Visibility>()?;
+
+        if fork.peek(Token![struct]) {
+            input.parse().map(Self::Struct)
+        } else if fork.peek(Token![enum]) {
+            input.parse().map(Self::Enum)
+        } else {
+            Err(fork.error("expected a struct or an enum"))
+        }
+    }
 }
 
-impl<'a> Context<'a> {
-    pub fn new(input: &'a DeriveInput) -> Self {
-        Self {
-            ident: &input.ident,
-            generics: &input.generics,
+impl ToTokens for Input {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Input::Struct(item) => item.to_tokens(tokens),
+            Input::Enum(item) => item.to_tokens(tokens),
         }
+    }
+}
+
+pub fn expand(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
+    let mut glob_attrs = if args.is_empty() {
+        Attrs::default()
+    } else {
+        parse2(args)?
+    };
+
+    let mut input = parse2::<Input>(input)?;
+    let mut implems = Implems::default();
+
+    glob_attrs.extend(Attrs::take_from(input.attrs_mut())?);
+
+    match &mut input {
+        Input::Struct(item) => struct_impl(item, &mut implems, &glob_attrs)?,
+        Input::Enum(item) => enum_impl(item, &mut implems, &glob_attrs)?,
     }
 
-    pub fn in_impl(
-        &self,
-        trait_for: TokenStream,
-        tokens: &TokenStream,
-        additional_where_clause: Option<WhereClause>,
-    ) -> TokenStream {
-        let (impl_generics, ty_generics, where_clause) = self.generics.split_for_impl();
-        let where_clause = match (where_clause.cloned(), additional_where_clause) {
-            (None, None) => None,
-            (None, Some(where_clause)) => Some(where_clause),
-            (where_clause @ Some(_), None) => where_clause,
-            (Some(mut where_clause), Some(additional_where_clause)) => {
-                where_clause
-                    .predicates
-                    .extend(additional_where_clause.predicates);
-                Some(where_clause)
-            }
-        };
-        let ident = self.ident;
-        quote! {
-            impl #impl_generics #trait_for #ident #ty_generics #where_clause {
-                #tokens
-            }
-        }
-    }
+    let methods = implems.get_methods(&input);
+    let traits = implems.get_traits();
+
+    Ok(quote! {
+        #input
+        #methods
+        #traits
+    })
 }
 
 #[derive(Debug, Clone, Default)]
@@ -69,7 +94,7 @@ impl Implems {
         self.traits.push(tokens)
     }
 
-    pub fn get_methods(&self, context: &Context) -> TokenStream {
+    pub fn get_methods(&self, context: &impl Context) -> TokenStream {
         if self.methods.is_empty() {
             TokenStream::new()
         } else {
@@ -98,27 +123,4 @@ impl Implems {
             };
         }
     }
-}
-
-fn try_expand(input: &DeriveInput) -> syn::Result<TokenStream> {
-    let context = Context::new(input);
-    let mut implems = Implems::default();
-
-    let global_attributes = Attributes::from_attributes(&input.attrs)?;
-
-    match &input.data {
-        Data::Struct(data_struct) => {
-            struct_impl(&context, &mut implems, &global_attributes, data_struct)?
-        }
-        Data::Enum(data_enum) => enum_impl(&context, &mut implems, &global_attributes, data_enum)?,
-        Data::Union(_) => return Err(syn::Error::new_spanned(input, "Unions are not supported")),
-    }
-
-    let methods = implems.get_methods(&context);
-    let traits = implems.get_traits();
-
-    Ok(quote! {
-        #methods
-        #traits
-    })
 }

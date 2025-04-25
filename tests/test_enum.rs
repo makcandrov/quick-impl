@@ -1,8 +1,9 @@
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
 #[test]
 fn test_enum_variant_unit() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test {
         #[quick_impl(
             pub(crate) const is,
@@ -35,7 +36,8 @@ fn test_enum_variant_unit() {
 
 #[test]
 fn test_enum_variant_single_unnamed() {
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Clone, Eq, PartialEq)]
+    #[quick_impl]
     enum Test {
         #[quick_impl(
             pub(crate) const is,
@@ -70,7 +72,8 @@ fn test_enum_variant_single_unnamed() {
 
 #[test]
 fn test_enum_variant_single_named() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test {
         #[quick_impl(
             pub(crate) const is,
@@ -103,7 +106,8 @@ fn test_enum_variant_single_named() {
 
 #[test]
 fn test_enum_variant_multiple_unnamed() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test {
         #[quick_impl(
             pub(crate) const is,
@@ -142,7 +146,8 @@ fn test_enum_variant_multiple_unnamed() {
 
 #[test]
 fn test_enum_variant_multiple_named() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test {
         #[quick_impl(
             pub(crate) const is,
@@ -196,7 +201,8 @@ fn test_enum_variant_multiple_named() {
 
 #[test]
 fn test_enum_generics() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test<T, U> {
         #[quick_impl(
             pub(crate) const is,
@@ -243,7 +249,8 @@ fn test_enum_generics() {
 
 #[test]
 fn test_enum_lifetimes() {
-    #[derive(Debug, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
     enum Test<'a, 'b> {
         #[quick_impl(
             pub(crate) is,
@@ -287,7 +294,8 @@ fn test_enum_lifetimes() {
 
 #[test]
 fn test_empty_enums() {
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Clone, Eq, PartialEq)]
+    #[quick_impl]
     enum TestA {
         #[quick_impl(
             pub(crate) const is,
@@ -306,7 +314,8 @@ fn test_empty_enums() {
         A,
     }
 
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    #[quick_impl]
+    #[derive(Debug, Clone, Eq, PartialEq)]
     enum TestB {
         #[quick_impl(
             pub(crate) const is,
@@ -325,7 +334,8 @@ fn test_empty_enums() {
         B(),
     }
 
-    #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+    #[derive(Debug, Clone, Eq, PartialEq)]
+    #[quick_impl]
     enum TestC {
         #[quick_impl(
             pub(crate) const is,
@@ -352,7 +362,8 @@ fn test_empty_enums() {
 #[test]
 fn test_variable_rename() {
     {
-        #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+        #[quick_impl]
+        #[derive(Debug, Clone, Eq, PartialEq)]
         enum TestA {
             #[quick_impl(pub is_and, pub inspect)]
             Variant1 { a: usize, b: usize, c: usize },
@@ -372,7 +383,8 @@ fn test_variable_rename() {
     }
 
     {
-        #[derive(Debug, Clone, Eq, PartialEq, QuickImpl)]
+        #[derive(Debug, Clone, Eq, PartialEq)]
+        #[quick_impl]
         enum TestF {
             #[quick_impl(pub is_and, pub inspect)]
             Variant1 { f: usize, b: usize, c: usize },

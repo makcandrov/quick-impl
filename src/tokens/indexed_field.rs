@@ -1,7 +1,7 @@
 use core::ops::Deref;
 
 use proc_macro2::TokenStream;
-use quote::{format_ident, ToTokens};
+use quote::{ToTokens, format_ident};
 use syn::{Field, Ident, Index};
 
 use crate::idents::ARGUMENT;
@@ -20,7 +20,11 @@ impl<'a> Deref for IndexedField<'a> {
     }
 }
 
-impl IndexedField<'_> {
+impl<'a> IndexedField<'a> {
+    pub const fn new(field: &'a Field, index: usize) -> Self {
+        Self { field, index }
+    }
+
     pub fn as_token(&self) -> TokenStream {
         self.field
             .ident
@@ -44,5 +48,5 @@ where
     fields
         .into_iter()
         .enumerate()
-        .map(|(index, field)| IndexedField { field, index })
+        .map(|(index, field)| IndexedField::new(field, index))
 }

@@ -1,11 +1,10 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::LitStr;
+use syn::{ItemStruct, LitStr};
 
 use crate::{
-    attributes::{Attribute, MethodAttribute},
+    attr::{Attr, AttrMethod},
     config::Config,
-    expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     tokens::IndexedField,
 };
@@ -14,10 +13,10 @@ const DEFAULT_NAME: &str = "get_{}";
 const DEFAULT_DOC: &str = "A getter for the `{1}` field of [`{0}`].";
 
 pub fn expand_get_clone(
-    context: &Context,
+    input: &ItemStruct,
     indexed_field: &IndexedField,
-    attribute: &Attribute,
-    method_attr: &MethodAttribute,
+    attribute: &Attr,
+    method_attr: &AttrMethod,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
@@ -31,7 +30,7 @@ pub fn expand_get_clone(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
         [
-            &context.ident.to_string(),
+            &input.ident.to_string(),
             &indexed_field.as_token().to_string(),
         ],
     )?;
