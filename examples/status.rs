@@ -35,9 +35,7 @@ fn main() {
     assert_eq!(rejection_reason.unwrap(), "Invalid request");
 
     // Struct example with `Deref` and `DerefMut`
-    let mut wrapper = Wrapper {
-        data: vec![1, 2, 3],
-    };
+    let mut wrapper = Wrapper { data: vec![1, 2, 3] };
 
     // Accessing inner `Vec<u8>` through Deref
     assert_eq!(wrapper.len(), 3); // Calls `Vec<u8>::len`

@@ -31,12 +31,7 @@ pub fn expand_from(
 
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(
-        fields,
-        TokenStream::new(),
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
@@ -65,13 +60,11 @@ pub fn expand_from(
         }
     };
 
-    let mut result = input.in_impl(
-        quote! { ::core::convert::#trait_ident<#ty> for },
-        &content,
-        None,
-    );
+    let mut result =
+        input.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content, None);
 
-    // If there is exactly one field of type T, we need to implement both `From<T>` and `From<(T,)>`.
+    // If there is exactly one field of type T, we need to implement both `From<T>` and
+    // `From<(T,)>`.
     if fields.len() == 1 {
         let ty = quote! { (#ty,) };
         let arg = quote! { (#arg,) };

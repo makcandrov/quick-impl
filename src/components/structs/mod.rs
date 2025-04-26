@@ -15,9 +15,10 @@ mod global_traits;
 pub fn struct_impl(
     input: &mut ItemStruct,
     implems: &mut Implems,
-    global_attributes: &Attrs,
+    all_attrs: &Attrs,
+    glob_attrs: &Attrs,
 ) -> syn::Result<()> {
-    for attribute in global_attributes.iter() {
+    for attribute in glob_attrs.iter() {
         match &attribute.kind {
             AttrKind::Method(method_attr) => {
                 let tokens = match attribute.ident.to_string().as_str() {
@@ -42,10 +43,7 @@ pub fn struct_impl(
                     TRAIT_FROM => global_traits::expand_from(input, attribute, &input.fields)?,
                     TRAIT_INTO => global_traits::expand_into(input, attribute, &input.fields)?,
                     _ => {
-                        return Err(syn::Error::new_spanned(
-                            &attribute.ident,
-                            "invalid trait name",
-                        ));
+                        return Err(syn::Error::new_spanned(&attribute.ident, "invalid trait name"));
                     }
                 };
                 implems.extend_traits(tokens);
@@ -56,11 +54,11 @@ pub fn struct_impl(
     let all_fields_attrs: Vec<_> = input
         .fields
         .iter_mut()
-        .map(|field| Attrs::take_from(&mut field.attrs))
+        .map(|field| Attrs::take_from(&mut field.attrs, false))
         .collect::<Result<_, _>>()?;
 
     for (indexed_field, field_attrs) in to_indexed_field_iter(&input.fields).zip(all_fields_attrs) {
-        for attribute in field_attrs.iter() {
+        for attribute in all_attrs.iter().chain(field_attrs.iter()) {
             match &attribute.kind {
                 AttrKind::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {

@@ -1,4 +1,5 @@
-use syn::LitStr;
+use proc_macro2::Span;
+use syn::{Ident, LitStr};
 
 pub fn to_snake_case(variant: &str) -> String {
     let mut snake = String::new();
@@ -74,15 +75,26 @@ impl ThenTry for bool {
     }
 }
 
+pub trait WithSpan: Sized {
+    fn with_span(self, span: Span) -> Self;
+    fn without_span(self) -> Self {
+        self.with_span(Span::call_site())
+    }
+}
+
+impl WithSpan for Ident {
+    fn with_span(mut self, span: Span) -> Self {
+        self.set_span(span);
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_runtime_format() {
-        assert_eq!(
-            &runtime_format("test{}test{0}{}test{1}{0}", ["A", "B"]),
-            "testAtestABtestBA",
-        )
+        assert_eq!(&runtime_format("test{}test{0}{}test{1}{0}", ["A", "B"]), "testAtestABtestBA",)
     }
 }

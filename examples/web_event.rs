@@ -38,9 +38,7 @@ fn main() {
 
     let click = WebEvent::click_from_coordinates(-10, 10);
     assert!(click.is_click());
-    let WebEvent::Click { x, y } = click else {
-        panic!()
-    };
+    let WebEvent::Click { x, y } = click else { panic!() };
     assert_eq!(x, -10);
     assert_eq!(y, 10);
 }

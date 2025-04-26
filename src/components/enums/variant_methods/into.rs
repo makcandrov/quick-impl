@@ -41,12 +41,7 @@ pub fn expand_into(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(
-        fields,
-        TokenStream::new(),
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
         fields,
         TokenStream::new(),

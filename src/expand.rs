@@ -12,6 +12,14 @@ use crate::{
     ctx::Context,
 };
 
+pub fn expand_qi(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
+    expand::<false>(args, input)
+}
+
+pub fn expand_qia(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
+    expand::<true>(args, input)
+}
+
 #[derive(Clone)]
 pub enum Input {
     Struct(ItemStruct),
@@ -52,21 +60,21 @@ impl ToTokens for Input {
     }
 }
 
-pub fn expand(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
-    let mut glob_attrs = if args.is_empty() {
-        Attrs::default()
-    } else {
-        parse2(args)?
-    };
+fn expand<const ALL: bool>(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
+    let args_attrs = parse2::<Attrs>(args)?;
+
+    let (mut all_attrs, mut glob_attrs) =
+        if ALL { (args_attrs, Default::default()) } else { (Default::default(), args_attrs) };
 
     let mut input = parse2::<Input>(input)?;
     let mut implems = Implems::default();
 
-    glob_attrs.extend(Attrs::take_from(input.attrs_mut())?);
+    all_attrs.extend(Attrs::take_from(input.attrs_mut(), true)?);
+    glob_attrs.extend(Attrs::take_from(input.attrs_mut(), false)?);
 
     match &mut input {
-        Input::Struct(item) => struct_impl(item, &mut implems, &glob_attrs)?,
-        Input::Enum(item) => enum_impl(item, &mut implems, &glob_attrs)?,
+        Input::Struct(item) => struct_impl(item, &mut implems, &all_attrs, &glob_attrs)?,
+        Input::Enum(item) => enum_impl(item, &mut implems, &all_attrs, &glob_attrs)?,
     }
 
     let methods = implems.get_methods(&input);

@@ -18,10 +18,7 @@ pub fn expand_as_ref(
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [
-            &input.ident.to_string(),
-            &indexed_field.as_token().to_string(),
-        ],
+        [&input.ident.to_string(), &indexed_field.as_token().to_string()],
     )?;
 
     config.finish()?;
@@ -39,9 +36,5 @@ pub fn expand_as_ref(
         }
     };
 
-    Ok(input.in_impl(
-        quote! { ::core::convert::#trait_ident<#field_ty> for },
-        &content,
-        None,
-    ))
+    Ok(input.in_impl(quote! { ::core::convert::#trait_ident<#field_ty> for }, &content, None))
 }

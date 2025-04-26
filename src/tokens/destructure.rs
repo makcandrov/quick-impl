@@ -1,9 +1,9 @@
 use proc_macro2::{Delimiter, TokenStream};
-use quote::{ToTokens, format_ident, quote};
-use syn::{Field, Ident, spanned::Spanned};
+use quote::{ToTokens, quote};
+use syn::Field;
 
 use super::with_delimiter;
-use crate::idents::ARGUMENT;
+use crate::tokens::indexed_field::field_rename;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum RenameField {
@@ -159,11 +159,8 @@ where
 
     let mut i = 1;
     for field in fields {
-        let field_ident = if let Some(ident) = &field.ident {
-            ident.clone()
-        } else {
-            field_rename(field, i)
-        };
+        let field_ident =
+            if let Some(ident) = &field.ident { ident.clone() } else { field_rename(field, i) };
         let field_type = &field.ty;
 
         res.extend(quote! { , #field_ident: #field_type});
@@ -171,8 +168,4 @@ where
     }
 
     with_delimiter(res, delimiter)
-}
-
-fn field_rename(field: &Field, index: usize) -> Ident {
-    format_ident!("{}{}", ARGUMENT, index, span = field.span())
 }

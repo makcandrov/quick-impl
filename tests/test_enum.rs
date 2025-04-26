@@ -134,10 +134,7 @@ fn test_enum_variant_multiple_unnamed() {
     let mut a = Test::Variant1(12, -15, 'C');
     assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
 
-    assert_eq!(
-        Test::from_variant1(12, -15, 'C'),
-        Test::Variant1(12, -15, 'C')
-    );
+    assert_eq!(Test::from_variant1(12, -15, 'C'), Test::Variant1(12, -15, 'C'));
     assert_eq!(
         <Test as From<(usize, isize, char)>>::from((12, -15, 'C')),
         Test::Variant1(12, -15, 'C')
@@ -165,37 +162,18 @@ fn test_enum_variant_multiple_named() {
         Variant1 { a: usize, b: isize, c: char },
     }
 
-    let a = Test::Variant1 {
-        a: 12,
-        b: -15,
-        c: 'C',
-    };
+    let a = Test::Variant1 { a: 12, b: -15, c: 'C' };
     assert!(a.is_variant1());
     assert_eq!(a.as_variant1().unwrap(), (&12, &-15, &'C'));
     assert_eq!(a.into_variant1().unwrap(), (12, -15, 'C'));
 
-    let mut a = Test::Variant1 {
-        a: 12,
-        b: -15,
-        c: 'C',
-    };
+    let mut a = Test::Variant1 { a: 12, b: -15, c: 'C' };
     assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15, &mut 'C'));
 
-    assert_eq!(
-        Test::from_variant1(12, -15, 'C'),
-        Test::Variant1 {
-            a: 12,
-            b: -15,
-            c: 'C'
-        }
-    );
+    assert_eq!(Test::from_variant1(12, -15, 'C'), Test::Variant1 { a: 12, b: -15, c: 'C' });
     assert_eq!(
         <Test as From<(usize, isize, char)>>::from((12, -15, 'C')),
-        Test::Variant1 {
-            a: 12,
-            b: -15,
-            c: 'C'
-        }
+        Test::Variant1 { a: 12, b: -15, c: 'C' }
     );
 }
 
@@ -223,24 +201,15 @@ fn test_enum_generics() {
         Variant2 { a: T, b: U },
     }
 
-    let a = Test::Variant1 {
-        a: 12usize,
-        b: -15isize,
-    };
+    let a = Test::Variant1 { a: 12usize, b: -15isize };
     assert!(a.is_variant1());
     assert_eq!(a.as_variant1().unwrap(), (&12, &-15));
     assert_eq!(a.into_variant1().unwrap(), (12, -15));
 
-    let mut a = Test::Variant1 {
-        a: 12usize,
-        b: -15isize,
-    };
+    let mut a = Test::Variant1 { a: 12usize, b: -15isize };
     assert_eq!(a.as_variant1_mut().unwrap(), (&mut 12, &mut -15));
 
-    assert_eq!(
-        Test::from_variant1(12, -15),
-        Test::Variant1 { a: 12, b: -15 }
-    );
+    assert_eq!(Test::from_variant1(12, -15), Test::Variant1 { a: 12, b: -15 });
     assert_eq!(
         <Test<usize, isize> as From<(usize, isize)>>::from((12, -15)),
         Test::Variant1 { a: 12, b: -15 }
@@ -282,10 +251,7 @@ fn test_enum_lifetimes() {
     let mut a = Test::Variant1(&12, &mut s2);
     assert_eq!(a.as_variant1_mut().unwrap(), (&mut &12, &mut &mut s3));
 
-    assert_eq!(
-        Test::from_variant1(&12, &mut -15),
-        Test::Variant1(&12, &mut s3)
-    );
+    assert_eq!(Test::from_variant1(&12, &mut -15), Test::Variant1(&12, &mut s3));
     assert_eq!(
         <Test as From<(&usize, &mut isize)>>::from((&12, &mut s3)),
         Test::Variant1(&12, &mut s4)
