@@ -18,10 +18,7 @@ struct PersonRef<'a> {
 
 fn main() {
     // Create a new person instance
-    let mut person = Person {
-        name: "Alice".to_string(),
-        age: 30,
-    };
+    let mut person = Person { name: "Alice".to_string(), age: 30 };
 
     assert_eq!(person.get_name(), "Alice");
     assert_eq!(*person.get_age(), 30);

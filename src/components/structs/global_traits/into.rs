@@ -10,6 +10,7 @@ use crate::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
     },
+    utils::WithSpan,
 };
 
 const DEFAULT_DOC: &str = "Creates a tuple from each field of the instance of [`{}`].";
@@ -30,12 +31,7 @@ pub fn expand_into(
 
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(
-        fields,
-        TokenStream::new(),
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
@@ -57,7 +53,7 @@ pub fn expand_into(
     let method_ident = Ident::new("from", attribute.ident.span());
 
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
-    let ident = &input.ident;
+    let ident = &input.ident.clone().without_span();
 
     let mut result = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {
@@ -69,7 +65,8 @@ pub fn expand_into(
         }
     };
 
-    // If there is exactly one field of type T, we need to implement both `Into<T>` and `Into<(T,)>`.
+    // If there is exactly one field of type T, we need to implement both `Into<T>` and
+    // `Into<(T,)>`.
     if fields.len() == 1 {
         let ty = quote! { (#ty,) };
         let ret = quote! { (#ret,) };

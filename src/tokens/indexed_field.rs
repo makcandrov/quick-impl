@@ -2,7 +2,7 @@ use core::ops::Deref;
 
 use proc_macro2::TokenStream;
 use quote::{ToTokens, format_ident};
-use syn::{Field, Ident, Index};
+use syn::{Field, Ident, Index, spanned::Spanned};
 
 use crate::idents::ARGUMENT;
 
@@ -34,10 +34,7 @@ impl<'a> IndexedField<'a> {
     }
 
     pub fn as_ident(&self) -> Ident {
-        self.field
-            .ident
-            .clone()
-            .unwrap_or_else(|| format_ident!("{}{}", ARGUMENT, self.index))
+        self.field.ident.clone().unwrap_or_else(|| field_rename(self.field, self.index))
     }
 }
 
@@ -45,8 +42,9 @@ pub fn to_indexed_field_iter<'a, I>(fields: I) -> impl Iterator<Item = IndexedFi
 where
     I: IntoIterator<Item = &'a Field>,
 {
-    fields
-        .into_iter()
-        .enumerate()
-        .map(|(index, field)| IndexedField::new(field, index))
+    fields.into_iter().enumerate().map(|(index, field)| IndexedField::new(field, index))
+}
+
+pub fn field_rename(field: &Field, index: usize) -> Ident {
+    format_ident!("{}{}", ARGUMENT, index, span = field.span())
 }

@@ -12,22 +12,17 @@ mod variant_traits;
 pub fn enum_impl(
     input: &mut ItemEnum,
     implems: &mut Implems,
-    global_attributes: &Attrs,
+    all_attrs: &Attrs,
+    glob_attrs: &Attrs,
 ) -> syn::Result<()> {
     #[expect(clippy::never_loop)]
-    for attribute in global_attributes.iter() {
+    for attribute in glob_attrs.iter() {
         match &attribute.kind {
             AttrKind::Method(_) => {
-                return Err(syn::Error::new_spanned(
-                    &attribute.ident,
-                    "invalid method name",
-                ));
+                return Err(syn::Error::new_spanned(&attribute.ident, "invalid method name"));
             }
             AttrKind::Trait => {
-                return Err(syn::Error::new_spanned(
-                    &attribute.ident,
-                    "invalid trait name",
-                ));
+                return Err(syn::Error::new_spanned(&attribute.ident, "invalid trait name"));
             }
         }
     }
@@ -35,11 +30,11 @@ pub fn enum_impl(
     let all_variants_attrs: Vec<_> = input
         .variants
         .iter_mut()
-        .map(|variant| Attrs::take_from(&mut variant.attrs))
+        .map(|variant| Attrs::take_from(&mut variant.attrs, false))
         .collect::<Result<_, _>>()?;
 
     for (variant, variant_attrs) in input.variants.iter().zip(all_variants_attrs) {
-        for attribute in variant_attrs.iter() {
+        for attribute in all_attrs.iter().chain(variant_attrs.iter()) {
             match &attribute.kind {
                 AttrKind::Method(method_attr) => {
                     let tokens = match attribute.ident.to_string().as_str() {

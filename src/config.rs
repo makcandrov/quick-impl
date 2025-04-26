@@ -32,10 +32,7 @@ impl Config {
                 for attribute_param in attribute_params {
                     let old = map.insert(
                         attribute_param.ident.to_string(),
-                        (
-                            attribute_param.ident.span(),
-                            attribute_param.literal.clone(),
-                        ),
+                        (attribute_param.ident.span(), attribute_param.literal.clone()),
                     );
 
                     if old.is_some() {
@@ -53,10 +50,7 @@ impl Config {
 
     pub fn finish(self) -> syn::Result<()> {
         if let Some((ident, (span, _))) = self.0.into_iter().next() {
-            Err(syn::Error::new(
-                span,
-                format!("unknown config parameter `{}`", ident),
-            ))
+            Err(syn::Error::new(span, format!("unknown config parameter `{}`", ident)))
         } else {
             Ok(())
         }

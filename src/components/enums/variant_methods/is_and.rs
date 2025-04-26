@@ -41,16 +41,11 @@ pub fn expand_is_and(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let need_rename = fields
-        .iter()
-        .any(|field| field.ident.as_ref().is_some_and(|ident| ident == "f"));
+    let need_rename =
+        fields.iter().any(|field| field.ident.as_ref().is_some_and(|ident| ident == "f"));
 
-    let ty = destructure_types(
-        fields,
-        quote! { & },
-        quote! { () },
-        AloneDecoration::DelimitedNoComma,
-    );
+    let ty =
+        destructure_types(fields, quote! { & }, quote! { () }, AloneDecoration::DelimitedNoComma);
 
     let destruct = destructure_data(
         fields,
@@ -58,11 +53,7 @@ pub fn expand_is_and(
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
         AloneDecoration::DelimitedNoComma,
-        if need_rename {
-            RenameField::Always
-        } else {
-            RenameField::Auto
-        },
+        if need_rename { RenameField::Always } else { RenameField::Auto },
     );
     let args = destructure_data(
         fields,
@@ -70,11 +61,7 @@ pub fn expand_is_and(
         quote! { () },
         Delimiter::Parenthesis,
         AloneDecoration::DelimitedNoComma,
-        if need_rename {
-            RenameField::AlwaysIgnoreOriginal
-        } else {
-            RenameField::Auto
-        },
+        if need_rename { RenameField::AlwaysIgnoreOriginal } else { RenameField::Auto },
     );
 
     let variant_ident = &variant.ident;

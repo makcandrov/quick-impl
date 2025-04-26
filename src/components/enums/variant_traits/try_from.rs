@@ -1,6 +1,6 @@
-use proc_macro2::{Delimiter, Ident, Span, TokenStream};
+use proc_macro2::{Delimiter, Span, TokenStream};
 use quote::quote;
-use syn::{ItemEnum, LitStr, Variant};
+use syn::{Ident, ItemEnum, LitStr, Variant};
 
 use crate::{
     attr::Attr,
@@ -10,6 +10,7 @@ use crate::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
     },
+    utils::WithSpan,
 };
 
 const DEFAULT_DOC: &str = "Converts the instance into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
@@ -32,12 +33,7 @@ pub fn expand_try_from(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(
-        fields,
-        TokenStream::new(),
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
@@ -60,7 +56,7 @@ pub fn expand_try_from(
     let method_ident = Ident::new("try_from", attribute.ident.span());
 
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
-    let ident = &input.ident;
+    let ident = input.ident.clone().without_span();
 
     let content = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {

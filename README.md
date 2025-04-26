@@ -145,6 +145,27 @@ enum Foo {
 }
 ```
 
+## Reduce duplicates with `quick_impl_all`
+
+`quick_impl_all` is a helper macro that automatically applies the specified `quick_impl` attributes to all fields (for structs) or all variants (for enums).
+You can combine it with regular `quick_impl` attributes on individual fields or variants.
+
+```rust
+use quick_impl::{quick_impl_all};
+
+#[quick_impl_all(pub const is)]
+enum MyEnum {
+    VariantA,
+
+    #[quick_impl(pub from)]
+    VariantB(i32),
+}
+
+let variant = MyEnum::from_variant_b(10);
+assert!(variant.is_variant_b());
+assert!(!variant.is_variant_a());
+```
+
 ## About [`derive_more`]
 
 This crate is **not** intended to compete with [`derive_more`]. While [`derive_more`] focuses on deriving standard traits, the primary goal of `quick-impl` is to generate common methods like `is_*`, `as_*`, and `set_*`.

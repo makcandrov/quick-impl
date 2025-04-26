@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Generics, Ident, ItemEnum, ItemStruct, WhereClause};
 
-use crate::expand::Input;
+use crate::{expand::Input, utils::WithSpan};
 
 pub trait Context {
     fn generics(&self) -> &Generics;
@@ -20,13 +20,11 @@ pub trait Context {
             (None, Some(where_clause)) => Some(where_clause),
             (where_clause @ Some(_), None) => where_clause,
             (Some(mut where_clause), Some(additional_where_clause)) => {
-                where_clause
-                    .predicates
-                    .extend(additional_where_clause.predicates);
+                where_clause.predicates.extend(additional_where_clause.predicates);
                 Some(where_clause)
             }
         };
-        let ident = self.ident();
+        let ident = self.ident().clone().without_span();
         quote! {
             impl #impl_generics #trait_for #ident #ty_generics #where_clause {
                 #tokens

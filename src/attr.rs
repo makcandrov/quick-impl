@@ -9,7 +9,7 @@ use syn::{
 };
 
 use crate::{
-    idents::MACRO_DERIVE_HELPER,
+    idents::{HELPER_QUICK_IMPL, HELPER_QUICK_IMPL_ALL},
     utils::{ThenTry, TryRetain},
 };
 
@@ -64,11 +64,7 @@ pub struct AttrConfig {
 
 impl Parse for AttrConfig {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-        Ok(Self {
-            ident: input.parse()?,
-            eq_token: input.parse()?,
-            literal: input.parse()?,
-        })
+        Ok(Self { ident: input.parse()?, eq_token: input.parse()?, literal: input.parse()? })
     }
 }
 
@@ -105,10 +101,12 @@ impl IntoIterator for Attrs {
 }
 
 impl Attrs {
-    pub fn take_from(attrs: &mut Vec<Attribute>) -> syn::Result<Self> {
+    pub fn take_from(attrs: &mut Vec<Attribute>, all: bool) -> syn::Result<Self> {
         let mut res = Self(Vec::with_capacity(attrs.len()));
+        let helper = if all { HELPER_QUICK_IMPL_ALL } else { HELPER_QUICK_IMPL };
+
         attrs.try_retain(|attr| -> Result<bool, syn::Error> {
-            if !attr.path().is_ident(MACRO_DERIVE_HELPER) {
+            if !attr.path().is_ident(helper) {
                 return Ok(true);
             }
 
@@ -122,10 +120,7 @@ impl Attrs {
 
     fn try_from_meta(meta: &Meta) -> syn::Result<Self> {
         let Meta::List(list) = meta else {
-            return Err(syn::Error::new_spanned(
-                meta,
-                format!("Expected `{MACRO_DERIVE_HELPER}(...)` attribute."),
-            ));
+            return Err(syn::Error::new_spanned(meta, "expected list of arguments"));
         };
 
         list.parse_args::<Self>()
@@ -164,11 +159,7 @@ impl Parse for Attr {
             AttrConfigList::None
         };
 
-        Ok(Attr {
-            kind,
-            ident,
-            config,
-        })
+        Ok(Attr { kind, ident, config })
     }
 }
 

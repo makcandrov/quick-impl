@@ -41,12 +41,7 @@ pub fn expand_as_ref_mut(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(
-        fields,
-        quote! { &mut },
-        quote! { () },
-        AloneDecoration::None,
-    );
+    let ty = destructure_types(fields, quote! { &mut }, quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
         fields,
         TokenStream::new(),

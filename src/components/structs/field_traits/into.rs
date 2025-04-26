@@ -2,7 +2,9 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::{ItemStruct, LitStr};
 
-use crate::{attr::Attr, config::Config, idents::config::CONFIG_DOC, tokens::IndexedField};
+use crate::{
+    attr::Attr, config::Config, idents::config::CONFIG_DOC, tokens::IndexedField, utils::WithSpan,
+};
 
 const DEFAULT_DOC: &str = "Converts into the `{1}` field of [`{0}`].";
 
@@ -16,15 +18,12 @@ pub fn expand_into(
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [
-            &input.ident.to_string(),
-            &indexed_field.as_token().to_string(),
-        ],
+        [&input.ident.to_string(), &indexed_field.as_token().to_string()],
     )?;
 
     config.finish()?;
 
-    let struct_ident = &input.ident;
+    let struct_ident = &input.ident.clone().without_span();
     let field_type = &indexed_field.ty;
     let field_ident = indexed_field.as_token();
     let trait_ident = Ident::new("From", attribute.ident.span());
