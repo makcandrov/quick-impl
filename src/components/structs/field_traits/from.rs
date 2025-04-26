@@ -1,19 +1,21 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{parse2, Ident, LitStr};
+use syn::{Ident, ItemStruct, LitStr, parse2};
 
 use crate::{
-    attributes::Attribute, config::Config, expand::Context, idents::config::CONFIG_DOC,
-    tokens::IndexedField,
+    attr::Attr,
+    config::Config,
+    ctx::Context,
+    idents::config::CONFIG_DOC,
+    tokens::{IndexedField, to_indexed_field_iter},
 };
 
 const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. Sets the other fields to their default value.";
 
-pub fn expand_from<'a>(
-    context: &Context,
+pub fn expand_from(
+    input: &ItemStruct,
     indexed_field: &IndexedField<'_>,
-    attribute: &Attribute,
-    indexed_fields: &'a Vec<IndexedField<'a>>,
+    attribute: &Attr,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
@@ -21,7 +23,7 @@ pub fn expand_from<'a>(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
         [
-            &context.ident.to_string(),
+            &input.ident.to_string(),
             &indexed_field.as_token().to_string(),
         ],
     )?;
@@ -36,7 +38,7 @@ pub fn expand_from<'a>(
     let mut where_clause = quote! { where };
 
     let mut other_fields = TokenStream::new();
-    for other_indexed_field in indexed_fields {
+    for other_indexed_field in to_indexed_field_iter(&input.fields) {
         if other_indexed_field.index == indexed_field.index {
             continue;
         }
@@ -72,7 +74,7 @@ pub fn expand_from<'a>(
         }
     };
 
-    Ok(context.in_impl(
+    Ok(input.in_impl(
         quote! { ::core::convert:: #trait_ident<#field_ty> for },
         &content,
         Some(parse2(where_clause).unwrap()),

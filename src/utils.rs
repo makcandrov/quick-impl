@@ -27,6 +27,53 @@ pub fn set_lit_str_value(lit_str: &mut LitStr, new_value: impl AsRef<str>) {
     *lit_str = LitStr::new(new_value.as_ref(), lit_str.span());
 }
 
+pub trait TryRetain<T> {
+    fn try_retain<F, E>(&mut self, mut f: F) -> Result<(), E>
+    where
+        F: FnMut(&T) -> Result<bool, E>,
+    {
+        self.try_retain_mut(|elem| f(elem))
+    }
+
+    fn try_retain_mut<F, E>(&mut self, f: F) -> Result<(), E>
+    where
+        F: FnMut(&mut T) -> Result<bool, E>;
+}
+
+impl<T> TryRetain<T> for Vec<T> {
+    fn try_retain_mut<F, E>(&mut self, mut f: F) -> Result<(), E>
+    where
+        F: FnMut(&mut T) -> Result<bool, E>,
+    {
+        let mut err = None::<E>;
+
+        self.retain_mut(|elem| {
+            if err.is_some() {
+                return true;
+            }
+            match f(elem) {
+                Ok(r) => r,
+                Err(e) => {
+                    err.replace(e);
+                    true
+                }
+            }
+        });
+
+        err.map_or(Ok(()), Err)
+    }
+}
+
+pub trait ThenTry {
+    fn then_try<T, E, F: FnOnce() -> Result<T, E>>(self, f: F) -> Result<Option<T>, E>;
+}
+
+impl ThenTry for bool {
+    fn then_try<T, E, F: FnOnce() -> Result<T, E>>(self, f: F) -> Result<Option<T>, E> {
+        if self { f().map(Some) } else { Ok(None) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

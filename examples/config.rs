@@ -1,6 +1,7 @@
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
-#[derive(QuickImpl, Default)]
+#[derive(Default)]
+#[quick_impl]
 struct Config {
     #[quick_impl(pub get, pub set, take, pub with)]
     host: String,

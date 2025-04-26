@@ -1,29 +1,28 @@
 use proc_macro2::{Delimiter, TokenStream};
 use quote::quote;
-use syn::{Fields, Ident};
+use syn::{Fields, Ident, ItemStruct};
 
 use crate::{
-    attributes::Attribute,
+    attr::Attr,
     config::Config,
-    expand::Context,
     idents::config::CONFIG_DOC,
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
 };
 
 const DEFAULT_DOC: &str = "Creates a tuple from each field of the instance of [`{}`].";
 
-pub fn expand_into<'a>(
-    context: &'a Context,
-    attribute: &'a Attribute,
-    fields: &'a Fields,
+pub fn expand_into(
+    input: &ItemStruct,
+    attribute: &Attr,
+    fields: &Fields,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
     let doc = config.get_lit_str_tokens(CONFIG_DOC)?.unwrap_or_else(|| {
-        let doc = DEFAULT_DOC.replace("{}", &context.ident.to_string());
+        let doc = DEFAULT_DOC.replace("{}", &input.ident.to_string());
         quote! { #doc }
     });
 
@@ -57,8 +56,8 @@ pub fn expand_into<'a>(
     let trait_ident = syn::Ident::new("From", attribute.ident.span());
     let method_ident = Ident::new("from", attribute.ident.span());
 
-    let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
-    let ident = context.ident;
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+    let ident = &input.ident;
 
     let mut result = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {

@@ -1,10 +1,9 @@
 use core::ops::{Deref, DerefMut};
 
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
 #[test]
 fn test_struct_single_named() {
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test {
         #[quick_impl(
@@ -53,7 +52,7 @@ fn test_struct_single_named() {
 
 #[test]
 fn test_struct_single_unnamed() {
-    #[derive(QuickImpl)]
+    #[derive(Debug)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test(
         #[quick_impl(
@@ -107,8 +106,8 @@ fn test_struct_single_unnamed() {
 
 #[test]
 fn test_struct_generics_unnamed() {
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub from_tuple, pub into_parts, impl From, impl Into)]
+    #[derive(Debug)]
     struct Test<A, B>(
         #[quick_impl(
             pub get,
@@ -153,7 +152,6 @@ fn test_struct_generics_unnamed() {
 
 #[test]
 fn test_struct_lifetimes() {
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test<'a, 'b>(
         #[quick_impl(
@@ -200,15 +198,12 @@ fn test_struct_lifetimes() {
 
 #[test]
 fn test_empty_struct() {
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test1;
 
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test2 {}
 
-    #[derive(QuickImpl)]
     #[quick_impl(pub const new, pub const from_tuple, pub into_parts, impl From, impl Into)]
     struct Test3();
 

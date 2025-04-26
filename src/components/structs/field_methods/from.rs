@@ -1,24 +1,22 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::LitStr;
+use syn::{ItemStruct, LitStr};
 
 use crate::{
-    attributes::{Attribute, MethodAttribute},
+    attr::{Attr, AttrMethod},
     config::Config,
-    expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
-    tokens::IndexedField,
+    tokens::{IndexedField, to_indexed_field_iter},
 };
 
 const DEFAULT_NAME: &str = "from_{}";
 const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. Sets the other fields to their default value.";
 
-pub fn expand_from<'a>(
-    context: &'a Context,
-    indexed_field: &'a IndexedField,
-    attribute: &'a Attribute,
-    method_attr: &'a MethodAttribute,
-    indexed_fields: &'a Vec<IndexedField<'a>>,
+pub fn expand_from(
+    input: &ItemStruct,
+    indexed_field: &IndexedField,
+    attribute: &Attr,
+    method_attr: &AttrMethod,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
@@ -32,7 +30,7 @@ pub fn expand_from<'a>(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
         [
-            &context.ident.to_string(),
+            &input.ident.to_string(),
             &indexed_field.as_token().to_string(),
         ],
     )?;
@@ -43,14 +41,14 @@ pub fn expand_from<'a>(
     let field_ty = &indexed_field.ty;
     let field_ident = indexed_field.as_ident();
 
-    let mut where_clause = if indexed_fields.len() > 1 {
+    let mut where_clause = if input.fields.len() > 1 {
         quote! { where }
     } else {
         TokenStream::new()
     };
 
     let mut other_fields = TokenStream::new();
-    for other_indexed_field in indexed_fields {
+    for other_indexed_field in to_indexed_field_iter(&input.fields) {
         if other_indexed_field.index == indexed_field.index {
             continue;
         }

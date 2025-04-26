@@ -9,9 +9,9 @@
 ## Usage
 
 ```rust
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
-#[derive(QuickImpl)]
+#[quick_impl]
 enum YourEnum {
     #[quick_impl(pub const is)]
     Variant1,
@@ -108,7 +108,7 @@ More examples can be found in the [examples folder].
 - `name` - Sets the name of the generated method. If not set, a default name is used.
 
 ```rust
-#[derive(quick_impl::QuickImpl)]
+#[quick_impl::quick_impl]
 struct Foo {
     #[quick_impl(pub get_clone = { name = "get_{}_unchecked"})]
     bar: usize,
@@ -125,8 +125,7 @@ assert_eq!(instance.get_baz_unchecked(), 2);
 - `doc` - Sets the documentation for the generated method. If not set, a default documentation is generated.
 
 ```rust
-#[derive(quick_impl::QuickImpl)]
-#[quick_impl(pub const new = { doc = "Generates an awesome instance of [`Foo`]." })]
+#[quick_impl::quick_impl(pub const new = { doc = "Generates an awesome instance of [`Foo`]." })]
 struct Foo {
     bar: usize,
     baz: usize,
@@ -138,7 +137,7 @@ struct Foo {
 - `doc` - Sets the documentation of the generated trait method. If not set, a default documentation is generated.
 
 ```rust
-#[derive(quick_impl::QuickImpl)]
+#[quick_impl::quick_impl]
 enum Foo {
     #[quick_impl(impl TryFrom = { doc = "Attempts to extract the associated data from a [`Foo::Bar`] variant." })]
     Bar(usize),
@@ -146,13 +145,21 @@ enum Foo {
 }
 ```
 
+## About [`derive_more`]
+
+This crate is **not** intended to compete with [`derive_more`]. While [`derive_more`] focuses on deriving standard traits, the primary goal of `quick-impl` is to generate common methods like `is_*`, `as_*`, and `set_*`.
+
+Trait implementations were added where it made sense and was easy to support, but `quick-impl` will never aim to match the breadth of trait support provided by [`derive_more`].
+
+[`derive_more`]: https://crates.io/crates/derive_more
+
 ## Installation
 
 Add `quick-impl` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-quick-impl = "0.1"
+quick-impl = "0.2"
 ```
 
 Or run the following command:

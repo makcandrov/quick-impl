@@ -1,15 +1,14 @@
 use proc_macro2::{Delimiter, Span, TokenStream};
 use quote::quote;
-use syn::{LitStr, Variant};
+use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attributes::{Attribute, MethodAttribute},
+    attr::{Attr, AttrMethod},
     config::Config,
-    expand::Context,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
     utils::to_snake_case,
 };
@@ -18,10 +17,10 @@ const DEFAULT_NAME: &str = "is_{}_and";
 const DEFAULT_DOC: &str = "Returns `true` if the variant is [`{}::{}`] and its associated data matches the predicate; otherwise, returns `false`.";
 
 pub fn expand_is_and(
-    context: &Context,
+    input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attribute,
-    method_attr: &MethodAttribute,
+    attribute: &Attr,
+    method_attr: &AttrMethod,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
 
@@ -34,7 +33,7 @@ pub fn expand_is_and(
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string(), &variant.ident.to_string()],
+        [&input.ident.to_string(), &variant.ident.to_string()],
     )?;
 
     config.finish()?;

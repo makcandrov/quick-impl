@@ -5,7 +5,7 @@ use quote::quote_spanned;
 use syn::{Ident, Lit, LitStr};
 
 use crate::{
-    attributes::AttributeConfig,
+    attr::AttrConfigList,
     utils::{runtime_format, set_lit_str_value},
 };
 
@@ -13,11 +13,11 @@ use crate::{
 pub struct Config(BTreeMap<String, (Span, Lit)>);
 
 impl Config {
-    pub fn new(attribute_config: &AttributeConfig, main: Option<&str>) -> syn::Result<Self> {
+    pub fn new(attribute_config: &AttrConfigList, main: Option<&str>) -> syn::Result<Self> {
         let mut map = BTreeMap::new();
         match attribute_config {
-            AttributeConfig::None => Ok(Self(map)),
-            AttributeConfig::Single(lit) => {
+            AttrConfigList::None => Ok(Self(map)),
+            AttrConfigList::Single(lit) => {
                 if let Some(main) = main {
                     map.insert(main.to_string(), (lit.span(), lit.clone()));
                 } else {
@@ -28,7 +28,7 @@ impl Config {
                 };
                 Ok(Self(map))
             }
-            AttributeConfig::Multiple(attribute_params) => {
+            AttrConfigList::Multiple(attribute_params) => {
                 for attribute_param in attribute_params {
                     let old = map.insert(
                         attribute_param.ident.to_string(),

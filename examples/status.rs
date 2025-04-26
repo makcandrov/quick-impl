@@ -1,6 +1,7 @@
-use quick_impl::QuickImpl;
+use quick_impl::quick_impl;
 
-#[derive(Debug, QuickImpl)]
+#[derive(Debug)]
+#[quick_impl]
 pub enum Status {
     #[quick_impl(pub const is)]
     Pending,
@@ -12,7 +13,7 @@ pub enum Status {
     Rejected(String),
 }
 
-#[derive(QuickImpl)]
+#[quick_impl]
 pub struct Wrapper {
     #[quick_impl(impl Deref, impl DerefMut)]
     data: Vec<u8>,

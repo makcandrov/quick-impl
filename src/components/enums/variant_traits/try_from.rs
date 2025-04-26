@@ -1,31 +1,30 @@
 use proc_macro2::{Delimiter, Ident, Span, TokenStream};
 use quote::quote;
-use syn::{LitStr, Variant};
+use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attributes::Attribute,
+    attr::Attr,
     config::Config,
-    expand::Context,
     idents::config::CONFIG_DOC,
     tokens::{
-        destructure_data, destructure_types, get_delimiter, with_delimiter, AloneDecoration,
-        RenameField,
+        AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
+        with_delimiter,
     },
 };
 
 const DEFAULT_DOC: &str = "Converts the instance into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
 
 pub fn expand_try_from(
-    context: &Context,
+    input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attribute,
+    attribute: &Attr,
 ) -> syn::Result<TokenStream> {
     let mut config = Config::new(&attribute.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [&context.ident.to_string(), &variant.ident.to_string()],
+        [&input.ident.to_string(), &variant.ident.to_string()],
     )?;
 
     config.finish()?;
@@ -60,8 +59,8 @@ pub fn expand_try_from(
     let trait_ident = Ident::new("TryFrom", attribute.ident.span());
     let method_ident = Ident::new("try_from", attribute.ident.span());
 
-    let (impl_generics, ty_generics, where_clause) = context.generics.split_for_impl();
-    let ident = context.ident;
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+    let ident = &input.ident;
 
     let content = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {
