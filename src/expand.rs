@@ -49,13 +49,11 @@ fn expand(args: TokenStream, input: TokenStream, all: bool) -> syn::Result<Token
         Input::Struct(input) => struct_impl(input, &mut implems, &all_orders)?,
     }
 
-    let methods = implems.get_methods(&input);
-    let traits = implems.get_traits();
+    let impls = implems.get_impls(&input);
 
     Ok(quote! {
         #original_input_tokens
-        #methods
-        #traits
+        #impls
     })
 }
 
@@ -74,32 +72,25 @@ impl Implems {
         self.traits.push(tokens)
     }
 
-    pub fn get_methods(&self, context: &impl Context) -> TokenStream {
-        if self.methods.is_empty() {
+    fn get_impls(self, context: &impl Context) -> TokenStream {
+        let methdos = if self.methods.is_empty() {
+            if self.traits.is_empty() {
+                return TokenStream::new();
+            }
+
             TokenStream::new()
         } else {
-            let methods_impl = context.in_impl(Default::default(), &self.methods, None);
-            quote! {
-                #[allow(non_snake_case)]
-                #methods_impl
-            }
-        }
-    }
+            context.in_impl(Default::default(), &self.methods, None)
+        };
 
-    pub fn get_traits(&self) -> TokenStream {
-        let mut traits_impl = TokenStream::new();
+        let mut traits = TokenStream::new();
+        self.traits.into_iter().for_each(|tts| traits.extend(tts));
 
-        if self.traits.is_empty() {
-            return traits_impl;
-        }
-
-        for t in &self.traits {
-            traits_impl.extend(quote! { #t })
-        }
         quote! {
             #[allow(non_snake_case)]
             const _: () = {
-                #traits_impl
+                #methdos
+                #traits
             };
         }
     }
