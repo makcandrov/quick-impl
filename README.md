@@ -21,7 +21,6 @@ enum YourEnum {
 }
 
 let instance1 = YourEnum::Variant1;
-
 assert!(instance1.is_variant1());
 
 let instance2 = YourEnum::from(42);
@@ -147,11 +146,11 @@ enum Foo {
 
 ## Reduce duplicates with `quick_impl_all`
 
-`quick_impl_all` is a helper macro that automatically applies the specified `quick_impl` attributes to all fields (for structs) or all variants (for enums).
-You can combine it with regular `quick_impl` attributes on individual fields or variants.
+`quick_impl_all` is a helper macro that automatically applies the specified `quick_impl` attributes to all variants (for enums) or all fields (for structs).
+You can combine it with regular `quick_impl` attributes on individual variants or fields.
 
 ```rust
-use quick_impl::{quick_impl_all};
+use quick_impl::quick_impl_all;
 
 #[quick_impl_all(pub const is)]
 enum MyEnum {
