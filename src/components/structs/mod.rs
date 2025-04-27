@@ -2,7 +2,7 @@ use syn::ItemStruct;
 
 use crate::{
     expand::Implems,
-    idents::{methods::*, traits::*},
+    idents::{ident_list_message, methods::*, traits::*},
     order::{AllOrders, Order},
     tokens::to_indexed_field_iter,
 };
@@ -25,7 +25,15 @@ pub fn struct_impl(
                     METHOD_INTO_PARTS => global_methods::expand_into_parts(input, order)?,
                     METHOD_NEW => global_methods::expand_new(input, order)?,
                     _ => {
-                        return Err(syn::Error::new_spanned(&order.ident, "unknown method"));
+                        let all_methods =
+                            ident_list_message([METHOD_FROM_TUPLE, METHOD_INTO_PARTS, METHOD_NEW]);
+                        return Err(syn::Error::new_spanned(
+                            &order.ident,
+                            format!(
+                                "unknown method `{}`, expected one of {}",
+                                order.ident, all_methods
+                            ),
+                        ));
                     }
                 };
                 implems.extend_methods(tokens);
@@ -35,7 +43,14 @@ pub fn struct_impl(
                     TRAIT_FROM => global_traits::expand_from(input, order)?,
                     TRAIT_INTO => global_traits::expand_into(input, order)?,
                     _ => {
-                        return Err(syn::Error::new_spanned(&order.ident, "unknown trait"));
+                        let all_traits = ident_list_message([TRAIT_FROM, TRAIT_INTO]);
+                        return Err(syn::Error::new_spanned(
+                            &order.ident,
+                            format!(
+                                "unknown trait `{}`, expected one of {}",
+                                order.ident, all_traits
+                            ),
+                        ));
                     }
                 };
                 implems.extend_traits(tokens);
@@ -64,9 +79,23 @@ pub fn struct_impl(
                         METHOD_TAKE => field_methods::expand_take(input, &indexed_field, order)?,
                         METHOD_WITH => field_methods::expand_with(input, &indexed_field, order)?,
                         _ => {
+                            let all_methods = ident_list_message([
+                                METHOD_FROM,
+                                METHOD_GET,
+                                METHOD_GET_CLONE,
+                                METHOD_GET_MUT,
+                                METHOD_INTO,
+                                METHOD_REPLACE,
+                                METHOD_SET,
+                                METHOD_TAKE,
+                                METHOD_WITH,
+                            ]);
                             return Err(syn::Error::new_spanned(
                                 &order.ident,
-                                "invalid method name",
+                                format!(
+                                    "unknown method `{}`, expected one of {}",
+                                    order.ident, all_methods
+                                ),
                             ));
                         }
                     };
@@ -87,7 +116,23 @@ pub fn struct_impl(
                         TRAIT_FROM => field_traits::expand_from(input, &indexed_field, order)?,
                         TRAIT_INTO => field_traits::expand_into(input, &indexed_field, order)?,
                         _ => {
-                            return Err(syn::Error::new_spanned(&order.ident, "invalid trait name"));
+                            let all_traits = ident_list_message([
+                                TRAIT_AS_MUT,
+                                TRAIT_AS_REF,
+                                TRAIT_BORROW,
+                                TRAIT_BORROW_MUT,
+                                TRAIT_DEREF,
+                                TRAIT_DEREF_MUT,
+                                TRAIT_FROM,
+                                TRAIT_INTO,
+                            ]);
+                            return Err(syn::Error::new_spanned(
+                                &order.ident,
+                                format!(
+                                    "unknown trait `{}`, expected one of {}",
+                                    order.ident, all_traits
+                                ),
+                            ));
                         }
                     };
                     implems.extend_traits(tokens);

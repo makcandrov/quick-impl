@@ -42,3 +42,7 @@ pub mod traits {
     pub const TRAIT_TRY_FROM: &str = "TryFrom";
     pub const TRAIT_TRY_INTO: &str = "TryInto";
 }
+
+pub fn ident_list_message<'a>(idents: impl IntoIterator<Item = &'a str>) -> String {
+    idents.into_iter().map(|ident| format!("`{ident}`")).collect::<Vec<_>>().join(", ")
+}

@@ -2,7 +2,7 @@ use syn::ItemEnum;
 
 use crate::{
     expand::Implems,
-    idents::{methods::*, traits::*},
+    idents::{ident_list_message, methods::*, traits::*},
     order::{AllOrders, Order},
 };
 
@@ -20,13 +20,13 @@ pub fn enum_impl(
             Order::Method(order) => {
                 return Err(syn::Error::new_spanned(
                     &order.ident,
-                    "invalid method name (there are currently no global method available on enums)",
+                    "unknown method (there are currently no global method available on enums)",
                 ));
             }
             Order::Trait(order) => {
                 return Err(syn::Error::new_spanned(
                     &order.ident,
-                    "invalid method name (there are currently no global trait available on enums)",
+                    "unknown trait (there are currently no global trait available on enums)",
                 ));
             }
         }
@@ -49,7 +49,7 @@ pub fn enum_impl(
                         METHOD_SET => variant_methods::expand_set(input, variant, order)?,
                         METHOD_TRY_INTO => variant_methods::expand_try_into(input, variant, order)?,
                         _ => {
-                            let all_methods = [
+                            let all_methods = ident_list_message([
                                 METHOD_AS_REF_MUT,
                                 METHOD_AS_REF,
                                 METHOD_FROM,
@@ -59,11 +59,7 @@ pub fn enum_impl(
                                 METHOD_IS,
                                 METHOD_SET,
                                 METHOD_TRY_INTO,
-                            ]
-                            .iter()
-                            .map(|ident| format!("`{ident}`"))
-                            .collect::<Vec<_>>()
-                            .join(", ");
+                            ]);
                             return Err(syn::Error::new_spanned(
                                 &order.ident,
                                 format!(
@@ -82,7 +78,19 @@ pub fn enum_impl(
                         TRAIT_TRY_FROM => variant_traits::expand_try_from(input, variant, order)?,
                         TRAIT_TRY_INTO => variant_traits::expand_try_into(input, variant, order)?,
                         _ => {
-                            return Err(syn::Error::new_spanned(&order.ident, "unknown trait"));
+                            let all_traits = ident_list_message([
+                                TRAIT_DEFAULT,
+                                TRAIT_FROM,
+                                TRAIT_TRY_FROM,
+                                TRAIT_TRY_INTO,
+                            ]);
+                            return Err(syn::Error::new_spanned(
+                                &order.ident,
+                                format!(
+                                    "unknown trait `{}`, expected one of {}",
+                                    order.ident, all_traits
+                                ),
+                            ));
                         }
                     };
                     implems.extend_traits(tokens);
