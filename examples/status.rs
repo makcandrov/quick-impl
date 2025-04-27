@@ -1,15 +1,14 @@
-use quick_impl::quick_impl;
+use quick_impl::{quick_impl, quick_impl_all};
 
 #[derive(Debug)]
-#[quick_impl]
+#[quick_impl_all(pub const is)]
 pub enum Status {
-    #[quick_impl(pub const is)]
     Pending,
 
-    #[quick_impl(pub const is, pub try_into, impl TryInto)]
+    #[quick_impl(pub try_into, impl TryInto)]
     Approved(i32),
 
-    #[quick_impl(pub const is, pub try_into, impl TryInto)]
+    #[quick_impl(pub try_into, impl TryInto)]
     Rejected(String),
 }
 

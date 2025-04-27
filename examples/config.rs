@@ -1,15 +1,13 @@
 use quick_impl::quick_impl;
 
 #[derive(Default)]
-#[quick_impl]
+#[quick_impl(pub const new)]
+#[quick_impl_all(pub get, pub set, take, pub with)]
 struct Config {
-    #[quick_impl(pub get, pub set, take, pub with)]
     host: String,
-
-    #[quick_impl(pub get, pub set, take, pub with)]
     port: u16,
 
-    #[quick_impl(pub get, pub set, take, pub with)]
+    #[quick_impl(replace)]
     max_connections: usize,
 }
 

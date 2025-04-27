@@ -1,11 +1,8 @@
-use quick_impl::quick_impl;
+use quick_impl::quick_impl_all;
 
-#[quick_impl]
+#[quick_impl_all(pub const is)]
 pub enum WebEvent {
-    #[quick_impl(pub const is)]
     PageLoad,
-
-    #[quick_impl(pub const is)]
     PageUnload,
 
     #[quick_impl(pub as_ref, pub(crate) as_ref_mut, impl From)]
@@ -14,8 +11,11 @@ pub enum WebEvent {
     #[quick_impl(pub is_and, pub as_ref, pub(crate) as_ref_mut, pub into)]
     Paste(String),
 
-    #[quick_impl(pub from = "click_from_coordinates", pub const is, pub as_ref)]
-    Click { x: i64, y: i64 },
+    #[quick_impl(pub from = "click_from_coordinates", pub as_ref)]
+    Click {
+        x: i64,
+        y: i64,
+    },
 }
 
 fn main() {

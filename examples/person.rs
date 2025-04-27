@@ -1,11 +1,10 @@
-use quick_impl::quick_impl;
+use quick_impl::{quick_impl, quick_impl_all};
 
-#[quick_impl]
+#[quick_impl_all(pub get)]
 struct Person {
-    #[quick_impl(pub get)]
     name: String,
 
-    #[quick_impl(pub get, pub set, get_mut)]
+    #[quick_impl(pub set, get_mut)]
     age: u32,
 }
 
