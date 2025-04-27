@@ -1,12 +1,12 @@
 use proc_macro2::{Delimiter, TokenStream};
 use quote::quote;
-use syn::{Fields, Ident, ItemStruct};
+use syn::{Ident, ItemStruct};
 
 use crate::{
-    attr::Attr,
     config::Config,
     ctx::Context,
     idents::config::CONFIG_DOC,
+    order::OrderTrait,
     tokens::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
@@ -15,12 +15,8 @@ use crate::{
 
 const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] from a tuple of its fields values.";
 
-pub fn expand_from(
-    input: &ItemStruct,
-    attribute: &Attr,
-    fields: &Fields,
-) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+pub fn expand_from(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenStream> {
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_lit_str_tokens(CONFIG_DOC)?.unwrap_or_else(|| {
         let doc = DEFAULT_DOC.replace("{}", &input.ident.to_string());
@@ -29,11 +25,12 @@ pub fn expand_from(
 
     config.finish()?;
 
-    let delimiter = get_delimiter(fields);
+    let delimiter = get_delimiter(&input.fields);
 
-    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
+    let ty =
+        destructure_types(&input.fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
     let destruct = destructure_data(
-        fields,
+        &input.fields,
         TokenStream::new(),
         with_delimiter(TokenStream::new(), delimiter),
         delimiter,
@@ -41,7 +38,7 @@ pub fn expand_from(
         RenameField::Auto,
     );
     let arg = destructure_data(
-        fields,
+        &input.fields,
         TokenStream::new(),
         quote! { () },
         Delimiter::Parenthesis,
@@ -49,8 +46,8 @@ pub fn expand_from(
         RenameField::Auto,
     );
 
-    let trait_ident = Ident::new("From", attribute.ident.span());
-    let method_ident = Ident::new("from", attribute.ident.span());
+    let trait_ident = Ident::new("From", order.ident.span());
+    let method_ident = Ident::new("from", order.ident.span());
 
     let content = quote! {
         #[doc = #doc]
@@ -65,7 +62,7 @@ pub fn expand_from(
 
     // If there is exactly one field of type T, we need to implement both `From<T>` and
     // `From<(T,)>`.
-    if fields.len() == 1 {
+    if input.fields.len() == 1 {
         let ty = quote! { (#ty,) };
         let arg = quote! { (#arg,) };
 

@@ -3,14 +3,13 @@ use quote::quote;
 use syn::{Ident, ItemEnum, LitStr, Variant};
 
 use crate::{
-    attr::Attr,
     config::Config,
     idents::config::CONFIG_DOC,
+    order::OrderTrait,
     tokens::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
     },
-    utils::WithSpan,
 };
 
 const DEFAULT_DOC: &str = "Converts the instance into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
@@ -18,9 +17,9 @@ const DEFAULT_DOC: &str = "Converts the instance into the associated data if the
 pub fn expand_try_from(
     input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attr,
+    order: &OrderTrait,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -52,11 +51,11 @@ pub fn expand_try_from(
     );
 
     let variant_ident = &variant.ident;
-    let trait_ident = Ident::new("TryFrom", attribute.ident.span());
-    let method_ident = Ident::new("try_from", attribute.ident.span());
+    let trait_ident = Ident::new("TryFrom", order.ident.span());
+    let method_ident = Ident::new("try_from", order.ident.span());
 
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
-    let ident = input.ident.clone().without_span();
+    let ident = &input.ident;
 
     let content = quote! {
         impl #impl_generics ::core::convert:: #trait_ident <#ident #ty_generics> for #ty #where_clause {

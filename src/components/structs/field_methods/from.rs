@@ -3,9 +3,9 @@ use quote::quote;
 use syn::{ItemStruct, LitStr};
 
 use crate::{
-    attr::{Attr, AttrMethod},
     config::Config,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
+    order::OrderMethod,
     tokens::{IndexedField, to_indexed_field_iter},
 };
 
@@ -15,14 +15,13 @@ const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. 
 pub fn expand_from(
     input: &ItemStruct,
     indexed_field: &IndexedField,
-    attribute: &Attr,
-    method_attr: &AttrMethod,
+    order: &OrderMethod,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
+    let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;
 
     let method_ident = config.get_formatted_lit_str_ident(
         CONFIG_NAME,
-        LitStr::new(DEFAULT_NAME, attribute.ident.span()),
+        LitStr::new(DEFAULT_NAME, order.ident.span()),
         [&indexed_field.as_token().to_string()],
     )?;
 
@@ -34,7 +33,7 @@ pub fn expand_from(
 
     config.finish()?;
 
-    let keywords = method_attr.keywords();
+    let keywords = order.keywords();
     let field_ty = &indexed_field.ty;
     let field_ident = indexed_field.as_ident();
 

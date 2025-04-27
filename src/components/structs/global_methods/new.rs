@@ -3,9 +3,9 @@ use quote::quote;
 use syn::{Ident, ItemStruct, LitStr};
 
 use crate::{
-    attr::{Attr, AttrMethod},
     config::Config,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
+    order::OrderMethod,
     tokens::{
         AloneDecoration, RenameField, destructure_data, destructure_data_with_types, get_delimiter,
         with_delimiter,
@@ -15,16 +15,12 @@ use crate::{
 const DEFAULT_NAME: &str = "new";
 const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] with the specified field values.";
 
-pub fn expand_new(
-    input: &ItemStruct,
-    attribute: &Attr,
-    method_attr: &AttrMethod,
-) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
+pub fn expand_new(input: &ItemStruct, order: &OrderMethod) -> syn::Result<TokenStream> {
+    let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;
 
     let method_ident = config
         .get_lit_str_ident(CONFIG_NAME)?
-        .unwrap_or_else(|| Ident::new(DEFAULT_NAME, attribute.ident.span()));
+        .unwrap_or_else(|| Ident::new(DEFAULT_NAME, order.ident.span()));
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -34,7 +30,7 @@ pub fn expand_new(
 
     config.finish()?;
 
-    let keywords = method_attr.keywords();
+    let keywords = order.keywords();
     let delimiter = get_delimiter(&input.fields);
 
     let input_tt = destructure_data_with_types(

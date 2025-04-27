@@ -1,87 +1,59 @@
-use proc_macro2::TokenStream;
-use quote::{ToTokens, quote};
-use syn::{
-    Attribute, ItemEnum, ItemStruct, Token, Visibility,
-    parse::{Parse, ParseStream},
-    parse2,
-};
+use proc_macro2::{Span, TokenStream};
+use quote::quote;
+use syn::parse2;
 
 use crate::{
-    attr::Attrs,
+    attr::AllAttrs,
     components::{enum_impl, struct_impl},
     ctx::Context,
+    input::Input,
+    order::{AllOrders, Orders},
 };
 
 pub fn expand_qi(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
-    expand::<false>(args, input)
+    expand(args, input, false)
 }
 
 pub fn expand_qia(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
-    expand::<true>(args, input)
+    expand(args, input, true)
 }
 
-#[derive(Clone)]
-pub enum Input {
-    Struct(ItemStruct),
-    Enum(ItemEnum),
-}
-
-impl Input {
-    pub fn attrs_mut(&mut self) -> &mut Vec<Attribute> {
-        match self {
-            Input::Struct(item) => &mut item.attrs,
-            Input::Enum(item) => &mut item.attrs,
-        }
-    }
-}
-
-impl Parse for Input {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-        let fork = input.fork();
-        let _ = fork.call(Attribute::parse_outer)?;
-        let _ = fork.parse::<Visibility>()?;
-
-        if fork.peek(Token![struct]) {
-            input.parse().map(Self::Struct)
-        } else if fork.peek(Token![enum]) {
-            input.parse().map(Self::Enum)
-        } else {
-            Err(fork.error("expected a struct or an enum"))
-        }
-    }
-}
-
-impl ToTokens for Input {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Input::Struct(item) => item.to_tokens(tokens),
-            Input::Enum(item) => item.to_tokens(tokens),
-        }
-    }
-}
-
-fn expand<const ALL: bool>(args: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
-    let args_attrs = parse2::<Attrs>(args)?;
-
-    let (mut all_attrs, mut glob_attrs) =
-        if ALL { (args_attrs, Default::default()) } else { (Default::default(), args_attrs) };
-
+fn expand(args: TokenStream, input: TokenStream, all: bool) -> syn::Result<TokenStream> {
     let mut input = parse2::<Input>(input)?;
+
+    let args_orders = parse2::<Orders>(args)?;
+    let (global_from_args, all_from_args) =
+        if all { (Default::default(), args_orders) } else { (args_orders, Default::default()) };
+
+    // Extract all relevant attributes from the item definition and its variants or fields.
+    let all_attrs = AllAttrs::extract_from_input(&mut input);
+
+    // Parse all relevant attributes into orders.
+    let all_orders = AllOrders::try_from_attrs(global_from_args, all_from_args, all_attrs)?;
+
+    // All tokens generated from the input item will have this neutral span.
+    // - Using `call_site` duplicates the number of implementations found by the analyzer.
+    // - Picking a random token from the source attaches each analyzer annotation to that token.
+    // No span I tested was free of weird side effects, so I chose the first option.
+    let neutral_span = Span::call_site();
+
+    // Manually remove all token spans so that the original spans never appear in the
+    // implementations. The token stream with the original spans is returned to create the
+    // structure with the correct spans.
+    let (input, original_input_tokens) = input.respan(neutral_span);
+
     let mut implems = Implems::default();
 
-    all_attrs.extend(Attrs::take_from(input.attrs_mut(), true)?);
-    glob_attrs.extend(Attrs::take_from(input.attrs_mut(), false)?);
-
-    match &mut input {
-        Input::Struct(item) => struct_impl(item, &mut implems, &all_attrs, &glob_attrs)?,
-        Input::Enum(item) => enum_impl(item, &mut implems, &all_attrs, &glob_attrs)?,
+    match &input {
+        Input::Enum(input) => enum_impl(input, &mut implems, &all_orders)?,
+        Input::Struct(input) => struct_impl(input, &mut implems, &all_orders)?,
     }
 
     let methods = implems.get_methods(&input);
     let traits = implems.get_traits();
 
     Ok(quote! {
-        #input
+        #original_input_tokens
         #methods
         #traits
     })

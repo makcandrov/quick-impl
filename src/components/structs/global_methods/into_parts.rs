@@ -3,25 +3,21 @@ use quote::quote;
 use syn::{Ident, ItemStruct, LitStr};
 
 use crate::{
-    attr::{Attr, AttrMethod},
     config::Config,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
+    order::OrderMethod,
     tokens::{AloneDecoration, destructure_types, to_indexed_field_iter},
 };
 
 const DEFAULT_NAME: &str = "into_parts";
 const DEFAULT_DOC: &str = "Destructures the instance of [`{}`] into its fields values.";
 
-pub fn expand_into_parts(
-    input: &ItemStruct,
-    attribute: &Attr,
-    method_attr: &AttrMethod,
-) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
+pub fn expand_into_parts(input: &ItemStruct, order: &OrderMethod) -> syn::Result<TokenStream> {
+    let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;
 
     let method_ident = config
         .get_lit_str_ident(CONFIG_NAME)?
-        .unwrap_or_else(|| Ident::new(DEFAULT_NAME, attribute.ident.span()));
+        .unwrap_or_else(|| Ident::new(DEFAULT_NAME, order.ident.span()));
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -31,7 +27,7 @@ pub fn expand_into_parts(
 
     config.finish()?;
 
-    let keywords = method_attr.keywords();
+    let keywords = order.keywords();
 
     let ret = if input.fields.is_empty() {
         TokenStream::new()

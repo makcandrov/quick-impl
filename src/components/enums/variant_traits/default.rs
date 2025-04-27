@@ -3,10 +3,10 @@ use quote::quote;
 use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attr::Attr,
     config::Config,
     ctx::Context,
     idents::config::CONFIG_DOC,
+    order::OrderTrait,
     tokens::{get_delimiter, with_delimiter},
 };
 
@@ -15,9 +15,9 @@ const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant with the default associa
 pub fn expand_default(
     input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attr,
+    order: &OrderTrait,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -31,8 +31,8 @@ pub fn expand_default(
     let delimiter = get_delimiter(fields);
 
     let variant_ident = &variant.ident;
-    let trait_ident = Ident::new("Default", attribute.ident.span());
-    let method_ident = Ident::new("default", attribute.ident.span());
+    let trait_ident = Ident::new("Default", order.ident.span());
+    let method_ident = Ident::new("default", order.ident.span());
 
     let default = quote! { ::core::default:: #trait_ident :: #method_ident () };
     let mut default_data = TokenStream::new();

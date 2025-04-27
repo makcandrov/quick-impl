@@ -1,9 +1,9 @@
 use syn::ItemStruct;
 
 use crate::{
-    attr::{AttrKind, Attrs},
     expand::Implems,
     idents::{methods::*, traits::*},
+    order::{AllOrders, Order},
     tokens::to_indexed_field_iter,
 };
 
@@ -13,37 +13,29 @@ mod global_methods;
 mod global_traits;
 
 pub fn struct_impl(
-    input: &mut ItemStruct,
+    input: &ItemStruct,
     implems: &mut Implems,
-    all_attrs: &Attrs,
-    glob_attrs: &Attrs,
+    all_orders: &AllOrders,
 ) -> syn::Result<()> {
-    for attribute in glob_attrs.iter() {
-        match &attribute.kind {
-            AttrKind::Method(method_attr) => {
-                let tokens = match attribute.ident.to_string().as_str() {
-                    METHOD_FROM_TUPLE => {
-                        global_methods::expand_from_tuple(input, attribute, method_attr)?
-                    }
-                    METHOD_INTO_PARTS => {
-                        global_methods::expand_into_parts(input, attribute, method_attr)?
-                    }
-                    METHOD_NEW => global_methods::expand_new(input, attribute, method_attr)?,
+    for order in all_orders.global() {
+        match order {
+            Order::Method(order) => {
+                let tokens = match order.ident.to_string().as_str() {
+                    METHOD_FROM_TUPLE => global_methods::expand_from_tuple(input, order)?,
+                    METHOD_INTO_PARTS => global_methods::expand_into_parts(input, order)?,
+                    METHOD_NEW => global_methods::expand_new(input, order)?,
                     _ => {
-                        return Err(syn::Error::new_spanned(
-                            &attribute.ident,
-                            "invalid method name",
-                        ));
+                        return Err(syn::Error::new_spanned(&order.ident, "unknown method"));
                     }
                 };
                 implems.extend_methods(tokens);
             }
-            AttrKind::Trait => {
-                let tokens = match attribute.ident.to_string().as_str() {
-                    TRAIT_FROM => global_traits::expand_from(input, attribute, &input.fields)?,
-                    TRAIT_INTO => global_traits::expand_into(input, attribute, &input.fields)?,
+            Order::Trait(order) => {
+                let tokens = match order.ident.to_string().as_str() {
+                    TRAIT_FROM => global_traits::expand_from(input, order)?,
+                    TRAIT_INTO => global_traits::expand_into(input, order)?,
                     _ => {
-                        return Err(syn::Error::new_spanned(&attribute.ident, "invalid trait name"));
+                        return Err(syn::Error::new_spanned(&order.ident, "unknown trait"));
                     }
                 };
                 implems.extend_traits(tokens);
@@ -51,107 +43,51 @@ pub fn struct_impl(
         }
     }
 
-    let all_fields_attrs: Vec<_> = input
-        .fields
-        .iter_mut()
-        .map(|field| Attrs::take_from(&mut field.attrs, false))
-        .collect::<Result<_, _>>()?;
-
-    for (indexed_field, field_attrs) in to_indexed_field_iter(&input.fields).zip(all_fields_attrs) {
-        for attribute in all_attrs.iter().chain(field_attrs.iter()) {
-            match &attribute.kind {
-                AttrKind::Method(method_attr) => {
-                    let tokens = match attribute.ident.to_string().as_str() {
-                        METHOD_FROM => field_methods::expand_from(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_GET => field_methods::expand_get(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_GET_CLONE => field_methods::expand_get_clone(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_GET_MUT => field_methods::expand_get_mut(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_INTO => field_methods::expand_into(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_REPLACE => field_methods::expand_replace(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_SET => field_methods::expand_set(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_TAKE => field_methods::expand_take(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
-                        METHOD_WITH => field_methods::expand_with(
-                            input,
-                            &indexed_field,
-                            attribute,
-                            method_attr,
-                        )?,
+    for indexed_field in to_indexed_field_iter(&input.fields) {
+        for order in all_orders.per_item(indexed_field.index) {
+            match order {
+                Order::Method(order) => {
+                    let tokens = match order.ident.to_string().as_str() {
+                        METHOD_FROM => field_methods::expand_from(input, &indexed_field, order)?,
+                        METHOD_GET => field_methods::expand_get(input, &indexed_field, order)?,
+                        METHOD_GET_CLONE => {
+                            field_methods::expand_get_clone(input, &indexed_field, order)?
+                        }
+                        METHOD_GET_MUT => {
+                            field_methods::expand_get_mut(input, &indexed_field, order)?
+                        }
+                        METHOD_INTO => field_methods::expand_into(input, &indexed_field, order)?,
+                        METHOD_REPLACE => {
+                            field_methods::expand_replace(input, &indexed_field, order)?
+                        }
+                        METHOD_SET => field_methods::expand_set(input, &indexed_field, order)?,
+                        METHOD_TAKE => field_methods::expand_take(input, &indexed_field, order)?,
+                        METHOD_WITH => field_methods::expand_with(input, &indexed_field, order)?,
                         _ => {
                             return Err(syn::Error::new_spanned(
-                                &attribute.ident,
+                                &order.ident,
                                 "invalid method name",
                             ));
                         }
                     };
                     implems.extend_methods(tokens);
                 }
-                AttrKind::Trait => {
-                    let tokens = match attribute.ident.to_string().as_str() {
-                        TRAIT_AS_MUT => {
-                            field_traits::expand_as_mut(input, &indexed_field, attribute)?
-                        }
-                        TRAIT_AS_REF => {
-                            field_traits::expand_as_ref(input, &indexed_field, attribute)?
-                        }
-                        TRAIT_BORROW => {
-                            field_traits::expand_borrow(input, &indexed_field, attribute)?
-                        }
+                Order::Trait(order) => {
+                    let tokens = match order.ident.to_string().as_str() {
+                        TRAIT_AS_MUT => field_traits::expand_as_mut(input, &indexed_field, order)?,
+                        TRAIT_AS_REF => field_traits::expand_as_ref(input, &indexed_field, order)?,
+                        TRAIT_BORROW => field_traits::expand_borrow(input, &indexed_field, order)?,
                         TRAIT_BORROW_MUT => {
-                            field_traits::expand_borrow_mut(input, &indexed_field, attribute)?
+                            field_traits::expand_borrow_mut(input, &indexed_field, order)?
                         }
-                        TRAIT_DEREF => {
-                            field_traits::expand_deref(input, &indexed_field, attribute)?
-                        }
+                        TRAIT_DEREF => field_traits::expand_deref(input, &indexed_field, order)?,
                         TRAIT_DEREF_MUT => {
-                            field_traits::expand_deref_mut(input, &indexed_field, attribute)?
+                            field_traits::expand_deref_mut(input, &indexed_field, order)?
                         }
-                        TRAIT_FROM => field_traits::expand_from(input, &indexed_field, attribute)?,
-                        TRAIT_INTO => field_traits::expand_into(input, &indexed_field, attribute)?,
+                        TRAIT_FROM => field_traits::expand_from(input, &indexed_field, order)?,
+                        TRAIT_INTO => field_traits::expand_into(input, &indexed_field, order)?,
                         _ => {
-                            return Err(syn::Error::new_spanned(
-                                &attribute.ident,
-                                "invalid trait name",
-                            ));
+                            return Err(syn::Error::new_spanned(&order.ident, "invalid trait name"));
                         }
                     };
                     implems.extend_traits(tokens);

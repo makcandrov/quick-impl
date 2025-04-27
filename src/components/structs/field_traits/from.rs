@@ -3,10 +3,10 @@ use quote::quote;
 use syn::{Ident, ItemStruct, LitStr, parse2};
 
 use crate::{
-    attr::Attr,
     config::Config,
     ctx::Context,
     idents::config::CONFIG_DOC,
+    order::OrderTrait,
     tokens::{IndexedField, to_indexed_field_iter},
 };
 
@@ -15,9 +15,9 @@ const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. 
 pub fn expand_from(
     input: &ItemStruct,
     indexed_field: &IndexedField<'_>,
-    attribute: &Attr,
+    order: &OrderTrait,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -29,8 +29,8 @@ pub fn expand_from(
 
     let field_ty = &indexed_field.ty;
     let field_ident = indexed_field.as_ident();
-    let trait_ident = Ident::new("From", attribute.ident.span());
-    let method_ident = Ident::new("from", attribute.ident.span());
+    let trait_ident = Ident::new("From", order.ident.span());
+    let method_ident = Ident::new("from", order.ident.span());
 
     let mut where_clause = quote! { where };
 

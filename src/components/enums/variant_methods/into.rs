@@ -3,9 +3,9 @@ use quote::quote;
 use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attr::{Attr, AttrMethod},
     config::Config,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
+    order::OrderMethod,
     tokens::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
@@ -19,14 +19,13 @@ const DEFAULT_DOC: &str = "Converts `self` into the associated data if the varia
 pub fn expand_into(
     input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attr,
-    method_attr: &AttrMethod,
+    order: &OrderMethod,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, Some(CONFIG_NAME))?;
+    let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;
 
     let method_ident = config.get_formatted_lit_str_ident(
         CONFIG_NAME,
-        LitStr::new(DEFAULT_NAME, attribute.ident.span()),
+        LitStr::new(DEFAULT_NAME, order.ident.span()),
         [&to_snake_case(&variant.ident.to_string())],
     )?;
 
@@ -60,7 +59,7 @@ pub fn expand_into(
     );
 
     let variant_ident = &variant.ident;
-    let keywords = method_attr.keywords();
+    let keywords = order.keywords();
 
     Ok(quote! {
         #[doc = #doc]

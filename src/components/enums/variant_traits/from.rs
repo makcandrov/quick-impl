@@ -3,10 +3,10 @@ use quote::quote;
 use syn::{ItemEnum, LitStr, Variant};
 
 use crate::{
-    attr::Attr,
     config::Config,
     ctx::Context,
     idents::config::CONFIG_DOC,
+    order::OrderTrait,
     tokens::{
         AloneDecoration, RenameField, destructure_data, destructure_types, get_delimiter,
         with_delimiter,
@@ -18,9 +18,9 @@ const DEFAULT_DOC: &str = "Creates a [`{}::{}`] variant from the provided data."
 pub fn expand_from(
     input: &ItemEnum,
     variant: &Variant,
-    attribute: &Attr,
+    order: &OrderTrait,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -52,8 +52,8 @@ pub fn expand_from(
     );
 
     let variant_ident = &variant.ident;
-    let trait_ident = Ident::new("From", attribute.ident.span());
-    let method_ident = Ident::new("from", attribute.ident.span());
+    let trait_ident = Ident::new("From", order.ident.span());
+    let method_ident = Ident::new("from", order.ident.span());
 
     let content = quote! {
         #[doc = #doc]

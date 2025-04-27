@@ -9,6 +9,9 @@ mod config;
 mod ctx;
 mod expand;
 mod idents;
+mod input;
+mod order;
+mod respan;
 mod tokens;
 mod utils;
 

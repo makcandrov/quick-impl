@@ -5,7 +5,7 @@ use quote::quote_spanned;
 use syn::{Ident, Lit, LitStr};
 
 use crate::{
-    attr::AttrConfigList,
+    order::OrderConfigList,
     utils::{runtime_format, set_lit_str_value},
 };
 
@@ -13,11 +13,11 @@ use crate::{
 pub struct Config(BTreeMap<String, (Span, Lit)>);
 
 impl Config {
-    pub fn new(attribute_config: &AttrConfigList, main: Option<&str>) -> syn::Result<Self> {
+    pub fn new(order_config_list: &OrderConfigList, main: Option<&str>) -> syn::Result<Self> {
         let mut map = BTreeMap::new();
-        match attribute_config {
-            AttrConfigList::None => Ok(Self(map)),
-            AttrConfigList::Single(lit) => {
+        match order_config_list {
+            OrderConfigList::None => Ok(Self(map)),
+            OrderConfigList::Single(lit) => {
                 if let Some(main) = main {
                     map.insert(main.to_string(), (lit.span(), lit.clone()));
                 } else {
@@ -28,17 +28,17 @@ impl Config {
                 };
                 Ok(Self(map))
             }
-            AttrConfigList::Multiple(attribute_params) => {
-                for attribute_param in attribute_params {
+            OrderConfigList::Multiple { brace: _, configs } => {
+                for config in configs {
                     let old = map.insert(
-                        attribute_param.ident.to_string(),
-                        (attribute_param.ident.span(), attribute_param.literal.clone()),
+                        config.ident.to_string(),
+                        (config.ident.span(), config.literal.clone()),
                     );
 
                     if old.is_some() {
                         return Err(syn::Error::new_spanned(
-                            &attribute_param.ident,
-                            format!("duplicate config parameter `{}`", &attribute_param.ident),
+                            &config.ident,
+                            format!("duplicate config parameter `{}`", &config.ident),
                         ));
                     }
                 }

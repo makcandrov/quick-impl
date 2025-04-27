@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Generics, Ident, ItemEnum, ItemStruct, WhereClause};
 
-use crate::{expand::Input, utils::WithSpan};
+use crate::input::Input;
 
 pub trait Context {
     fn generics(&self) -> &Generics;
@@ -24,7 +24,7 @@ pub trait Context {
                 Some(where_clause)
             }
         };
-        let ident = self.ident().clone().without_span();
+        let ident = self.ident();
         quote! {
             impl #impl_generics #trait_for #ident #ty_generics #where_clause {
                 #tokens

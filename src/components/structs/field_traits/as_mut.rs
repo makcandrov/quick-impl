@@ -3,7 +3,8 @@ use quote::quote;
 use syn::{ItemStruct, LitStr};
 
 use crate::{
-    attr::Attr, config::Config, ctx::Context, idents::config::CONFIG_DOC, tokens::IndexedField,
+    config::Config, ctx::Context, idents::config::CONFIG_DOC, order::OrderTrait,
+    tokens::IndexedField,
 };
 
 const DEFAULT_DOC: &str = "Cheap mutable-to-mutable reference conversion.";
@@ -11,9 +12,9 @@ const DEFAULT_DOC: &str = "Cheap mutable-to-mutable reference conversion.";
 pub fn expand_as_mut(
     input: &ItemStruct,
     indexed_field: &IndexedField<'_>,
-    attribute: &Attr,
+    order: &OrderTrait,
 ) -> syn::Result<TokenStream> {
-    let mut config = Config::new(&attribute.config, None)?;
+    let mut config = Config::new(&order.config, None)?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
@@ -24,8 +25,8 @@ pub fn expand_as_mut(
     config.finish()?;
 
     let field_ident = indexed_field.as_token();
-    let trait_ident = Ident::new("AsMut", attribute.ident.span());
-    let method_ident = Ident::new("as_mut", attribute.ident.span());
+    let trait_ident = Ident::new("AsMut", order.ident.span());
+    let method_ident = Ident::new("as_mut", order.ident.span());
     let field_ty = &indexed_field.ty;
 
     let content = quote! {
