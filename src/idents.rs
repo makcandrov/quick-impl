@@ -44,5 +44,9 @@ pub mod traits {
 }
 
 pub fn ident_list_message<'a>(idents: impl IntoIterator<Item = &'a str>) -> String {
-    idents.into_iter().map(|ident| format!("`{ident}`")).collect::<Vec<_>>().join(", ")
+    idents
+        .into_iter()
+        .map(|ident| format!("`{ident}`"))
+        .collect::<Vec<_>>()
+        .join(", ")
 }

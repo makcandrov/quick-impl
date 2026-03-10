@@ -20,7 +20,9 @@ pub trait Context {
             (None, Some(where_clause)) => Some(where_clause),
             (where_clause @ Some(_), None) => where_clause,
             (Some(mut where_clause), Some(additional_where_clause)) => {
-                where_clause.predicates.extend(additional_where_clause.predicates);
+                where_clause
+                    .predicates
+                    .extend(additional_where_clause.predicates);
                 Some(where_clause)
             }
         };

@@ -54,7 +54,10 @@ impl AllAttrs {
     ) -> Self {
         let mut global = Attrs::default();
         global.extract(global_raw);
-        Self { global, per_item: per_item_raw.into_iter().map(Attrs::new).collect() }
+        Self {
+            global,
+            per_item: per_item_raw.into_iter().map(Attrs::new).collect(),
+        }
     }
 
     pub fn extract_from_input(input: &mut Input) -> Self {
@@ -65,7 +68,10 @@ impl AllAttrs {
     }
 
     pub fn extract_from_item_enum(item_enum: &mut ItemEnum) -> Self {
-        Self::new(&mut item_enum.attrs, item_enum.variants.iter_mut().map(|field| &mut field.attrs))
+        Self::new(
+            &mut item_enum.attrs,
+            item_enum.variants.iter_mut().map(|field| &mut field.attrs),
+        )
     }
 
     pub fn extract_from_item_struct(item_struct: &mut ItemStruct) -> Self {

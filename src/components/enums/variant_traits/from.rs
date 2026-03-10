@@ -33,7 +33,12 @@ pub fn expand_from(
     let fields = &variant.fields;
     let delimiter = get_delimiter(fields);
 
-    let ty = destructure_types(fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
+    let ty = destructure_types(
+        fields,
+        TokenStream::new(),
+        quote! { () },
+        AloneDecoration::None,
+    );
     let destruct = destructure_data(
         fields,
         TokenStream::new(),
@@ -63,5 +68,9 @@ pub fn expand_from(
         }
     };
 
-    Ok(input.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content, None))
+    Ok(input.in_impl(
+        quote! { ::core::convert::#trait_ident<#ty> for },
+        &content,
+        None,
+    ))
 }

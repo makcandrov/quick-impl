@@ -26,8 +26,12 @@ pub fn expand_into(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenS
 
     let delimiter = get_delimiter(&input.fields);
 
-    let ty =
-        destructure_types(&input.fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
+    let ty = destructure_types(
+        &input.fields,
+        TokenStream::new(),
+        quote! { () },
+        AloneDecoration::None,
+    );
     let destruct = destructure_data(
         &input.fields,
         TokenStream::new(),

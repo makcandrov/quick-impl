@@ -113,8 +113,8 @@ where
                     quote! { , #ident: #prefix #rename_ident }
                 }
                 RenameField::AlwaysIgnoreOriginal => {
-                    let rename_ident = field_rename(first, i);
-                    quote! { , #prefix #rename_ident }
+                    let rename_ident = field_rename(field, i);
+                    quote! { , #prefix #rename_ident}
                 }
             }
         } else {
@@ -159,8 +159,11 @@ where
 
     let mut i = 1;
     for field in fields {
-        let field_ident =
-            if let Some(ident) = &field.ident { ident.clone() } else { field_rename(field, i) };
+        let field_ident = if let Some(ident) = &field.ident {
+            ident.clone()
+        } else {
+            field_rename(field, i)
+        };
         let field_type = &field.ty;
 
         res.extend(quote! { , #field_ident: #field_type});

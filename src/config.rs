@@ -50,7 +50,10 @@ impl Config {
 
     pub fn finish(self) -> syn::Result<()> {
         if let Some((ident, (span, _))) = self.0.into_iter().next() {
-            Err(syn::Error::new(span, format!("unknown config parameter `{}`", ident)))
+            Err(syn::Error::new(
+                span,
+                format!("unknown config parameter `{}`", ident),
+            ))
         } else {
             Ok(())
         }

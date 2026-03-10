@@ -27,8 +27,12 @@ pub fn expand_from(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenS
 
     let delimiter = get_delimiter(&input.fields);
 
-    let ty =
-        destructure_types(&input.fields, TokenStream::new(), quote! { () }, AloneDecoration::None);
+    let ty = destructure_types(
+        &input.fields,
+        TokenStream::new(),
+        quote! { () },
+        AloneDecoration::None,
+    );
     let destruct = destructure_data(
         &input.fields,
         TokenStream::new(),
@@ -57,8 +61,11 @@ pub fn expand_from(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenS
         }
     };
 
-    let mut result =
-        input.in_impl(quote! { ::core::convert::#trait_ident<#ty> for }, &content, None);
+    let mut result = input.in_impl(
+        quote! { ::core::convert::#trait_ident<#ty> for },
+        &content,
+        None,
+    );
 
     // If there is exactly one field of type T, we need to implement both `From<T>` and
     // `From<(T,)>`.

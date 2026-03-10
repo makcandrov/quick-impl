@@ -30,8 +30,7 @@ pub struct OrderMethod {
 
 #[derive(Clone)]
 pub struct OrderTrait {
-    #[expect(unused)]
-    pub impl_token: Token![impl],
+    pub _impl_token: Token![impl],
     pub ident: Ident,
     pub config: OrderConfigList,
 }
@@ -62,14 +61,20 @@ pub struct OrderConfig {
 
 impl OrderMethod {
     pub fn keywords(&self) -> TokenStream {
-        let Self { vis, const_token, .. } = self;
+        let Self {
+            vis, const_token, ..
+        } = self;
         quote! { #vis #const_token }
     }
 }
 
 impl Parse for OrderConfig {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-        Ok(Self { ident: input.parse()?, eq_token: input.parse()?, literal: input.parse()? })
+        Ok(Self {
+            ident: input.parse()?,
+            eq_token: input.parse()?,
+            literal: input.parse()?,
+        })
     }
 }
 
@@ -138,7 +143,11 @@ impl Parse for OrderMethod {
 
 impl Parse for OrderTrait {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-        Ok(Self { impl_token: input.parse()?, ident: input.parse()?, config: input.parse()? })
+        Ok(Self {
+            _impl_token: input.parse()?,
+            ident: input.parse()?,
+            config: input.parse()?,
+        })
     }
 }
 

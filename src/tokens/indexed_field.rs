@@ -34,7 +34,10 @@ impl<'a> IndexedField<'a> {
     }
 
     pub fn as_ident(&self) -> Ident {
-        self.field.ident.clone().unwrap_or_else(|| field_rename(self.field, self.index))
+        self.field
+            .ident
+            .clone()
+            .unwrap_or_else(|| field_rename(self.field, self.index))
     }
 }
 
@@ -42,7 +45,10 @@ pub fn to_indexed_field_iter<'a, I>(fields: I) -> impl Iterator<Item = IndexedFi
 where
     I: IntoIterator<Item = &'a Field>,
 {
-    fields.into_iter().enumerate().map(|(index, field)| IndexedField::new(field, index))
+    fields
+        .into_iter()
+        .enumerate()
+        .map(|(index, field)| IndexedField::new(field, index))
 }
 
 pub fn field_rename(field: &Field, index: usize) -> Ident {

@@ -56,7 +56,9 @@ mod utils;
 /// ```
 #[proc_macro_attribute]
 pub fn quick_impl(args: TokenStream, input: TokenStream) -> TokenStream {
-    expand::expand_qi(args.into(), input.into()).unwrap_or_else(|err| err.to_compile_error()).into()
+    expand::expand_qi(args.into(), input.into())
+        .unwrap_or_else(|err| err.to_compile_error())
+        .into()
 }
 
 /// Quickly generate common methods and trait implementations on enums or structs on all the

@@ -33,6 +33,9 @@ mod tests {
 
     #[test]
     fn test_runtime_format() {
-        assert_eq!(&runtime_format("test{}test{0}{}test{1}{0}", ["A", "B"]), "testAtestABtestBA",)
+        assert_eq!(
+            &runtime_format("test{}test{0}{}test{1}{0}", ["A", "B"]),
+            "testAtestABtestBA",
+        )
     }
 }

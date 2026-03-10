@@ -14,7 +14,7 @@ use crate::{
 
 const DEFAULT_NAME: &str = "from_tuple";
 const DEFAULT_DOC: &str =
-    "Constructs a new instance of [`{}`] from a tuple with the specified field values .";
+    "Constructs a new instance of [`{}`] from a tuple with the specified field values.";
 
 pub fn expand_from_tuple(input: &ItemStruct, order: &OrderMethod) -> syn::Result<TokenStream> {
     let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;

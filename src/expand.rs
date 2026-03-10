@@ -22,8 +22,11 @@ fn expand(args: TokenStream, input: TokenStream, all: bool) -> syn::Result<Token
     let mut input = parse2::<Input>(input)?;
 
     let args_orders = parse2::<Orders>(args)?;
-    let (global_from_args, all_from_args) =
-        if all { (Default::default(), args_orders) } else { (args_orders, Default::default()) };
+    let (global_from_args, all_from_args) = if all {
+        (Default::default(), args_orders)
+    } else {
+        (args_orders, Default::default())
+    };
 
     // Extract all relevant attributes from the item definition and its variants or fields.
     let all_attrs = AllAttrs::extract_from_input(&mut input);
@@ -73,7 +76,7 @@ impl Implems {
     }
 
     fn get_impls(self, context: &impl Context) -> TokenStream {
-        let methdos = if self.methods.is_empty() {
+        let methods = if self.methods.is_empty() {
             if self.traits.is_empty() {
                 return TokenStream::new();
             }
@@ -89,7 +92,7 @@ impl Implems {
         quote! {
             #[allow(non_snake_case)]
             const _: () = {
-                #methdos
+                #methods
                 #traits
             };
         }
