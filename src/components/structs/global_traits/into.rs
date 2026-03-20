@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-const DEFAULT_DOC: &str = "Creates a tuple from each field of the instance of [`{}`].";
+const DEFAULT_DOC: &str = "Converts [`{}`] into a tuple of its field values.";
 
 pub fn expand_into(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenStream> {
     let mut config = Config::new(&order.config, None)?;

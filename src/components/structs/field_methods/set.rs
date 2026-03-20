@@ -10,8 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "set_{}";
-const DEFAULT_DOC: &str =
-    "A setter for the `{1}` field of [`{0}`]. Returns a mutable reference to the instance.";
+const DEFAULT_DOC: &str = "Sets the `{1}` field of [`{0}`] and returns `&mut self` for chaining.";
 
 pub fn expand_set(
     input: &ItemStruct,

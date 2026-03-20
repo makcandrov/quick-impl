@@ -10,7 +10,7 @@ use crate::{
     tokens::{IndexedField, to_indexed_field_iter},
 };
 
-const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field. Sets the other fields to their default value.";
+const DEFAULT_DOC: &str = "Creates an instance of [`{0}`] from the `{1}` field, setting the remaining fields to their default values.";
 
 pub fn expand_from(
     input: &ItemStruct,

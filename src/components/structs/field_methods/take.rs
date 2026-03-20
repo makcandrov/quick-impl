@@ -10,8 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "take_{}";
-const DEFAULT_DOC: &str =
-    "Returns the `{1}` field of [`{0}`] and replaces it with its default value.";
+const DEFAULT_DOC: &str = "Takes the `{1}` field of [`{0}`], replacing it with its default value.";
 
 pub fn expand_take(
     input: &ItemStruct,

@@ -10,8 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "is_{}";
-const DEFAULT_DOC: &str =
-    "Returns `true` if the variant is [`{}::{}`]; otherwise, returns `false`.";
+const DEFAULT_DOC: &str = "Returns `true` if `self` is the [`{}::{}`] variant.";
 
 pub fn expand_is(
     input: &ItemEnum,

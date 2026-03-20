@@ -11,7 +11,7 @@ use crate::{
 
 const DEFAULT_NAME: &str = "replace_{}";
 const DEFAULT_DOC: &str =
-    "Replaces the `{1}` field of [`{0}`] by the given value. Returns the previous value.";
+    "Replaces the `{1}` field of [`{0}`] with the given value, returning the previous value.";
 
 pub fn expand_replace(
     input: &ItemStruct,

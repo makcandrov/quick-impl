@@ -13,7 +13,7 @@ use crate::{
     },
 };
 
-const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] from a tuple of its fields values.";
+const DEFAULT_DOC: &str = "Constructs a new instance of [`{}`] from a tuple of its field values.";
 
 pub fn expand_from(input: &ItemStruct, order: &OrderTrait) -> syn::Result<TokenStream> {
     let mut config = Config::new(&order.config, None)?;

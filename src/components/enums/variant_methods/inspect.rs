@@ -14,7 +14,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "inspect_{}";
-const DEFAULT_DOC: &str = "Calls a function with a reference to the associated data if the instance is of the variant [`{}::{}`]. Returns the original instance.";
+const DEFAULT_DOC: &str = "Calls the given closure with a reference to the associated data if `self` is the [`{}::{}`] variant, and returns `self`.";
 
 pub fn expand_inspect(
     input: &ItemEnum,

@@ -14,7 +14,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "try_into_{}";
-const DEFAULT_DOC: &str = "Converts `self` into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
+const DEFAULT_DOC: &str = "Extracts the associated data if `self` is the [`{}::{}`] variant, or returns `Err(self)` otherwise.";
 
 pub fn expand_try_into(
     input: &ItemEnum,

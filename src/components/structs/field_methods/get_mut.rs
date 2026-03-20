@@ -10,7 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "get_{}_mut";
-const DEFAULT_DOC: &str = "A mutable getter for the `{1}` field of [`{0}`].";
+const DEFAULT_DOC: &str = "Returns a mutable reference to the `{1}` field of [`{0}`].";
 
 pub fn expand_get_mut(
     input: &ItemStruct,

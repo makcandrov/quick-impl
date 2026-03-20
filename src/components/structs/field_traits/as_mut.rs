@@ -7,7 +7,7 @@ use crate::{
     tokens::IndexedField,
 };
 
-const DEFAULT_DOC: &str = "Cheap mutable-to-mutable reference conversion.";
+const DEFAULT_DOC: &str = "Returns a mutable reference to the `{1}` field of [`{0}`].";
 
 pub fn expand_as_mut(
     input: &ItemStruct,

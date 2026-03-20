@@ -1,47 +1,40 @@
-use quick_impl::{quick_impl, quick_impl_all};
+use quick_impl::quick_impl_all;
 
 #[derive(Debug)]
 #[quick_impl_all(pub const is)]
 pub enum Status {
+    #[quick_impl(impl Default)]
     Pending,
 
     #[quick_impl(pub try_into, impl TryInto)]
     Approved(i32),
 
-    #[quick_impl(pub try_into, impl TryInto)]
+    #[quick_impl(pub try_into, impl TryFrom)]
     Rejected(String),
 }
 
-#[quick_impl]
-pub struct Wrapper {
-    #[quick_impl(impl Deref, impl DerefMut)]
-    data: Vec<u8>,
-}
-
 fn main() {
-    // Enum example with `try_into` and `is`
+    // `impl Default` — defaults to the specified variant
+    let status = Status::default();
+    assert!(status.is_pending());
+
+    // `try_into` method — fallible extraction returning Result
     let status = Status::Approved(200);
-    assert!(status.is_approved());
+    let code: Result<i32, Status> = status.try_into_approved();
+    assert_eq!(code.unwrap(), 200);
 
-    // Use `try_into` to convert to the associated data
-    let approved_code: Result<i32, Status> = status.try_into_approved();
-    assert_eq!(approved_code.unwrap(), 200);
+    // `try_into` on the wrong variant returns Err(self)
+    let status = Status::Pending;
+    let result: Result<i32, Status> = status.try_into_approved();
+    assert!(result.is_err());
 
-    let rejected_status = Status::Rejected("Invalid request".to_string());
-    assert!(rejected_status.is_rejected());
+    // `impl TryInto` trait — same behavior via the standard trait
+    let status = Status::Approved(200);
+    let code: Result<i32, Status> = status.try_into();
+    assert_eq!(code.unwrap(), 200);
 
-    let rejection_reason: Result<String, Status> = rejected_status.try_into();
-    assert_eq!(rejection_reason.unwrap(), "Invalid request");
-
-    // Struct example with `Deref` and `DerefMut`
-    let mut wrapper = Wrapper {
-        data: vec![1, 2, 3],
-    };
-
-    // Accessing inner `Vec<u8>` through Deref
-    assert_eq!(wrapper.len(), 3); // Calls `Vec<u8>::len`
-
-    // Mutating inner `Vec<u8>` through DerefMut
-    wrapper.push(4);
-    assert_eq!(wrapper.len(), 4); // Now has 4 elements
+    // `impl TryFrom` trait — extract from the other direction
+    let status = Status::Rejected("Invalid request".to_string());
+    let reason = String::try_from(status);
+    assert_eq!(reason.unwrap(), "Invalid request");
 }

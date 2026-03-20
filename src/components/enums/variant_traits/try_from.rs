@@ -12,7 +12,8 @@ use crate::{
     },
 };
 
-const DEFAULT_DOC: &str = "Converts the instance into the associated data if the variant is [`{}::{}`]; otherwise, returns `Err(self)`.";
+const DEFAULT_DOC: &str =
+    "Extracts the associated data if the variant is [`{}::{}`], or returns `Err(self)` otherwise.";
 
 pub fn expand_try_from(
     input: &ItemEnum,

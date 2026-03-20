@@ -4,7 +4,7 @@ use syn::{ItemStruct, LitStr};
 
 use crate::{config::Config, idents::config::CONFIG_DOC, order::OrderTrait, tokens::IndexedField};
 
-const DEFAULT_DOC: &str = "Converts into the `{1}` field of [`{0}`].";
+const DEFAULT_DOC: &str = "Consumes `self` and returns the `{1}` field of [`{0}`].";
 
 pub fn expand_into(
     input: &ItemStruct,

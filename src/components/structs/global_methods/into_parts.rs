@@ -10,7 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "into_parts";
-const DEFAULT_DOC: &str = "Destructures the instance of [`{}`] into its fields values.";
+const DEFAULT_DOC: &str = "Decomposes [`{}`] into a tuple of its field values.";
 
 pub fn expand_into_parts(input: &ItemStruct, order: &OrderMethod) -> syn::Result<TokenStream> {
     let mut config = Config::new(&order.config, Some(CONFIG_NAME))?;

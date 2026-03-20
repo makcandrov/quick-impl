@@ -10,7 +10,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "with_{}";
-const DEFAULT_DOC: &str = "Returns an instance of [`{0}`] with the `{1}` field modified.";
+const DEFAULT_DOC: &str = "Returns `self` with the `{1}` field set to the given value.";
 
 pub fn expand_with(
     input: &ItemStruct,

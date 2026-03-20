@@ -14,7 +14,8 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "set_{}";
-const DEFAULT_DOC: &str = "Replaces the current instance with a new instance of the [`{}::{}`] variant, returning the original instance.";
+const DEFAULT_DOC: &str =
+    "Sets `self` to the [`{}::{}`] variant with the given data, returning the previous value.";
 
 pub fn expand_set(
     input: &ItemEnum,

@@ -14,7 +14,7 @@ use crate::{
 };
 
 const DEFAULT_NAME: &str = "as_{}_mut";
-const DEFAULT_DOC: &str = "Returns a mutable reference to the associated data if the variant is [`{}::{}`]; otherwise, returns `None`.";
+const DEFAULT_DOC: &str = "Returns a mutable reference to the associated data if `self` is the [`{}::{}`] variant, or `None` otherwise.";
 
 pub fn expand_as_ref_mut(
     input: &ItemEnum,
