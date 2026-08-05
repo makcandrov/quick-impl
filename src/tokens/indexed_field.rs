@@ -2,7 +2,7 @@ use core::ops::Deref;
 
 use proc_macro2::TokenStream;
 use quote::{ToTokens, format_ident};
-use syn::{Field, Ident, Index, spanned::Spanned};
+use syn::{Field, Ident, Index, ext::IdentExt, spanned::Spanned};
 
 use crate::idents::ARGUMENT;
 
@@ -31,6 +31,16 @@ impl<'a> IndexedField<'a> {
             .as_ref()
             .map(|x| x.to_token_stream())
             .unwrap_or_else(|| Index::from(self.index).to_token_stream())
+    }
+
+    /// Field name used to build method names and documentation. The `r#` prefix is stripped, as it
+    /// cannot appear in the middle of an identifier.
+    pub fn name(&self) -> String {
+        self.field
+            .ident
+            .as_ref()
+            .map(|ident| ident.unraw().to_string())
+            .unwrap_or_else(|| self.index.to_string())
     }
 
     pub fn as_ident(&self) -> Ident {

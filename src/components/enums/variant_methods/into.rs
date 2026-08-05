@@ -27,7 +27,7 @@ pub fn expand_into(
     let method_ident = config.get_formatted_lit_str_ident(
         CONFIG_NAME,
         LitStr::new(DEFAULT_NAME, order.ident.span()),
-        [&to_snake_case(&variant.ident.to_string())],
+        [&to_snake_case(&variant.ident)],
     )?;
 
     let doc = config.get_formatted_lit_str(

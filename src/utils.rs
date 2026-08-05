@@ -1,6 +1,9 @@
-use syn::LitStr;
+use syn::{Ident, LitStr, ext::IdentExt};
 
-pub fn to_snake_case(variant: &str) -> String {
+/// Takes an [`Ident`] rather than a string so that the `r#` prefix of raw identifiers is stripped,
+/// as it cannot appear in the middle of an identifier.
+pub fn to_snake_case(ident: &Ident) -> String {
+    let variant = ident.unraw().to_string();
     let mut snake = String::new();
     for (i, ch) in variant.char_indices() {
         if i > 0 && ch.is_uppercase() {

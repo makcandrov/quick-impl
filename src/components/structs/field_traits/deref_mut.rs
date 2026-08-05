@@ -19,10 +19,7 @@ pub fn expand_deref_mut(
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [
-            &input.ident.to_string(),
-            &indexed_field.as_token().to_string(),
-        ],
+        [&input.ident.to_string(), &indexed_field.name()],
     )?;
 
     config.finish()?;

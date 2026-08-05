@@ -23,16 +23,13 @@ pub fn expand_replace(
     let method_ident = config.get_formatted_lit_str_ident(
         CONFIG_NAME,
         LitStr::new(DEFAULT_NAME, order.ident.span()),
-        [&indexed_field.as_token().to_string()],
+        [&indexed_field.name()],
     )?;
 
     let doc = config.get_formatted_lit_str(
         CONFIG_DOC,
         LitStr::new(DEFAULT_DOC, Span::call_site()),
-        [
-            &input.ident.to_string(),
-            &indexed_field.as_token().to_string(),
-        ],
+        [&input.ident.to_string(), &indexed_field.name()],
     )?;
 
     config.finish()?;

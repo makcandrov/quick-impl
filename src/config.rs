@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use proc_macro2::{Span, TokenStream};
 use quote::quote_spanned;
-use syn::{Ident, Lit, LitStr};
+use syn::{Ident, Lit, LitStr, parse_str};
 
 use crate::{
     order::OrderConfigList,
@@ -86,12 +86,11 @@ impl Config {
     }
 
     pub fn get_lit_str_ident(&mut self, config_ident: &'static str) -> syn::Result<Option<Ident>> {
-        let lit_str = self.get_lit_str(config_ident)?;
-        Ok(lit_str.map(|lit_str| {
-            let value = lit_str.value();
-            let span = lit_str.span();
-            Ident::new(&value, span)
-        }))
+        if let Some(lit_str) = self.get_lit_str(config_ident)? {
+            lit_str_to_ident(&lit_str).map(Some)
+        } else {
+            Ok(None)
+        }
     }
 
     pub fn get_formatted_lit_str(
@@ -113,8 +112,14 @@ impl Config {
         replacements: impl IntoIterator<Item = impl AsRef<str>>,
     ) -> syn::Result<Ident> {
         let lit_str = self.get_formatted_lit_str(config_ident, default_lit_str, replacements)?;
-        let value = lit_str.value();
-        let span = lit_str.span();
-        Ok(Ident::new(&value, span))
+        lit_str_to_ident(&lit_str)
     }
+}
+
+fn lit_str_to_ident(lit_str: &LitStr) -> syn::Result<Ident> {
+    let span = lit_str.span();
+    let value = lit_str.value();
+    let mut ident = parse_str::<Ident>(&value)?;
+    ident.set_span(span);
+    Ok(ident)
 }
