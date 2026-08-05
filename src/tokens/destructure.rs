@@ -103,8 +103,7 @@ where
         return alone.apply(res, delimiter);
     }
 
-    let mut i = 1;
-    for field in fields {
+    for (i, field) in (1..).zip(fields) {
         let ext = if let Some(ident) = &field.ident {
             match rename {
                 RenameField::Auto => quote! { , #prefix #ident },
@@ -123,7 +122,6 @@ where
         };
 
         res.extend(ext);
-        i += 1
     }
 
     with_delimiter(res, delimiter)
@@ -157,8 +155,7 @@ where
         return alone.apply(res, delimiter);
     }
 
-    let mut i = 1;
-    for field in fields {
+    for (i, field) in (1..).zip(fields) {
         let field_ident = if let Some(ident) = &field.ident {
             ident.clone()
         } else {
@@ -167,7 +164,6 @@ where
         let field_type = &field.ty;
 
         res.extend(quote! { , #field_ident: #field_type});
-        i += 1
     }
 
     with_delimiter(res, delimiter)

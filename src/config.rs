@@ -38,7 +38,7 @@ impl Config {
                     if old.is_some() {
                         return Err(syn::Error::new_spanned(
                             &config.ident,
-                            format!("duplicate config parameter `{}`", &config.ident),
+                            format!("duplicate config parameter `{}`", config.ident),
                         ));
                     }
                 }
