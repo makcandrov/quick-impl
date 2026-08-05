@@ -6,7 +6,7 @@ use crate::{
     config::Config,
     idents::config::{CONFIG_DOC, CONFIG_NAME},
     order::OrderMethod,
-    tokens::{IndexedField, to_indexed_field_iter},
+    tokens::{IndexedField, construct_defaulting_others},
 };
 
 const DEFAULT_NAME: &str = "from_{}";
@@ -37,40 +37,8 @@ pub fn expand_from(
     let field_ty = &indexed_field.ty;
     let field_ident = indexed_field.as_ident();
 
-    let mut where_clause = if input.fields.len() > 1 {
-        quote! { where }
-    } else {
-        TokenStream::new()
-    };
-
-    let mut other_fields = TokenStream::new();
-    for other_indexed_field in to_indexed_field_iter(&input.fields) {
-        if other_indexed_field.index == indexed_field.index {
-            continue;
-        }
-        let other_field_ident = &other_indexed_field.as_ident();
-        let other_field_ty = &other_indexed_field.ty;
-        where_clause.extend(quote! {
-            #other_field_ty: ::core::default::Default,
-        });
-
-        if other_indexed_field.ident.is_some() {
-            other_fields
-                .extend(quote! { #other_field_ident: ::core::default::Default::default(), });
-        } else {
-            other_fields.extend(quote! { ::core::default::Default::default(), });
-        }
-    }
-
-    let structure_creation = if let Some(field_ident) = &indexed_field.ident {
-        quote! {
-            Self { #field_ident, #other_fields }
-        }
-    } else {
-        quote! {
-            Self ( #field_ident, #other_fields )
-        }
-    };
+    let (bounds, structure_creation) = construct_defaulting_others(&input.fields, indexed_field);
+    let where_clause = (!bounds.is_empty()).then(|| quote! { where #bounds });
 
     Ok(quote! {
         #[doc = #doc]

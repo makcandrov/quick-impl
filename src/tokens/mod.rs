@@ -3,7 +3,8 @@ pub use delimiter::{get_delimiter, with_delimiter};
 
 mod destructure;
 pub use destructure::{
-    AloneDecoration, RenameField, destructure_data, destructure_data_with_types, destructure_types,
+    AloneDecoration, RenameField, construct_defaulting_others, destructure_data,
+    destructure_data_with_types, destructure_types,
 };
 
 mod indexed_field;

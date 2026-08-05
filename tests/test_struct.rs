@@ -225,3 +225,54 @@ fn test_empty_struct() {
     let () = Test3().into_parts();
     let () = Test3().into();
 }
+
+#[test]
+fn test_struct_from_field_position() {
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
+    struct Unnamed(usize, #[quick_impl(pub from, impl From)] usize, usize);
+
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
+    struct Named {
+        a: usize,
+        #[quick_impl(pub from, impl From)]
+        b: usize,
+        c: usize,
+    }
+
+    // The value must land on the annotated field, not on the first one.
+    assert_eq!(Unnamed::from_1(12), Unnamed(0, 12, 0));
+    assert_eq!(<Unnamed as From<usize>>::from(12), Unnamed(0, 12, 0));
+
+    assert_eq!(Named::from_b(12), Named { a: 0, b: 12, c: 0 });
+    assert_eq!(
+        <Named as From<usize>>::from(12),
+        Named { a: 0, b: 12, c: 0 },
+    );
+}
+
+#[test]
+fn test_struct_from_field_position_distinct_types() {
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
+    struct Test(u8, #[quick_impl(pub from, impl From)] String, bool);
+
+    assert_eq!(
+        Test::from_1("hello".to_owned()),
+        Test(0, "hello".to_owned(), false),
+    );
+    assert_eq!(
+        <Test as From<String>>::from("hello".to_owned()),
+        Test(0, "hello".to_owned(), false),
+    );
+}
+
+#[test]
+fn test_struct_from_last_field() {
+    #[derive(Debug, Eq, PartialEq)]
+    #[quick_impl]
+    struct Test(usize, usize, #[quick_impl(pub from)] usize);
+
+    assert_eq!(Test::from_2(12), Test(0, 0, 12));
+}

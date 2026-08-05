@@ -1,9 +1,9 @@
 use proc_macro2::{Delimiter, TokenStream};
 use quote::{ToTokens, quote};
-use syn::Field;
+use syn::{Field, Fields};
 
-use super::with_delimiter;
-use crate::tokens::indexed_field::field_rename;
+use super::{get_delimiter, with_delimiter};
+use crate::tokens::indexed_field::{IndexedField, field_rename, to_indexed_field_iter};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum RenameField {
@@ -125,6 +125,38 @@ where
     }
 
     with_delimiter(res, delimiter)
+}
+
+/// Builds the expression constructing `Self` from `kept`, defaulting every other field, along with
+/// the `Default` bounds those fields require.
+///
+/// Fields are emitted in declaration order, which tuple structs rely on.
+pub fn construct_defaulting_others(
+    fields: &Fields,
+    kept: &IndexedField<'_>,
+) -> (TokenStream, TokenStream) {
+    let kept_ident = kept.as_ident();
+    let mut bounds = TokenStream::new();
+    let mut values = TokenStream::new();
+
+    for field in to_indexed_field_iter(fields) {
+        let value = if field.index == kept.index {
+            quote! { #kept_ident }
+        } else {
+            let ty = &field.ty;
+            bounds.extend(quote! { #ty: ::core::default::Default, });
+            quote! { ::core::default::Default::default() }
+        };
+
+        if let Some(ident) = &field.ident {
+            values.extend(quote! { #ident: #value, });
+        } else {
+            values.extend(quote! { #value, });
+        }
+    }
+
+    let construction = with_delimiter(values, get_delimiter(fields));
+    (bounds, quote! { Self #construction })
 }
 
 pub fn destructure_data_with_types<'a, I>(
