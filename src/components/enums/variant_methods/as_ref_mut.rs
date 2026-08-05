@@ -70,10 +70,10 @@ pub fn expand_as_ref_mut(
         #[doc = #doc]
         #[must_use]
         #[inline]
-        #keywords fn #method_ident(&mut self) -> Option<#ty> {
+        #keywords fn #method_ident(&mut self) -> ::core::option::Option<#ty> {
             match self {
-                Self::#variant_ident #destruct => Some(#ret),
-                _ => None,
+                Self::#variant_ident #destruct => ::core::option::Option::Some(#ret),
+                _ => ::core::option::Option::None,
             }
         }
     })

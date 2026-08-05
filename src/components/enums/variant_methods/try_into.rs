@@ -69,10 +69,10 @@ pub fn expand_try_into(
     Ok(quote! {
         #[doc = #doc]
         #[inline]
-        #keywords fn #method_ident(self) -> Result<#ty, Self> {
+        #keywords fn #method_ident(self) -> ::core::result::Result<#ty, Self> {
             match self {
-                Self::#variant_ident #destruct => Ok(#ret),
-                other => Err(other),
+                Self::#variant_ident #destruct => ::core::result::Result::Ok(#ret),
+                other => ::core::result::Result::Err(other),
             }
         }
     })

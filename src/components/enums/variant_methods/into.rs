@@ -71,10 +71,10 @@ pub fn expand_into(
         #[doc = #doc]
         #[must_use]
         #[inline]
-        #keywords fn #method_ident(self) -> Option<#ty> {
+        #keywords fn #method_ident(self) -> ::core::option::Option<#ty> {
             match self {
-                Self::#variant_ident #destruct => Some(#ret),
-                _ => None,
+                Self::#variant_ident #destruct => ::core::option::Option::Some(#ret),
+                _ => ::core::option::Option::None,
             }
         }
     })

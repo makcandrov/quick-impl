@@ -44,8 +44,8 @@ pub fn expand_get_clone(
         #[doc = #doc]
         #[must_use]
         #[inline]
-        #keywords fn #method_ident (&self) -> #ty where #ty: core::clone::Clone {
-            self.#field_ident.clone()
+        #keywords fn #method_ident (&self) -> #ty where #ty: ::core::clone::Clone {
+            ::core::clone::Clone::clone(&self.#field_ident)
         }
     })
 }

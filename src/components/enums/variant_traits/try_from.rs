@@ -69,10 +69,10 @@ pub fn expand_try_from(
 
             #[doc = #doc]
             #[inline]
-            fn #method_ident (value: #ident #ty_generics) -> Result<Self, #ident #ty_generics> {
+            fn #method_ident (value: #ident #ty_generics) -> ::core::result::Result<Self, #ident #ty_generics> {
                 match value {
-                    #ident :: #variant_ident #destruct => Ok(#ret),
-                    other => Err(other),
+                    #ident :: #variant_ident #destruct => ::core::result::Result::Ok(#ret),
+                    other => ::core::result::Result::Err(other),
                 }
             }
         }
