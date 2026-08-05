@@ -6,11 +6,12 @@ pub fn respan2(input: TokenStream, span: Span) -> TokenStream {
 
 fn respan2_tt(tt: TokenTree, span: Span) -> TokenTree {
     match tt {
-        TokenTree::Group(mut group) => {
-            group.set_span(span);
+        TokenTree::Group(group) => {
             let delim = group.delimiter();
             let stream = respan2(group.stream(), span);
-            TokenTree::Group(Group::new(delim, stream))
+            let mut group = Group::new(delim, stream);
+            group.set_span(span);
+            TokenTree::Group(group)
         }
         TokenTree::Ident(mut ident) => {
             ident.set_span(span);
