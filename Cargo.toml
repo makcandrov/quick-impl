@@ -1,10 +1,9 @@
 [package]
 name = "quick-impl"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2024"
 rust-version = "1.85"
 repository = "https://github.com/makcandrov/quick-impl"
-homepage = "https://github.com/makcandrov/quick-impl"
 documentation = "https://docs.rs/quick-impl"
 description = "Quickly implement usual methods and traits for enums and structs."
 license = "MIT OR Apache-2.0"
